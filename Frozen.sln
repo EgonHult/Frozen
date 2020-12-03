@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Frozen", "Frozen\Frozen.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Products", "Products\Products.csproj", "{96070A2F-E818-45F2-9A33-2316F0161555}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Payment", "Payment\Payment.csproj", "{1B8E5812-2DBE-489D-949F-12FF059DF281}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Payments", "Payment\Payments.csproj", "{1B8E5812-2DBE-489D-949F-12FF059DF281}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orders", "Orders\Orders.csproj", "{875142C3-3D32-48A1-A15C-1171AE2DB525}"
 EndProject
