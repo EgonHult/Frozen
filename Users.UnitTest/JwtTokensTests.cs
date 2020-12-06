@@ -1,67 +1,116 @@
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using Users.Models;
 using Users.Services;
+using Users.UnitTest.Context;
 
 namespace Users.UnitTest
 {
     [TestClass]
     public class JwtTokensTests
     {
+        public static IConfigurationRoot Config { get; set; }
+
+        /// <summary>
+        /// Executes once before ALL tests
+        /// </summary>
+        /// <param name="context"></param>
+        [ClassInitialize]
+        public static void LoadAppsettings(TestContext context)
+        {
+            var appSettings = new AppSettings();
+            Config = appSettings.Config;
+        }
+
         [TestMethod]
-        public void CreateToken_CreateNewJwtToken_ReturnTokenNotNULL()
+        public void CreateToken_TryCreateNewJwtToken_ReturnNotNULL()
         {
             // Arrange
-            IConfigurationRoot config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-
-            JwtTokenHandler createToken = new JwtTokenHandler(config);
+            JwtTokenHandler tokenHandler = new JwtTokenHandler(Config);
             var user = DummyUser.User();
 
             // Act
-            string token = createToken.CreateToken(user);
+            string token = tokenHandler.CreateToken(user);
 
             // Assert
             Assert.IsNotNull(token);
         }
 
         [TestMethod]
-        public void SetTokenClaims_CreateSetOfClaims_ReturnItemsNotNull()
+        public void CreateToken_TryCreateNewJwtTokenWithNullUser_ReturnNULL()
         {
             // Arrange
-            JwtTokenHandler tokenHandler = new JwtTokenHandler();
+            JwtTokenHandler tokenHandler = new JwtTokenHandler(Config);
             var user = DummyUser.User();
 
             // Act
-            var result = tokenHandler.SetTokenClaims(user).ToList();
+            string token = tokenHandler.CreateToken(null);
 
             // Assert
-            CollectionAssert.AllItemsAreNotNull(result);
+            Assert.IsNull(token);
         }
 
         [TestMethod]
-        public void ConfigureToken_CreateJwtSecurityToken_ReturnJwtSecurityTokenNotNull()
+        public void CreateRefreshToken_TryCreateNewRefreshJwtToken_ReturnNotNULL()
         {
             // Arrange
-            IConfigurationRoot config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["JWT:Key"]));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-            JwtTokenHandler tokenHandler = new JwtTokenHandler(config);
+            JwtTokenHandler tokenHandler = new JwtTokenHandler(Config);
             var user = DummyUser.User();
-            var claims = tokenHandler.SetTokenClaims(user);
 
             // Act
-            var result = tokenHandler.ConfigureToken(claims, credentials);
+            string token = tokenHandler.CreateRefreshToken(user);
 
             // Assert
-            Assert.IsNotNull(result);
+            Assert.IsNotNull(token);
+        }
+
+        [TestMethod]
+        public void CreateRefreshToken_TryCreateNewRefreshJwtTokenWithNullUser_ReturnNULL()
+        {
+            // Arrange
+            JwtTokenHandler tokenHandler = new JwtTokenHandler(Config);
+            var user = DummyUser.User();
+
+            // Act
+            string token = tokenHandler.CreateRefreshToken(null);
+
+            // Assert
+            Assert.IsNull(token);
+        }
+
+        [TestMethod]
+        public void ValidateToken_CheckIfJwtTokenIsValid_ReturnTrue()
+        {
+            // Arrange
+            JwtTokenHandler tokenHandler = new JwtTokenHandler(Config);
+            var user = DummyUser.User();
+            string token = tokenHandler.CreateToken(user);
+
+            // Act
+            var result = tokenHandler.ValidateToken(token)
+                .Identity
+                .IsAuthenticated;
+
+            // Assert
+            Assert.IsTrue(result);
+
+        }
+
+        [TestMethod]
+        public void ValidateRefreshToken_CheckIfJwtRefreshTokenIsValid_ReturnTrue()
+        {
+            // Arrange
+            JwtTokenHandler tokenHandler = new JwtTokenHandler(Config);
+            var user = DummyUser.User();
+            string token = tokenHandler.CreateRefreshToken(user);
+
+            // Act
+            var result = tokenHandler.ValidateRefreshToken(token)
+                .Identity
+                .IsAuthenticated;
+
+            // Assert
+            Assert.IsTrue(result);
+
         }
     }
 }
