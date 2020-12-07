@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,17 +10,34 @@ namespace Users.UnitTest
 {
     public static class DummyUser
     {
-        public static User User()
+        public static UserModel TestUser()
         {
-            User user = new User()
+            UserModel  user = new UserModel()
             {
-                Id = Guid.NewGuid(),
-                FirstName = "Arne",
-                LastName = "Anka",
-                Email = "arne@anka.se"
+                FirstName = "Joel",
+                LastName = "Felldin",
+                Address = "Alfred Nobels Allé",
+                City = "Huddinge",
+                Zip = "14152",
+                PhoneNumber = "07012312312",
+                Email = "joel.felldin@iths.se"
             };
 
             return user;
         }
+
+        public static User TestUser2()
+        {
+            User user = new User()
+            {
+                Id = Guid.NewGuid(),
+                FirstName = "Test",
+                LastName = "User",
+                Email = "test@test.com"
+            };
+
+            return user;
+        }
+
     }
 }

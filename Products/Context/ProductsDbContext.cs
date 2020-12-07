@@ -17,11 +17,11 @@ namespace Products.Context
         {
         }
 
-        public DbSet<ProductsModel> Product { get; set; }
+        public DbSet<ProductModel> Product { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.Entity<ProductsModel>(entity => {
+            builder.Entity<ProductModel>(entity => {
                 entity.Property(x => x.Name).IsRequired();
                 entity.Property(x => x.Price).IsRequired().HasColumnType("decimal(18,2)");
                 entity.Property(x => x.Quantity).IsRequired();
