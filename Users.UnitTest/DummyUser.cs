@@ -1,16 +1,11 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 using Users.Models;
 
 namespace Users.UnitTest
 {
     public static class DummyUser
     {
-        public static UserModel TestUser()
+        public static UserModel TestUserModel()
         {
             UserModel  user = new UserModel()
             {
@@ -20,20 +15,26 @@ namespace Users.UnitTest
                 City = "Huddinge",
                 Zip = "14152",
                 PhoneNumber = "07012312312",
-                Email = "joel.felldin@iths.se"
+                Email = "joel.felldin@iths.se",
+                Password = "Test123!"
             };
 
             return user;
         }
 
-        public static User TestUser2()
+        public static User TestUser()
         {
             User user = new User()
             {
                 Id = Guid.NewGuid(),
                 FirstName = "Test",
-                LastName = "User",
-                Email = "test@test.com"
+                LastName = "Test",
+                Address = "Test",
+                City = "Test",
+                Zip = "12345",
+                PhoneNumber = "+46-12-3456789",
+                Email = "testuser@frozen.se",
+                UserName = "testuser@frozen.se"
             };
 
             return user;

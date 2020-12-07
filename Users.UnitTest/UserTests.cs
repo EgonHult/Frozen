@@ -1,37 +1,57 @@
-using Microsoft.AspNetCore.Identity;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Users.Models;
 using Users.Repositories;
 using Users.UnitTest.Context;
+using Users.UnitTest.Fixture;
 
 namespace Users.UnitTest
 {
     [TestClass]
     public class UserTests
     {
-        public static UserModel TestDummyUser { get; set; }
+        public static UserRepository UserRepositoryClass { get; set; }
+        public static TestUserContext UnitTestContext { get; set; }
+        public static User FixtureUser { get; set; }
 
         [ClassInitialize]
-        public static void LoadAppsettings(TestContext context)
+        public static void TestFixtureSetup(TestContext context)
         {
-            TestDummyUser = DummyUser.TestUser();
+            UnitTestContext = new TestUserContext();
+
+            UserRepositoryClass = new UserRepository(
+                UnitTestContext.UserDbContext, 
+                UnitTestContext.UserManager, 
+                UnitTestContext.SignInManager, 
+                UnitTestContext.RoleManager);
+            
+            var userFixture = new UserFixture(UnitTestContext.UserManager);
+            FixtureUser = userFixture.CreateDummyUserAsync().Result;
         }
 
-        [TestMethod]
-        public void CreateUser_RegisterNewUser_ReturnCreatedUserIsNotNull()
+        [ClassCleanup]
+        public static void TestFixtureDispose()
         {
-            using(var context = new TestUsersDbContext())
-            {
-                // Arrange
-                //var userManager = new UserManager<User>(options => { options. });
-                var userRepository = new UserRepository(context.DbContext, context.UserManager);
+            // Remove test-user from database
+            var userFixture = new UserFixture(UnitTestContext.UserManager);
+            userFixture.RemoveDummyUserAsync(FixtureUser).Wait();
 
-                // Act
-                var createdUser = userRepository.CreateUserAsync(TestDummyUser);
+            UnitTestContext.Dispose();
+        }
+        
+        [TestMethod]
+        public void CreateUser_RegisterNewUser_ReturnCreatedUserAreEqual()
+        {
+            // Arrange
+            var userModel = DummyUser.TestUserModel();
 
-                // Assert
-                Assert.IsNotNull(createdUser.Result);
-            }
+            // Act
+            var createdUser = UserRepositoryClass.CreateUserAsync(userModel).Result;
+
+            // Assert
+            Assert.IsNotNull(createdUser);
+
+            // Clean up and delete test-user from database!
+            UnitTestContext.UserManager.DeleteAsync(createdUser).Wait();
         }
     }
 }

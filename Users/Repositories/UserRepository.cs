@@ -12,11 +12,15 @@ namespace Users.Repositories
     {
         private readonly UserDbContext _context;
         private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
+        private readonly RoleManager<AppRole> _roleManager;
 
-        public UserRepository(UserDbContext context, UserManager<User> userManager)
+        public UserRepository(UserDbContext context, UserManager<User> userManager, SignInManager<User> signInManager, RoleManager<AppRole> roleManager)
         {
             this._context = context;
             this._userManager = userManager;
+            this._signInManager = signInManager;
+            this._roleManager = roleManager;
         }
 
         public async Task<User> CreateUserAsync(UserModel userModel)
@@ -33,8 +37,9 @@ namespace Users.Repositories
             };
 
             var result = await _userManager.CreateAsync(user, userModel.Password);
+            var role = await _userManager.AddToRoleAsync(user, "User");
 
-            if (result.Succeeded)
+            if (result.Succeeded && role.Succeeded)
             {
                 return user;
             }

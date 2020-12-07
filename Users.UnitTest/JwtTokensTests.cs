@@ -27,7 +27,7 @@ namespace Users.UnitTest
         {
             // Arrange
             JwtTokenHandler tokenHandler = new JwtTokenHandler(Config);
-            var user = DummyUser.TestUser2();
+            var user = DummyUser.TestUser();
 
             // Act
             string token = tokenHandler.CreateToken(user);
@@ -41,7 +41,7 @@ namespace Users.UnitTest
         {
             // Arrange
             JwtTokenHandler tokenHandler = new JwtTokenHandler(Config);
-            var user = DummyUser.TestUser();
+            var user = DummyUser.TestUserModel();
 
             // Act
             string token = tokenHandler.CreateToken(null);
@@ -55,7 +55,7 @@ namespace Users.UnitTest
         {
             // Arrange
             JwtTokenHandler tokenHandler = new JwtTokenHandler(Config);
-            var user = DummyUser.TestUser2();
+            var user = DummyUser.TestUser();
 
             // Act
             string token = tokenHandler.CreateRefreshToken(user);
@@ -69,7 +69,7 @@ namespace Users.UnitTest
         {
             // Arrange
             JwtTokenHandler tokenHandler = new JwtTokenHandler(Config);
-            var user = DummyUser.TestUser();
+            var user = DummyUser.TestUserModel();
 
             // Act
             string token = tokenHandler.CreateRefreshToken(null);
@@ -83,7 +83,7 @@ namespace Users.UnitTest
         {
             // Arrange
             JwtTokenHandler tokenHandler = new JwtTokenHandler(Config);
-            var user = DummyUser.TestUser2();
+            var user = DummyUser.TestUser();
             string token = tokenHandler.CreateToken(user);
 
             // Act
@@ -101,7 +101,7 @@ namespace Users.UnitTest
         {
             // Arrange
             JwtTokenHandler tokenHandler = new JwtTokenHandler(Config);
-            var user = DummyUser.TestUser2();
+            var user = DummyUser.TestUser();
             string token = tokenHandler.CreateRefreshToken(user);
 
             // Act
