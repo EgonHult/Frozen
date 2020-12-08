@@ -27,10 +27,10 @@ namespace Users.UnitTest
         {
             // Arrange
             JwtTokenHandler tokenHandler = new JwtTokenHandler(Config);
-            var user = DummyUser.TestUser2();
+            var user = DummyUser.TestUser();
 
             // Act
-            string token = tokenHandler.CreateToken(user);
+            string token = tokenHandler.CreateToken(user, false);
 
             // Assert
             Assert.IsNotNull(token);
@@ -41,10 +41,10 @@ namespace Users.UnitTest
         {
             // Arrange
             JwtTokenHandler tokenHandler = new JwtTokenHandler(Config);
-            var user = DummyUser.TestUser();
+            var user = DummyUser.TestUserModel();
 
             // Act
-            string token = tokenHandler.CreateToken(null);
+            string token = tokenHandler.CreateToken(null, false);
 
             // Assert
             Assert.IsNull(token);
@@ -55,7 +55,7 @@ namespace Users.UnitTest
         {
             // Arrange
             JwtTokenHandler tokenHandler = new JwtTokenHandler(Config);
-            var user = DummyUser.TestUser2();
+            var user = DummyUser.TestUser();
 
             // Act
             string token = tokenHandler.CreateRefreshToken(user);
@@ -69,7 +69,7 @@ namespace Users.UnitTest
         {
             // Arrange
             JwtTokenHandler tokenHandler = new JwtTokenHandler(Config);
-            var user = DummyUser.TestUser();
+            var user = DummyUser.TestUserModel();
 
             // Act
             string token = tokenHandler.CreateRefreshToken(null);
@@ -83,8 +83,8 @@ namespace Users.UnitTest
         {
             // Arrange
             JwtTokenHandler tokenHandler = new JwtTokenHandler(Config);
-            var user = DummyUser.TestUser2();
-            string token = tokenHandler.CreateToken(user);
+            var user = DummyUser.TestUser();
+            string token = tokenHandler.CreateToken(user, false);
 
             // Act
             var result = tokenHandler.ValidateToken(token)
@@ -101,7 +101,7 @@ namespace Users.UnitTest
         {
             // Arrange
             JwtTokenHandler tokenHandler = new JwtTokenHandler(Config);
-            var user = DummyUser.TestUser2();
+            var user = DummyUser.TestUser();
             string token = tokenHandler.CreateRefreshToken(user);
 
             // Act

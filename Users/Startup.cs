@@ -18,6 +18,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Users.Context;
 using Users.Models;
+using Users.Repositories;
+using Users.Services;
 
 namespace Users
 {
@@ -75,6 +77,9 @@ namespace Users
             {
                 options.DefaultAuthenticateScheme = "Bearer";
             });
+
+            services.AddSingleton<JwtTokenHandler>();
+            services.AddTransient<IUserRepository, UserRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
