@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using Users.Context;
 using Users.Models;
+using Users.Services;
 
 namespace Users.UnitTest.Context
 {
@@ -16,6 +17,7 @@ namespace Users.UnitTest.Context
         public UserManager<User> UserManager { get; private set; }
         public SignInManager<User> SignInManager { get; private set; }
         public RoleManager<AppRole> RoleManager { get; private set; }
+        public JwtTokenHandler JwtTokenHandler { get; private set; }
 
         public TestUserContext()
         {
@@ -30,7 +32,7 @@ namespace Users.UnitTest.Context
                 .UseSqlServer(connectionString).Options;
 
             UserDbContext = new UserDbContext(dbOption);
-
+            JwtTokenHandler = new JwtTokenHandler(AppsettingsConfig.Config);
             AddIdentityFramework(connectionString);
         }
 

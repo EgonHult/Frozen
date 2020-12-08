@@ -30,7 +30,7 @@ namespace Users.UnitTest
             var user = DummyUser.TestUser();
 
             // Act
-            string token = tokenHandler.CreateToken(user);
+            string token = tokenHandler.CreateToken(user, false);
 
             // Assert
             Assert.IsNotNull(token);
@@ -44,7 +44,7 @@ namespace Users.UnitTest
             var user = DummyUser.TestUserModel();
 
             // Act
-            string token = tokenHandler.CreateToken(null);
+            string token = tokenHandler.CreateToken(null, false);
 
             // Assert
             Assert.IsNull(token);
@@ -84,7 +84,7 @@ namespace Users.UnitTest
             // Arrange
             JwtTokenHandler tokenHandler = new JwtTokenHandler(Config);
             var user = DummyUser.TestUser();
-            string token = tokenHandler.CreateToken(user);
+            string token = tokenHandler.CreateToken(user, false);
 
             // Act
             var result = tokenHandler.ValidateToken(token)

@@ -24,14 +24,14 @@ namespace Users.Services
         /// </summary>
         /// <param name="user"></param>
         /// <returns>Fresh JWT token string</returns>
-        public string CreateToken(User user)
+        public string CreateToken(User user, bool isAdmin)
         {
             if (user == null)
                 return null;
 
             var expirationDate = DateTime.UtcNow.AddMinutes(int.Parse(_config[AppSettings.JWT_EXPIRE_MINUTES]));
             var credentials = SignCredentials(AppSettings.JWT_KEY);
-            var claims = SetTokenClaims(user);
+            var claims = SetTokenClaims(user, isAdmin);
             var token = ConstructJwtToken(claims, credentials, expirationDate);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
@@ -62,14 +62,15 @@ namespace Users.Services
             return credentials;
         }
 
-        private IEnumerable<Claim> SetTokenClaims(User user)
+        private IEnumerable<Claim> SetTokenClaims(User user, bool isAdmin)
         {
             var claims = new List<Claim>()
             {
                 new Claim("FirstName", user.FirstName),
                 new Claim("LastName", user.LastName),
                 new Claim("UserEmail", user.Email),
-                new Claim("UserId", user.Id.ToString())
+                new Claim("UserId", user.Id.ToString()),
+                new Claim(ClaimTypes.Role, (isAdmin) ? "Admin" : "User")
             };
 
             return claims;
