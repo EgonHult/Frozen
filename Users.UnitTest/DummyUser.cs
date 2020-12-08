@@ -9,13 +9,13 @@ namespace Users.UnitTest
         {
             UserModel  user = new UserModel()
             {
-                FirstName = "Joel",
-                LastName = "Felldin",
-                Address = "Alfred Nobels Allé",
-                City = "Huddinge",
-                Zip = "14152",
-                PhoneNumber = "07012312312",
-                Email = "joel.felldin@iths.se",
+                FirstName = "UnitTest",
+                LastName = "UnitTest",
+                Address = "UnitTest",
+                City = "UnitTest",
+                Zip = "12345",
+                PhoneNumber = "+46-12-3456789",
+                Email = "unittest@frozen.se",
                 Password = "Test123!"
             };
 

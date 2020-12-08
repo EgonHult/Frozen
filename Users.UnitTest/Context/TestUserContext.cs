@@ -11,11 +11,11 @@ namespace Users.UnitTest.Context
 {
     public class TestUserContext : IDisposable
     {
-        public AppSettings AppsettingsConfig { get; set; }
-        public UserDbContext UserDbContext { get; set; }
-        public UserManager<User> UserManager { get; set; }
-        public SignInManager<User> SignInManager { get; set; }
-        public RoleManager<AppRole> RoleManager { get; set; }
+        public AppSettings AppsettingsConfig { get; private set; }
+        public UserDbContext UserDbContext { get; private set; }
+        public UserManager<User> UserManager { get; private set; }
+        public SignInManager<User> SignInManager { get; private set; }
+        public RoleManager<AppRole> RoleManager { get; private set; }
 
         public TestUserContext()
         {
@@ -25,13 +25,13 @@ namespace Users.UnitTest.Context
 
         public void InitializeContext()
         {
-            var config = AppsettingsConfig.Config.GetConnectionString("SqlDatabase");
+            var connectionString = AppsettingsConfig.Config.GetConnectionString("SqlDatabase");
             var dbOption = new DbContextOptionsBuilder<UserDbContext>()
-                .UseSqlServer(config).Options;
-
-            AddIdentityFramework(config);
+                .UseSqlServer(connectionString).Options;
 
             UserDbContext = new UserDbContext(dbOption);
+
+            AddIdentityFramework(connectionString);
         }
 
         public void AddIdentityFramework(string connectionString)
@@ -42,7 +42,7 @@ namespace Users.UnitTest.Context
             serviceCollection.AddDbContext<UserDbContext>(options => options.UseSqlServer(connectionString));
             serviceCollection.AddLogging();
 
-            // Add IdentityFramework and SQL-connection
+            // Add IdentityFramework to serviceCollection
             serviceCollection.AddIdentity<User, AppRole>()
                 .AddUserManager<UserManager<User>>()
                 .AddEntityFrameworkStores<UserDbContext>()

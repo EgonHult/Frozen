@@ -16,6 +16,7 @@ namespace Users.UnitTest
         [ClassInitialize]
         public static void TestFixtureSetup(TestContext context)
         {
+            // Set up DbContext and IdentityFramework
             UnitTestContext = new TestUserContext();
 
             UserRepositoryClass = new UserRepository(
@@ -24,6 +25,7 @@ namespace Users.UnitTest
                 UnitTestContext.SignInManager, 
                 UnitTestContext.RoleManager);
             
+            // Register a temporary test-user in database for unittesting
             var userFixture = new UserFixture(UnitTestContext.UserManager);
             FixtureUser = userFixture.CreateDummyUserAsync().Result;
         }
@@ -50,8 +52,9 @@ namespace Users.UnitTest
             // Assert
             Assert.IsNotNull(createdUser);
 
-            // Clean up and delete test-user from database!
-            UnitTestContext.UserManager.DeleteAsync(createdUser).Wait();
+            // Clean up and delete createdUser!
+            if (createdUser != null)
+                UnitTestContext.UserManager.DeleteAsync(createdUser).Wait();
         }
     }
 }
