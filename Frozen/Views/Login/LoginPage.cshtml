@@ -2,16 +2,16 @@
 @{
     ViewData["Title"] = "LoginPage";
 }
-
+@ViewBag.Success
 <h1>Vänligen logga in</h1>
 
 <div class="col-sm-auto">
     <form method="post" asp-action="LoginPage">
         <p></p>
         <div class="form-group">
-            <label asp-for="Email">Epostadress</label>
-            <input asp-for="Email" type="email" class="form-control">
-            <span asp-validation-for="Email" class="text-danger"></span>
+            <label asp-for="Username">Epostadress</label>
+            <input asp-for="Username" type="email" class="form-control">
+            <span asp-validation-for="Username" class="text-danger"></span>
         </div>
 
         <div class="form-group">

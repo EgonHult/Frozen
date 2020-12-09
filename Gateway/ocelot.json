@@ -1,7 +1,7 @@
 {
   "Routes": [
     {
-      "DownstreamPathTemplate": "/api/test/{catchAll}",
+      "DownstreamPathTemplate": "/api/Users/{catchAll}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -10,7 +10,7 @@
         }
       ],
       "UpstreamPathTemplate": "/user/{catchAll}",
-      "UpstreamHttpMethod": [ "Get" ]
+      "UpstreamHttpMethod": [ "Get", "Put", "Delete", "Post" ]
     },
 
     {

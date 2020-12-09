@@ -79,13 +79,18 @@ namespace Users.Controllers
 
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
+        [HttpPost("register")]
         public async Task<ActionResult<UserModel>> PostUser(RegisterUserModel user)
         {
             if (user != null)
             {
                 try
                 {
+                    var checkExisting = await _userRepository.CheckIfUserExistsByEmailAsync(user.Email);
+                    if(checkExisting == true)
+                    {
+                        return Conflict();
+                    }
                     var newUser = await _userRepository.CreateUserAsync(user);
                     if (newUser != null)
                         return Ok(newUser);

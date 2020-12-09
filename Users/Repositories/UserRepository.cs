@@ -37,7 +37,8 @@ namespace Users.Repositories
                 Address = userModel.Address,
                 City = userModel.City,
                 Email = userModel.Email,
-                UserName = userModel.Email
+                UserName = userModel.Email,
+                Zip = userModel.Zip
             };
 
             var result = await _userManager.CreateAsync(user, userModel.Password);
@@ -104,6 +105,15 @@ namespace Users.Repositories
             }
 
             return null;
+        }
+        public async Task<bool> CheckIfUserExistsByEmailAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if(user != null)
+            {
+                return true;
+            }
+            return false;
         }
 
         public async Task<UserModel> ConvertUserToUserModelAsync(User user)

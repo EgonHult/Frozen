@@ -3,6 +3,10 @@
     ViewData["Title"] = "RegisterPage";
 }
 
+@if (ViewBag.Exists != null)
+{
+    <label>@ViewBag.Exists</label> 
+}
 <form method="post" asp-action="RegisterPage">
     <div class="form-row">
         <div class="form-group col-md-6">

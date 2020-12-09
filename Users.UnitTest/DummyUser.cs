@@ -5,9 +5,9 @@ namespace Users.UnitTest
 {
     public static class DummyUser
     {
-        public static UserModel TestUserModel()
+        public static RegisterUserModel TestUserModel()
         {
-            UserModel  user = new UserModel()
+            RegisterUserModel  user = new RegisterUserModel()
             {
                 FirstName = "UnitTest",
                 LastName = "UnitTest",
