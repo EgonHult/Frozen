@@ -34,16 +34,17 @@ namespace Frozen.Controllers
                     var responseMessage = await response.Content.ReadAsStringAsync();
                     if(response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                     {
-                        ViewBag.WrongLogin = "Felaktiga inloggningsuppgifter, Loser";
+                        ViewBag.Message = "Felaktiga inloggningsuppgifter, Loser";
                     }
                     else if(response.IsSuccessStatusCode)
                     {
                         LoggedInUser loggedInUser = JsonConvert.DeserializeObject<LoggedInUser>(responseMessage);
-                        ViewBag.Success = "Du är nu inloggad, " + loggedInUser.User.FirstName;
+                        //ViewBag.Message = "Du är nu inloggad, " + loggedInUser.User.FirstName;
+                        return RedirectToAction("Index", "Home");
                     }
                 }
             }
-            return View();
+            return View("LoginPage");
         }
         [HttpGet]
         public IActionResult RegisterPage()
