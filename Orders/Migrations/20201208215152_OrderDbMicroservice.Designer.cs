@@ -10,8 +10,8 @@ using Orders.Context;
 namespace Orders.Migrations
 {
     [DbContext(typeof(OrderDbContext))]
-    [Migration("20201205225707_OrderDB")]
-    partial class OrderDB
+    [Migration("20201208215152_OrderDbMicroservice")]
+    partial class OrderDbMicroservice
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -19,7 +19,7 @@ namespace Orders.Migrations
             modelBuilder
                 .UseIdentityColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.0");
+                .HasAnnotation("ProductVersion", "5.0.1");
 
             modelBuilder.Entity("Orders.Models.Order", b =>
                 {
@@ -30,11 +30,11 @@ namespace Orders.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("PaymentId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("PaymentId")
+                        .HasColumnType("int");
 
-                    b.Property<Guid>("StatusId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("StatusId")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("TotalPrice")
                         .HasColumnType("decimal(18,2)");
@@ -51,17 +51,25 @@ namespace Orders.Migrations
 
             modelBuilder.Entity("Orders.Models.OrderProduct", b =>
                 {
-                    b.Property<Guid>("ProductId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Amount")
-                        .HasColumnType("int");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<Guid>("OrderId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("ProductId");
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("OrderId");
 
@@ -70,9 +78,10 @@ namespace Orders.Migrations
 
             modelBuilder.Entity("Orders.Models.Status", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -80,6 +89,23 @@ namespace Orders.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Status");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Lagd"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Behandlad"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Skickad"
+                        });
                 });
 
             modelBuilder.Entity("Orders.Models.Order", b =>
@@ -95,13 +121,11 @@ namespace Orders.Migrations
 
             modelBuilder.Entity("Orders.Models.OrderProduct", b =>
                 {
-                    b.HasOne("Orders.Models.Order", "Order")
+                    b.HasOne("Orders.Models.Order", null)
                         .WithMany("OrderProduct")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("Orders.Models.Order", b =>
