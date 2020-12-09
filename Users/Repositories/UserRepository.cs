@@ -27,7 +27,7 @@ namespace Users.Repositories
             this._tokenHandler = tokenHandler;
         }
 
-        public async Task<UserModel> CreateUserAsync(UserModel userModel)
+        public async Task<UserModel> CreateUserAsync(RegisterUserModel userModel)
         {
             User user = new User()
             {
@@ -75,6 +75,7 @@ namespace Users.Repositories
         {
             var result = await _context.Users.Select(x => new UserModel()
             {
+                Id = x.Id,
                 FirstName = x.FirstName,
                 LastName = x.LastName,
                 Email = x.Email,
@@ -207,6 +208,28 @@ namespace Users.Repositories
 
                 if (result.Succeeded)
                     return await ConvertUserToUserModelAsync(user);
+            }
+
+            return null;
+        }
+
+        public async Task<TokenModel> GenerateNewTokensAsync(Guid id, string refreshToken)
+        {
+            var result = _tokenHandler.ValidateRefreshToken(refreshToken);
+
+            if (result.Identity.IsAuthenticated)
+            {
+                // Get user and its role
+                var user = await _userManager.FindByIdAsync(id.ToString());
+                var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+
+                var tokenModel = new TokenModel()
+                {
+                    Token = _tokenHandler.CreateToken(user, isAdmin),
+                    RefreshToken = _tokenHandler.CreateRefreshToken(user)
+                };
+
+                return tokenModel;
             }
 
             return null;

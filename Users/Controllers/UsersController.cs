@@ -80,7 +80,7 @@ namespace Users.Controllers
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<UserModel>> PostUser(UserModel user)
+        public async Task<ActionResult<UserModel>> PostUser(RegisterUserModel user)
         {
             if (user != null)
             {
@@ -99,6 +99,24 @@ namespace Users.Controllers
             return BadRequest();
         }
 
+        // POST: api/Users/login/
+        [HttpPost("login")]
+        public async Task<ActionResult<LoginResponseModel>> LoginUserAsync(LoginModel loginModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await _userRepository.LoginUserAsync(loginModel);
+
+                if (result == null)
+                    return Unauthorized();
+
+                return Ok(result);
+            }
+
+            return BadRequest();
+        }
+
+
         // DELETE: api/Users/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<UserModel>> DeleteUser(Guid id)
@@ -112,6 +130,17 @@ namespace Users.Controllers
             }
 
             return BadRequest();
+        }
+
+        [HttpGet("token/{id}/{refreshToken}")]
+        public async Task<ActionResult<TokenModel>> RequestNewTokenAsync(Guid id, string refreshToken)
+        {
+            var result = await _userRepository.GenerateNewTokensAsync(id, refreshToken);
+
+            if (result == null)
+                return BadRequest();
+
+            return Ok(result);
         }
 
         private bool UserExists(Guid id)

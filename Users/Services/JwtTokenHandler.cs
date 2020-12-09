@@ -24,7 +24,7 @@ namespace Users.Services
         /// </summary>
         /// <param name="user"></param>
         /// <returns>Fresh JWT token string</returns>
-        public string CreateToken(User user, bool isAdmin)
+        public string CreateToken(User user, bool isAdmin = false)
         {
             if (user == null)
                 return null;

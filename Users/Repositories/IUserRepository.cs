@@ -8,7 +8,7 @@ namespace Users.Repositories
 {
     public interface IUserRepository
     {
-        Task<UserModel> CreateUserAsync(UserModel userModel);
+        Task<UserModel> CreateUserAsync(RegisterUserModel userModel);
         Task<UserModel> GetUserByIdAsync(Guid id);
         Task<List<UserModel>> GetAllUsersAsync();
         Task<UserModel> DeleteUserAsync(Guid id);
@@ -16,5 +16,6 @@ namespace Users.Repositories
         Task<LoginResponseModel> LoginUserAsync(LoginModel loginModel);
         Task<UserModel> UpdateEmailAddressAsync(UserModel userModel);
         Task<UserModel> UpdatePasswordAsync(Guid id, string oldPass, string newPass);
+        Task<TokenModel> GenerateNewTokensAsync(Guid id, string refreshToken);
     }
 }

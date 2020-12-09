@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 
 namespace Users.Models
 {
-    public class UserModel : RegisterUserModel
+    public class TokenModel
     {
-        public Guid Id { get; set; }
+        public string Token { get; set; }
+        public string RefreshToken { get; set; }
     }
 }
