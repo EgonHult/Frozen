@@ -17,5 +17,7 @@ namespace Users.Repositories
         Task<UserModel> UpdateEmailAddressAsync(UserModel userModel);
         Task<UserModel> UpdatePasswordAsync(Guid id, string oldPass, string newPass);
         Task<TokenModel> GenerateNewTokensAsync(Guid id, string refreshToken);
+        Task<bool> CheckIfUserExistsByEmailAsync(string email);
+
     }
 }
