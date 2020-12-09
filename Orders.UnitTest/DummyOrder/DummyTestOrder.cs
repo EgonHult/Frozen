@@ -11,29 +11,22 @@ namespace Orders.UnitTest.DummyOrder
     {
         public static Order TestOrder()
         {
-            var dummyStatus = new Status
-            {
-                Id = Guid.NewGuid(),
-                Name = "On Hold"
-            };
 
-            
             var dummyOrder = new Order
-            {
+            {         
                 Id = Guid.NewGuid(),
-                StatusId = dummyStatus.Id,
-                TotalPrice = 1000,               
-                PaymentId = Guid.NewGuid(),
+                StatusId = 1,
+                TotalPrice = 1000.99M,               
+                PaymentId = 1,
                 UserId = Guid.NewGuid(),
+                Date = DateTime.Now,
 
                 OrderProduct = new List<OrderProduct>()
                 {
-                    new OrderProduct { Amount = 2, ProductId = Guid.NewGuid() },
-                    new OrderProduct { Amount = 2, ProductId = Guid.NewGuid() }
-                }
-                
+                    new OrderProduct { Quantity = 2, ProductId = Guid.NewGuid(), Name = "Isglass" },
+                    new OrderProduct { Quantity = 2, ProductId = Guid.NewGuid(), Name = "Mjukglass" }
+                }               
             };
-        
 
             return dummyOrder;
 

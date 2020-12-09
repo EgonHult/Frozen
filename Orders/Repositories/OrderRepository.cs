@@ -1,4 +1,5 @@
-﻿using Orders.Context;
+﻿using Microsoft.EntityFrameworkCore;
+using Orders.Context;
 using Orders.Models;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,6 @@ namespace Orders.Repositories
             _context = context;
         }
 
-
         public async Task<Order> CreateOrderAsync(Order order)
         {
             try
@@ -32,29 +32,56 @@ namespace Orders.Repositories
             catch (Exception)
             {
                 return null;
+            }   
+        }
+
+        public async Task<Order> DeleteOrderByIdAsync(Guid orderId)
+        {
+            try
+            {
+                var order = await _context.Order.FindAsync(orderId);
+
+                if (order != null)
+                {
+                    _context.Order.Remove(order);
+                    await _context.SaveChangesAsync();
+                    return order;
+                }
+
+                return null;
             }
-
-            
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
-        public Task<Order> DeleteOrderAsync(Guid orderId)
+        public async Task<List<Order>> GetAllOrdersAsync()
         {
-            throw new NotImplementedException();
+            var result = await _context.Order.OrderBy(x => x.StatusId).ToListAsync();
+            return result;
         }
 
-        public Task<List<Order>> GetAllOrdersAsync()
+        public async Task<Order> GetOrderByIdAsync(Guid orderId)
         {
-            throw new NotImplementedException();
+            if(orderId == Guid.Empty)
+                return null;
+           
+            var user = await _context.Order.FindAsync(orderId);
+
+            return user ?? null;           
         }
 
-        public Task<Order> GetOrderByIdAsync(Guid orderId)
+        public async Task<Order> UpdateOrderAsync(Order order)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<Order> UpdateOrderAsync(Order order)
-        {
-            throw new NotImplementedException();
+            if (order.Id != Guid.Empty)
+            {
+                _context.Entry(order).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+                return order;
+            }
+            else
+                return order;
         }
     }
 }
