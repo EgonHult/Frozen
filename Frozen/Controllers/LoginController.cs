@@ -1,4 +1,5 @@
 ﻿using Frozen.Models;
+using Frozen.Services;
 using Frozen.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,11 +15,19 @@ namespace Frozen.Controllers
 {
     public class LoginController : Controller
     {
+        private readonly IHttpContextAccessor _accessor;
+
+        public LoginController(IHttpContextAccessor accessor)
+        {
+            _accessor = accessor;
+        }
+
         [HttpGet]
         public IActionResult LoginPage()
         {
             return View();
         }
+
         [HttpPost]
         public async Task<IActionResult> LoginPageAsync(LoginViewModel viewModel)
         {
@@ -39,6 +48,10 @@ namespace Frozen.Controllers
                     else if(response.IsSuccessStatusCode)
                     {
                         LoggedInUser loggedInUser = JsonConvert.DeserializeObject<LoggedInUser>(responseMessage);
+
+                        var _cookieHandler = new CookieHandler(_accessor);
+                        await _cookieHandler.CreateLoginCookiesAsync(loggedInUser.Token, loggedInUser.RefreshToken);
+
                         //ViewBag.Message = "Du är nu inloggad, " + loggedInUser.User.FirstName;
                         return RedirectToAction("Index", "Home");
                     }
