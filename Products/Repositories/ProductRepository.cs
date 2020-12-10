@@ -1,4 +1,5 @@
-﻿using Products.Context;
+﻿using Microsoft.EntityFrameworkCore;
+using Products.Context;
 using Products.Models;
 using System;
 using System.Collections.Generic;
@@ -64,19 +65,48 @@ namespace Products.Repositories
             }
         }
 
-        public Task<List<ProductModel>> GetAllProducts()
+        public async Task<List<ProductModel>> GetAllProducts()
         {
-            throw new NotImplementedException();
+            //try
+            //{
+            //    var listOfProducts = await _context.Product.OrderBy(x => x.Name).ToListAsync();
+
+            //    return listOfProducts;
+            //}
+            //catch (Exception)
+            //{
+            //    return null;
+            //}
+            var listOfProducts = await _context.Product.OrderBy(x => x.Name).ToListAsync();
+            return listOfProducts;
         }
 
-        public Task<ProductModel> GetProductByIdAsync(Guid productId)
+        public async Task<ProductModel> GetProductByIdAsync(Guid productId)
         {
-            throw new NotImplementedException();
+            if (productId == Guid.Empty)
+                return null;
+
+            var product = await _context.Product.FindAsync(productId);
+            return product;
         }
 
-        public Task<ProductModel> UpdateProductAsync(ProductModel product)
+        public async Task<ProductModel> UpdateProductAsync(ProductModel product)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (product.Id != Guid.Empty)
+                {
+                    _context.Entry(product).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                    return product;
+                }
+                else
+                    return product;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
     }
 }

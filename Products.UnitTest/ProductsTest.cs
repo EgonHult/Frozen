@@ -5,6 +5,7 @@ using Products.Repositories;
 using Products.UnitTest.Context;
 using Products.UnitTest.DummyProduct;
 using System;
+using System.Collections.Generic;
 
 namespace Products.UnitTest
 {
@@ -99,6 +100,90 @@ namespace Products.UnitTest
                     // Act
                     var productRepository = new ProductRepository(context);
                     var product = productRepository.DeleteProductByIdAsync(nonExistingProductId);
+                }
+                catch (Exception)
+                {
+                    // Arrange
+                    return;
+                }
+            }
+        }
+        [TestMethod]
+        public void GetAllProducts_GetListWithAllProductsInDb_ReturnListOfProducts()
+        {
+            using (var context = new TestProductsDbContext().DbContext)
+            {
+                // Act
+                var productRepository = new ProductRepository(context);
+                var products = productRepository.GetAllProducts().Result;
+
+                // Assert
+                Assert.IsInstanceOfType(products, typeof(List<ProductModel>));
+            }
+        }
+
+        [TestMethod]
+        public void GetProductByIdAsync_GetProductById_ReturnProduct()
+        {
+            using (var context = new TestProductsDbContext().DbContext)
+            {
+                // Arrange 
+                var dummyProduct = DummyTestProduct.TestProduct();
+                context.Product.Add(dummyProduct);
+                context.SaveChanges();
+
+                // Act
+                var productRepository = new ProductRepository(context);
+                var product = productRepository.GetProductByIdAsync(dummyProduct.Id).Result;
+
+                // Assert
+                Assert.IsNotNull(product);
+
+                // Delete dummyOrder from DB
+                context.Remove(dummyProduct);
+                context.SaveChanges();
+            }
+        }
+
+        [TestMethod]
+        public void UpdateProductAsync_UpdatePriceForProduct_ReturnUpdatedProduct()
+        {
+            using (var context = new TestProductsDbContext().DbContext)
+            {
+                // Arrange
+                var dummyProduct = DummyTestProduct.TestProduct();
+                context.Product.Add(dummyProduct);
+                context.SaveChanges();
+                var oldPrice = 1000;
+
+                // Act
+                dummyProduct.Price = 2000;
+                var productRepository = new ProductRepository(context);
+                var product = productRepository.UpdateProductAsync(dummyProduct).Result;
+
+                // Assert
+                Assert.AreNotEqual(oldPrice, product.Price);
+                Assert.AreEqual(dummyProduct.Price, product.Price);
+
+                // Delete dummyOrder from DB
+                context.Remove(dummyProduct);
+                context.SaveChanges();
+            }
+        }
+
+        [TestMethod]
+        public void UpdateProductAsync_TryUpdateNonExistingProduct_ReturnNull()
+        {
+            using (var context = new TestProductsDbContext().DbContext)
+            {
+                try
+                {
+                    // Arrange
+                    ProductModel dummyProduct = null;
+
+                    // Act
+                    var productRepository = new ProductRepository(context);
+                    var product = productRepository.UpdateProductAsync(dummyProduct);
                 }
                 catch (Exception)
                 {
