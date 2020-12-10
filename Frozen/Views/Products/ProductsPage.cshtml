@@ -1,0 +1,21 @@
+﻿@model List<Frozen.Models.Product>
+@{
+    ViewData["Title"] = "Produkter";
+}
+
+<h1>Produkter</h1>
+
+<div class="card-deck">
+    @foreach (var item in Model)
+    {
+        <div class="card m-2" style="min-width:20rem">
+            <img class="card-img-top" src="@item.Image" alt="bild">
+            <div class="card-body">
+                <h5 class="card-title">@item.Name</h5>
+                <p class="card-text">@item.Details</p>
+                <p class="card-text">@item.Price kr</p>
+                <input type="button" value="Lägg i varukorg" @*onclick="AddToCart('@item.ID')"*@ class="btn btn-danger cartButton" />
+            </div>
+        </div>
+    }
+</div>
