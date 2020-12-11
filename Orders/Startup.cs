@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Orders.Context;
+using Orders.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,6 +46,8 @@ namespace Orders
             {
                 options.UseSqlServer(Configuration.GetConnectionString("SqlDatabase"));
             });
+
+            services.AddTransient<IOrderRepository, OrderRepository>();
 
             // Add JWT token functionality
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

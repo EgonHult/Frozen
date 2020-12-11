@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Orders.Repositories
 {
-    internal interface IOrderRepository
+    public interface IOrderRepository
     {
         Task<Order> CreateOrderAsync(Order order);
         Task<Order> UpdateOrderAsync(Order order);

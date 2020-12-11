@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+
 namespace Orders.Repositories
 {
     public class OrderRepository : IOrderRepository
@@ -74,14 +75,16 @@ namespace Orders.Repositories
 
         public async Task<Order> UpdateOrderAsync(Order order)
         {
-            if (order.Id != Guid.Empty)
+            bool orderExistInDatabase  = await _context.Order.AnyAsync(x => x.Id == order.Id);
+
+            if (orderExistInDatabase && order.Id != Guid.Empty)
             {
                 _context.Entry(order).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
                 return order;
             }
             else
-                return order;
+                return null;
         }
     }
 }
