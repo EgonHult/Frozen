@@ -15,19 +15,19 @@ namespace Products.Controllers
     [ApiController]
     public class ProductsController : ControllerBase
     {
-        private readonly ProductsDbContext _context;
-        private readonly IProductRepository _productsRepository;
+        //private readonly ProductsDbContext _context;
+        //private readonly IProductRepository _productsRepository;
         public ProductsController(ProductsDbContext context, IProductRepository productRepository)
         {
-            _context = context;
-            this._productsRepository = productRepository;
+            //_context = context;
+            //this._productsRepository = productRepository;
         }
         // GET: api/<ProductsController>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProductModel>>> GetProductsAsync()
         {
-            var result = await _productsRepository.GetAllProducts();
-            return Ok(result);
+            //var result = await _productsRepository.GetAllProducts();
+            return Ok();
         }
 
         // GET api/<ProductsController>/5
