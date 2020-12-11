@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Products.Models
+namespace Frozen.Models
 {
-    public class ProductModel
+    public class Product
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
@@ -13,6 +13,5 @@ namespace Products.Models
         public string Details { get; set; }
         public int Quantity { get; set; }
         public string Image { get; set; }
-        public int WeightInGrams { get; set; }
     }
 }
