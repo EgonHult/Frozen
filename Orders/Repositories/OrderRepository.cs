@@ -63,14 +63,25 @@ namespace Orders.Repositories
             return result;
         }
 
+
         public async Task<Order> GetOrderByIdAsync(Guid orderId)
         {
             if(orderId == Guid.Empty)
                 return null;
            
-            var user = await _context.Order.FindAsync(orderId);
+            var order = await _context.Order.FindAsync(orderId);
 
-            return user ?? null;           
+            return order ?? null;           
+        }
+        public async Task<List<Order>> GetAllOrdersByUserIdAsync(Guid userId)
+        {
+            bool userWithOrdersExistInDatabase = await _context.Order.AnyAsync(x => x.UserId == userId);
+
+            if (!userWithOrdersExistInDatabase)
+                return null;
+            var order = await _context.Order.Where(x => x.UserId == userId).ToListAsync();
+                return order;
+
         }
 
         public async Task<Order> UpdateOrderAsync(Order order)
