@@ -10,29 +10,29 @@ using System.Threading.Tasks;
 
 namespace Orders.Controllers
 {
+    [Route("api/[controller]")]
     [ApiController]
-    [Route("[controller]")]
-    public class OrderController : ControllerBase
+    public class OrdersController : ControllerBase
     {
         private readonly OrderDbContext _context;
         private readonly IOrderRepository _orderRepository;
 
-        public OrderController(OrderDbContext context, IOrderRepository orderRepository)
+        public OrdersController(OrderDbContext context, IOrderRepository orderRepository)
         {
             _context = context;
             _orderRepository = orderRepository;
         }
 
 
-        // GET: api/Users
+        // GET: api/Orders
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Order>>> GetOrdersAsync()
+        public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
         {
             var result = await _orderRepository.GetAllOrdersAsync();
             return Ok(result);
         }
 
-        // GET: api/Users/5
+        // GET: api/Orders/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Order>> GetOrder(Guid id)
         {
@@ -49,7 +49,9 @@ namespace Orders.Controllers
             return BadRequest();
         }
 
-        // PUT: api/Users/5
+        
+
+        // PUT: api/Orders/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutOrder(Order order)
@@ -79,7 +81,7 @@ namespace Orders.Controllers
         }
 
 
-        // POST: api/Users
+        // POST: api/Orders
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost("create")]
         public async Task<ActionResult<Order>> PostOrder(Order order)
@@ -101,7 +103,7 @@ namespace Orders.Controllers
             return BadRequest();
         }
 
-        // DELETE: api/Users/5
+        // DELETE: api/Orders/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<Order>> DeleteOrder(Guid id)
         {
