@@ -13,6 +13,7 @@ namespace Orders.Repositories
         Task<Order> DeleteOrderByIdAsync(Guid orderId);
         Task<Order> GetOrderByIdAsync(Guid orderId);
         Task<List<Order>> GetAllOrdersAsync();
+        Task<List<Order>> GetAllOrdersByUserIdAsync(Guid userId);
 
     }
 }

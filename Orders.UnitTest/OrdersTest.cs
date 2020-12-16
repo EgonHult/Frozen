@@ -182,7 +182,47 @@ namespace Orders.UnitTest
             }
         }
 
+        [TestMethod]
+        public void GetAllOrdersByUserId_GetAllOrdersFromTheSpecsificUserId_ReturnAllOrdersWithTheUserId()
+        {
+            using (var context = new TestOrdersDbContext().DbContext)
+            {
+                // Arrange 
+                var dummyOrder = DummyTestOrder.TestOrder();
+                context.Order.Add(dummyOrder);
+                context.SaveChanges();
+
+                // Act
+                var orderRepository = new OrderRepository(context);
+                var orders = orderRepository.GetAllOrdersByUserIdAsync(dummyOrder.UserId).Result;
+
+                // Assert
+                Assert.IsInstanceOfType(orders, typeof(List<Order>));
+
+                // Delete dummyOrder from DB
+                context.Remove(dummyOrder);
+                context.SaveChanges();
+            }
+        }
+
+        [TestMethod]
+        public void GetAllOrdersByUserId_GetNonExistingOrdersFromTheSpecsificUserId_ReturnNull()
+        {
+            using (var context = new TestOrdersDbContext().DbContext)
+            {
+                // Arrange 
+                var dummyOrder = DummyTestOrder.TestOrder();
 
 
-    }
+                // Act
+                var orderRepository = new OrderRepository(context);
+                var orders = orderRepository.GetAllOrdersByUserIdAsync(dummyOrder.UserId).Result;
+
+                // Assert
+                Assert.IsNull(orders);
+            }
+
+        }
+
+   }
 }
