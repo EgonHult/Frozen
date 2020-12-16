@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Users.Models;
 
@@ -18,6 +17,5 @@ namespace Users.Repositories
         Task<UserModel> UpdatePasswordAsync(Guid id, string oldPass, string newPass);
         Task<TokenModel> GenerateNewTokensAsync(Guid id, string refreshToken);
         Task<bool> CheckIfUserExistsByEmailAsync(string email);
-
     }
 }

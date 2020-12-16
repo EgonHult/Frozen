@@ -31,7 +31,7 @@ namespace Users.Services
 
             var expirationDate = DateTime.UtcNow.AddMinutes(int.Parse(_config[AppSettings.JWT_EXPIRE_MINUTES]));
             var credentials = SignCredentials(AppSettings.JWT_KEY);
-            var claims = SetTokenClaims(user, isAdmin);
+            var claims = SetTokenClaims(user, isAdmin, expirationDate);
             var token = ConstructJwtToken(claims, credentials, expirationDate);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
@@ -49,7 +49,7 @@ namespace Users.Services
 
             var expirationDate = DateTime.UtcNow.AddMonths(int.Parse(_config[AppSettings.JWT_EXPIRE_MONTHS]));
             var credentials = SignCredentials(AppSettings.JWT_REFRESHKEY);
-            var claims = SetRefreshTokenClaims(user);
+            var claims = SetRefreshTokenClaims(user, expirationDate);
             var token = ConstructJwtToken(claims, credentials, expirationDate);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
@@ -62,7 +62,7 @@ namespace Users.Services
             return credentials;
         }
 
-        private IEnumerable<Claim> SetTokenClaims(User user, bool isAdmin)
+        private IEnumerable<Claim> SetTokenClaims(User user, bool isAdmin, DateTime expires)
         {
             var claims = new List<Claim>()
             {
@@ -70,21 +70,24 @@ namespace Users.Services
                 new Claim("LastName", user.LastName),
                 new Claim("UserEmail", user.Email),
                 new Claim("UserId", user.Id.ToString()),
+                new Claim(ClaimTypes.Expiration, expires.ToString()),
                 new Claim(ClaimTypes.Role, (isAdmin) ? "Admin" : "User")
             };
 
             return claims;
         }
 
-        private IEnumerable<Claim> SetRefreshTokenClaims(User user)
+        private IEnumerable<Claim> SetRefreshTokenClaims(User user, DateTime expires)
         {
             var claims = new List<Claim>()
             {
-                new Claim("UserId", user.Id.ToString())
+                new Claim("UserId", user.Id.ToString()),
+                new Claim(ClaimTypes.Expiration, expires.ToString())
             };
 
             return claims;
         }
+
         // Construct JWT token with its claims based on the security credentials
         private JwtSecurityToken ConstructJwtToken(IEnumerable<Claim> claims, SigningCredentials credentials, DateTime expires)
         {
@@ -120,7 +123,7 @@ namespace Users.Services
             return claimsPrincipal;
         }
 
-        private TokenValidationParameters TokenValidationSetup(string token, string securityKey)
+        private TokenValidationParameters TokenValidationSetup(string securityKey)
         {
             var validationParameters = new TokenValidationParameters()
             {
@@ -137,7 +140,7 @@ namespace Users.Services
 
         private ClaimsPrincipal Validate(string token, string securityKey)
         {
-            var validationParameters = TokenValidationSetup(token, securityKey);
+            var validationParameters = TokenValidationSetup(securityKey);
             var handler = new JwtSecurityTokenHandler();
             var result = handler.ValidateToken(token, validationParameters, out var securityToken);
 

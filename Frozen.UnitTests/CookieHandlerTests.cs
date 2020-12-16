@@ -14,29 +14,29 @@ namespace Frozen.UnitTests
     [TestClass]
     public class CookieHandlerTests
     {
-        public static IHttpContextAccessor HttpContext { get; set; }
+        public static CookieHandler CookieHandler { get; set; }
 
         [ClassInitialize]
         public static void LoadAppsettings(TestContext context)
         {
             var config = new HttpContextConfig();
-            HttpContext = config.HttpContext;
+            var httpContext = config.HttpContext;
+            CookieHandler = new CookieHandler(httpContext);
         }
 
         [TestMethod]
-        public void CreateSessionCookie_TryCreateNewSessionCookie_ReturnCreatedCookie()
+        public void CreateSessionCookie_TryCreateNewSessionCookie_ReturnEqualSessionContent()
         {
             // Arrange
-            var cookieHandler = new CookieHandler(HttpContext);
             var sessioncookieName = "UnitTestSessionCookie";
             var content = Guid.NewGuid().ToString();
 
             // Act
-            cookieHandler.CreateSessionCookie(sessioncookieName, content);
-            var result = cookieHandler.ReadSessionCookieContent(sessioncookieName);
+            CookieHandler.CreateSessionCookie(sessioncookieName, content);
+            var result = CookieHandler.ReadSessionCookieContent(sessioncookieName);
 
             // Act
-            Assert.AreEqual("some content here", result);
+            Assert.AreEqual(content, result);
         }
     }
 }

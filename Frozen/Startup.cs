@@ -1,3 +1,4 @@
+using Frozen.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -32,6 +33,9 @@ namespace Frozen
 
             services.AddControllersWithViews();
 
+            // Add to DI
+            services.AddTransient<ICookieHandler, CookieHandler>();
+            services.AddTransient<IClientService, ClientService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

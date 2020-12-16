@@ -1,10 +1,9 @@
 ﻿using Frozen.Common;
+using Frozen.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -28,12 +27,16 @@ namespace Frozen.Services
         /// One for storing RefreshToken.
         /// One session cookie for storing token.
         /// </summary>
-        /// <param name="content"></param>
-        public async Task CreateLoginCookiesAsync(string token, string refreshToken)
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public async Task CreateLoginCookiesAsync(LoggedInUser user)
         {
-            await CreateLoggInCookieAsync(token);
-            CreatePersitentCookie(CommonConfig.PersistantCookie.COOKIE_REFRESHTOKEN_NAME, refreshToken);
-            CreateSessionCookie(CommonConfig.SessionCookie.COOKIE_NAME, token);
+            var token = user.Token;
+            var refreshToken = user.RefreshToken;
+
+            await CreateAuthCookieAsync(token);
+            CreatePersitentCookie(Cookies.JWT_REFRESH_TOKEN, refreshToken);
+            CreateSessionCookie(Cookies.JWT_SESSION_TOKEN, token);
         }
 
         /// <summary>
@@ -41,7 +44,7 @@ namespace Frozen.Services
         /// </summary>
         /// <param name="content"></param>
         /// <param name="isPersistent"></param>
-        public async Task CreateLoggInCookieAsync(string content, bool isPersistent = false)
+        public async Task CreateAuthCookieAsync(string content, bool isPersistent = false)
         {
             var claims = await _tokenHandler.GetClaimsAsync(content);
 
@@ -54,6 +57,41 @@ namespace Frozen.Services
 
             await _accessor.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
                 new ClaimsPrincipal(claimsIdentity), authProperties);
+        }
+
+        public async Task<bool> ValidateJwtTokenAsync()
+        {
+            var token = ReadSessionCookieContent(Cookies.JWT_SESSION_TOKEN);
+
+            if (token == null)
+                return false;
+
+            return await _tokenHandler.ValidateJwtTokenExpirationDateAsync(token);
+        }
+
+        //public async Task<string> GetClaimFromAuthTokenAsync(string claimName)
+        //{
+        //    var token = ReadSessionCookieContent(CommonConfig.SessionCookie.COOKIE_NAME);
+        //    var claims = await _tokenHandler.GetClaimsAsync(token);
+        //    var userId = claims.FirstOrDefault(x => x.Type == claimName).Value;
+
+        //    return userId;
+        //}
+
+        public async Task<string> GetClaimFromIdentityCookieAsync(string claimName)
+        {
+            var userId = await Task.FromResult(_accessor.HttpContext.User.FindFirstValue(claimName));
+            return userId;
+        }
+
+        /// <summary>
+        /// Renew authentication Jwt-Tokens
+        /// </summary>
+        /// <param name="model"></param>
+        public void RenewAuthTokens(TokenModel model)
+        {
+            CreatePersitentCookie(Cookies.JWT_REFRESH_TOKEN, model.RefreshToken);
+            CreateSessionCookie(Cookies.JWT_SESSION_TOKEN, model.Token);
         }
 
         /// <summary>
@@ -91,7 +129,7 @@ namespace Frozen.Services
         /// <param name="content">String-value to store in the cookie</param>
         public void CreateSessionCookie(string name, string content)
         {
-            _accessor.HttpContext.Session.SetString("test", content);
+            _accessor.HttpContext.Session.SetString(name, content);
         }
 
         /// <summary>
@@ -104,5 +142,19 @@ namespace Frozen.Services
             return _accessor.HttpContext.Session.GetString(name);
         }
 
+        /// <summary>
+        /// Destory all regular/session cookies!
+        /// </summary>
+        public void DestroyAllCookies()
+        {
+            // Remove JWT-token session cookie
+            _accessor.HttpContext.Session.Remove(Cookies.JWT_SESSION_TOKEN);
+
+            // Remove refreshtoken
+            _accessor.HttpContext.Response.Headers.Remove(Cookies.JWT_REFRESH_TOKEN);
+
+            // Remove Auth-cookie
+            _accessor.HttpContext.SignOutAsync();
+        }
     }
 }

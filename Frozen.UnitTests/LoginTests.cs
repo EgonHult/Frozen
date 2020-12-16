@@ -1,35 +1,28 @@
 ﻿using Frozen.Controllers;
+using Frozen.Services;
 using Frozen.UnitTests.Sessions;
 using Frozen.ViewModels;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Session;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Frozen.UnitTests
 {
     [TestClass]
     public class LoginTests
     {
-        private static IHttpContextAccessor HttpContext { get; set; }
         private static LoginController LoginController { get; set; }
 
         [ClassInitialize]
         public static void LoadAppsettings(TestContext context)
         {
             var config = new HttpContextConfig();
-            HttpContext = config.HttpContext;
 
-            // Instantiate a new LoginController object to test on
-            LoginController = new LoginController(HttpContext);
+            IHttpContextAccessor httpContext = config.HttpContext;
+            ICookieHandler _cookieHandler = new CookieHandler(httpContext);
+            IClientService clientService = new ClientService(_cookieHandler);
+
+            LoginController = new LoginController(_cookieHandler, clientService);
         }
 
         [TestMethod]

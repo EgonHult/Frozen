@@ -9,5 +9,6 @@ namespace Frozen.Services
     interface IJwtTokenHandler
     {
         Task<IEnumerable<Claim>> GetClaimsAsync(string token);
+        Task<bool> ValidateJwtTokenExpirationDateAsync(string token);
     }
 }
