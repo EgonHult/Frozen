@@ -46,7 +46,7 @@ namespace Frozen.Controllers
                 else if (response.IsSuccessStatusCode)
                 {
                     var loggedInUser = await _clientService.ReadResponseAsync<LoggedInUser>(response.Content);
-                    await _cookieHandler.CreateLoginCookiesAsync(loggedInUser);
+                    await _cookieHandler.CreateLoginCookiesAsync(loggedInUser, viewModel.Remember);
 
                     return RedirectToAction("Index", "Home");
                 }

@@ -29,12 +29,12 @@ namespace Frozen.Services
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public async Task CreateLoginCookiesAsync(LoggedInUser user)
+        public async Task CreateLoginCookiesAsync(LoggedInUser user, bool rememberUser)
         {
             var token = user.Token;
             var refreshToken = user.RefreshToken;
 
-            await CreateAuthCookieAsync(token);
+            await CreateAuthCookieAsync(token, rememberUser);
             CreatePersitentCookie(Cookies.JWT_REFRESH_TOKEN, refreshToken);
             CreateSessionCookie(Cookies.JWT_SESSION_TOKEN, token);
         }

@@ -8,7 +8,7 @@ namespace Frozen.Services
 {
     public interface ICookieHandler
     {
-        Task CreateLoginCookiesAsync(LoggedInUser user);
+        Task CreateLoginCookiesAsync(LoggedInUser user, bool rememberUser);
         Task CreateAuthCookieAsync(string content, bool isPersistent = false);
         void CreatePersitentCookie(string name, string content);
         string ReadPersitentCookie(string name);
