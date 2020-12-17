@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -150,8 +151,8 @@ namespace Frozen.Services
             // Remove JWT-token session cookie
             _accessor.HttpContext.Session.Remove(Cookies.JWT_SESSION_TOKEN);
 
-            // Remove refreshtoken
-            _accessor.HttpContext.Response.Headers.Remove(Cookies.JWT_REFRESH_TOKEN);
+            // Remove Refreshtoken
+            _accessor.HttpContext.Response.Cookies.Delete(Cookies.JWT_REFRESH_TOKEN);
 
             // Remove Auth-cookie
             _accessor.HttpContext.SignOutAsync();

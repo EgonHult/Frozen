@@ -6,11 +6,11 @@ namespace Frozen.Controllers
 {
     public class LogOutController : Controller
     {
-        private readonly CookieHandler _cookieHandler;
+        private readonly ICookieHandler _cookieHandler;
 
-        public LogOutController(IHttpContextAccessor accessor)
+        public LogOutController(ICookieHandler cookieHandler)
         {
-            this._cookieHandler = new CookieHandler(accessor);
+            this._cookieHandler = cookieHandler;
         }
 
         [HttpGet]
