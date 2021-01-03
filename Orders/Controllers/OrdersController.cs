@@ -26,7 +26,7 @@ namespace Orders.Controllers
 
         // GET: api/Orders
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
+        public async Task<ActionResult<List<Order>>> GetOrders()
         {
             var result = await _orderRepository.GetAllOrdersAsync();
             return Ok(result);
@@ -41,7 +41,7 @@ namespace Orders.Controllers
             if (!orderExist)
                 return NotFound();
 
-            var result = await _orderRepository.GetOrderByIdAsync(id);
+            var result = await _orderRepository.GetOrderByOrderIdAsync(id);
 
             if (result != null)
                 return Ok(result);
@@ -80,6 +80,23 @@ namespace Orders.Controllers
             return NoContent();
         }
 
+        // GET: api/Orders/user/id      
+        [HttpGet("user/{id}")]
+        public async Task<ActionResult<List<Order>>> GetOrdersByUserId(Guid id)
+        {
+            var orderExist = OrdersWithUserIdExists(id);
+
+            if (!orderExist)
+                return NotFound();
+
+            var result = await _orderRepository.GetOrdersByUserIdAsync(id);
+
+            if (result != null)
+                return Ok(result);
+
+            return BadRequest();
+
+        }
 
         // POST: api/Orders
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -109,7 +126,7 @@ namespace Orders.Controllers
         {
             if (id != Guid.Empty)
             {
-                var result = await _orderRepository.DeleteOrderByIdAsync(id);
+                var result = await _orderRepository.DeleteOrderByOrderIdAsync(id);
 
                 if (result != null)
                     return Ok(result);
@@ -123,5 +140,11 @@ namespace Orders.Controllers
         {
             return _context.Order.Any(e => e.Id == id);
         }
+
+        private bool OrdersWithUserIdExists(Guid userId)
+        {
+            return _context.Order.Any(x => x.UserId == userId);
+        }
+
     }
 }

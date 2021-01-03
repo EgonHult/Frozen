@@ -14,7 +14,7 @@
     },
 
     {
-      "DownstreamPathTemplate": "/api/test/{catchAll}",
+      "DownstreamPathTemplate": "/api/Orders/{catchAll}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -23,7 +23,7 @@
         }
       ],
       "UpstreamPathTemplate": "/order/{catchAll}",
-      "UpstreamHttpMethod": [ "Get" ]
+      "UpstreamHttpMethod": [ "Get", "Put", "Delete", "Post" ]
     }
   ],
   "GlobalConfiguration": {
