@@ -60,6 +60,32 @@ namespace Orders.UnitTest
         }
 
         [TestMethod]
+        public void CreateOrderAsync_TryCreateOrderWithExistingOrderId_ReturnNull()
+        {
+            using (var context = new TestOrdersDbContext().DbContext)
+            {
+                // Arrange
+
+                var orderRepository = new OrderRepository(context);
+                var dummyOrder = DummyTestOrder.TestOrder();
+                var dummyOrder2 = dummyOrder;
+              
+                //Act 
+
+                var newOrder = orderRepository.CreateOrderAsync(dummyOrder).Result;
+                var newOrder2 = orderRepository.CreateOrderAsync(dummyOrder2).Result;
+
+                //Assert
+                Assert.AreEqual(newOrder2, null);
+
+                // Delete dummyOrder from DB
+                context.Remove(dummyOrder);
+                context.SaveChanges();
+
+            }
+        }
+
+        [TestMethod]
         public void DeleteOrderByIdAsync_DeleteOrderFromDatabse_ReturnDeletedOrderAreEqual()
         {
             using (var context = new TestOrdersDbContext().DbContext)
@@ -71,10 +97,10 @@ namespace Orders.UnitTest
 
                 // Act
                 var productRepository = new OrderRepository(context);
-                var deletedProduct = productRepository.DeleteOrderByOrderIdAsync(dummyOrder.Id);
+                var deletedProduct = productRepository.DeleteOrderByOrderIdAsync(dummyOrder.Id).Result;
 
                 // Assert
-                Assert.AreEqual(dummyOrder, deletedProduct.Result);
+                Assert.AreEqual(dummyOrder, deletedProduct);
 
           
             }
