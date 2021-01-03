@@ -7,6 +7,8 @@ using System.Linq;
 using System.Threading.Tasks;
 
 
+
+
 namespace Orders.Repositories
 {
     public class OrderRepository : IOrderRepository
@@ -20,7 +22,8 @@ namespace Orders.Repositories
 
         public async Task<Order> CreateOrderAsync(Order order)
         {
-            bool orderExistInDatabase = await _context.Order.AnyAsync(x => x.Id == order.Id);
+ 
+            bool orderExistInDatabase = await CheckIfOrderExistInDatabaseAsync(order.Id);
 
             if (!orderExistInDatabase)
             {
@@ -86,15 +89,14 @@ namespace Orders.Repositories
 
             if (!userWithOrdersExistInDatabase)
                 return null;
-            var order = await _context.Order.Where(x => x.UserId == userId)
-                .Include(x => x.Status).ToListAsync();
-                return order;
 
+            var order = await _context.Order.Where(x => x.UserId == userId).Include(x => x.Status).ToListAsync();
+                return order;
         }
 
         public async Task<Order> UpdateOrderAsync(Order order)
-        {
-            bool orderExistInDatabase  = await _context.Order.AnyAsync(x => x.Id == order.Id);
+        {       
+            bool orderExistInDatabase = await CheckIfOrderExistInDatabaseAsync(order.Id);
 
             if (orderExistInDatabase && order.Id != Guid.Empty)
             {
@@ -105,5 +107,8 @@ namespace Orders.Repositories
             else
                 return null;
         }
+
+        public async Task<bool> CheckIfOrderExistInDatabaseAsync(Guid id)
+        => await _context.Order.AnyAsync(x => x.Id == id);
     }
 }
