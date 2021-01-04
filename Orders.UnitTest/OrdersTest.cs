@@ -42,6 +42,7 @@ namespace Orders.UnitTest
             using(var context = new TestOrdersDbContext().DbContext)
             {
                 // Arrange
+                
                 var orderRepository = new OrderRepository(context);
                 Order dummyOrder = null;
 
@@ -59,6 +60,32 @@ namespace Orders.UnitTest
         }
 
         [TestMethod]
+        public void CreateOrderAsync_TryCreateOrderWithExistingOrderId_ReturnNull()
+        {
+            using (var context = new TestOrdersDbContext().DbContext)
+            {
+                // Arrange
+
+                var orderRepository = new OrderRepository(context);
+                var dummyOrder = DummyTestOrder.TestOrder();
+                var dummyOrder2 = dummyOrder;
+              
+                //Act 
+
+                var newOrder = orderRepository.CreateOrderAsync(dummyOrder).Result;
+                var newOrder2 = orderRepository.CreateOrderAsync(dummyOrder2).Result;
+
+                //Assert
+                Assert.AreEqual(newOrder2, null);
+
+                // Delete dummyOrder from DB
+                context.Remove(dummyOrder);
+                context.SaveChanges();
+
+            }
+        }
+
+        [TestMethod]
         public void DeleteOrderByIdAsync_DeleteOrderFromDatabse_ReturnDeletedOrderAreEqual()
         {
             using (var context = new TestOrdersDbContext().DbContext)
@@ -70,10 +97,10 @@ namespace Orders.UnitTest
 
                 // Act
                 var productRepository = new OrderRepository(context);
-                var deletedProduct = productRepository.DeleteOrderByIdAsync(dummyOrder.Id);
+                var deletedProduct = productRepository.DeleteOrderByOrderIdAsync(dummyOrder.Id).Result;
 
                 // Assert
-                Assert.AreEqual(dummyOrder, deletedProduct.Result);
+                Assert.AreEqual(dummyOrder, deletedProduct);
 
           
             }
@@ -91,7 +118,7 @@ namespace Orders.UnitTest
 
                     // Act
                     var orderRepository = new OrderRepository(context);
-                    var order = orderRepository.DeleteOrderByIdAsync(nonExistingOrderId);
+                    var order = orderRepository.DeleteOrderByOrderIdAsync(nonExistingOrderId);
                 }
                 catch (Exception)
                 {
@@ -113,7 +140,7 @@ namespace Orders.UnitTest
 
                 // Act
                 var orderRepository = new OrderRepository(context);
-                var order = orderRepository.GetOrderByIdAsync(dummyOrder.Id).Result;
+                var order = orderRepository.GetOrderByOrderIdAsync(dummyOrder.Id).Result;
 
                 // Assert
                 Assert.IsNotNull(order);
@@ -134,7 +161,7 @@ namespace Orders.UnitTest
               
                 // Act
                 var orderRepository = new OrderRepository(context);
-                var order = orderRepository.GetOrderByIdAsync(dummyOrder.Id).Result;
+                var order = orderRepository.GetOrderByOrderIdAsync(dummyOrder.Id).Result;
 
                 // Assert
                 Assert.IsNull(order);
@@ -183,7 +210,7 @@ namespace Orders.UnitTest
         }
 
         [TestMethod]
-        public void GetAllOrdersByUserId_GetAllOrdersFromTheSpecsificUserId_ReturnAllOrdersWithTheUserId()
+        public void GetOrdersByUserId_GetAllOrdersFromTheSpecsificUserId_ReturnAllOrdersWithTheUserId()
         {
             using (var context = new TestOrdersDbContext().DbContext)
             {
@@ -194,7 +221,7 @@ namespace Orders.UnitTest
 
                 // Act
                 var orderRepository = new OrderRepository(context);
-                var orders = orderRepository.GetAllOrdersByUserIdAsync(dummyOrder.UserId).Result;
+                var orders = orderRepository.GetOrdersByUserIdAsync(dummyOrder.UserId).Result;
 
                 // Assert
                 Assert.IsInstanceOfType(orders, typeof(List<Order>));
@@ -206,7 +233,7 @@ namespace Orders.UnitTest
         }
 
         [TestMethod]
-        public void GetAllOrdersByUserId_GetNonExistingOrdersFromTheSpecsificUserId_ReturnNull()
+        public void GetOrdersByUserId_GetNonExistingOrdersFromTheSpecsificUserId_ReturnNull()
         {
             using (var context = new TestOrdersDbContext().DbContext)
             {
@@ -216,7 +243,7 @@ namespace Orders.UnitTest
 
                 // Act
                 var orderRepository = new OrderRepository(context);
-                var orders = orderRepository.GetAllOrdersByUserIdAsync(dummyOrder.UserId).Result;
+                var orders = orderRepository.GetOrdersByUserIdAsync(dummyOrder.UserId).Result;
 
                 // Assert
                 Assert.IsNull(orders);
