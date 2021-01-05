@@ -11,9 +11,9 @@ namespace Frozen.Services
 {
     public class ClientService : IClientService
     {
-        private const string BEARER_TOKEN_TYPE = "Bearer";
-        private const string ACCEPT_VALUE = "application/json";
         private readonly ICookieHandler _cookieHandler;
+        private const string TOKEN_SCHEME  = "Bearer";
+        private const string MEDIA_TYPE_JSON = "application/json";
 
         public ClientService(ICookieHandler cookieHandler)
         {
@@ -27,40 +27,34 @@ namespace Frozen.Services
         /// <param name="method"></param>
         /// <param name="obj"></param>
         /// <param name="jwtToken"></param>
-        /// <returns></returns>
         public async Task<HttpResponseMessage> SendRequestToGatewayAsync(string api, HttpMethod method, object obj = null, string jwtToken = null)
         {
-            // Before sending any request, check if token needs to be renewed!
-            await CheckTokenStatusAsync();
+            await VerifyTokenValidationStatusAsync();
 
-            return await SendRequestAsync(api, method, obj, jwtToken);
+            return await SendHttpRequestAsync(api, method, obj, jwtToken);
         }
 
-        private async Task<HttpResponseMessage> SendRequestAsync(string api, HttpMethod method, object obj = null, string jwtToken = null)
+        private async Task<HttpResponseMessage> SendHttpRequestAsync(string apiLocation, HttpMethod httpMethod, object obj = null, string jwtToken = null)
         {
             using (var client = new HttpClient())
             {
-                var jsonData = JsonConvert.SerializeObject(obj);
+                var json = JsonConvert.SerializeObject(obj);
 
-                var request = new HttpRequestMessage(method, api);
+                var request = new HttpRequestMessage(httpMethod, apiLocation);
+
                 request = AddAuthorizationHeader(request, jwtToken);
-                request.Content = AddContentToRequest(jsonData);
+                request.Content = new StringContent(json, Encoding.UTF8, MEDIA_TYPE_JSON);
 
                 return await client.SendAsync(request);
             }
         }
-        
-        private StringContent AddContentToRequest(string data)
-        {
-            return new StringContent(data, Encoding.UTF8, ACCEPT_VALUE);
-        }
 
-        private HttpRequestMessage AddAuthorizationHeader(HttpRequestMessage requestMessage, string authToken)
+        private HttpRequestMessage AddAuthorizationHeader(HttpRequestMessage requestMessage, string jwtToken)
         {
-            if (authToken == null)
+            if (jwtToken == null)
                 return requestMessage;
 
-            requestMessage.Headers.Authorization = new AuthenticationHeaderValue(BEARER_TOKEN_TYPE, authToken);
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue(TOKEN_SCHEME, jwtToken);
             return requestMessage;
         }
 
@@ -69,7 +63,6 @@ namespace Frozen.Services
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="responseContent"></param>
-        /// <returns></returns>
         public async Task<T> ReadResponseAsync<T>(HttpContent responseContent)
         {
             var content = await responseContent.ReadAsStringAsync();
@@ -80,8 +73,7 @@ namespace Frozen.Services
         /// <summary>
         /// Check if current JWT-token is valid. If not, a new JWT-token request will be sent
         /// </summary>
-        /// <returns></returns>
-        public async Task CheckTokenStatusAsync()
+        public async Task VerifyTokenValidationStatusAsync()
         {
             var isTokenValid = await _cookieHandler.ValidateJwtTokenAsync();
             var refreshToken = _cookieHandler.ReadPersistentCookie(Cookies.JWT_REFRESH_TOKEN);
@@ -89,19 +81,19 @@ namespace Frozen.Services
 
             if (!isTokenValid && refreshToken != null && loggedInUserId != null)
             {
-                await RequestNewTokens(Guid.Parse(loggedInUserId));
+                await SendRequestForNewTokenAndRefreshToken(Guid.Parse(loggedInUserId));
             }
         }
 
-        private async Task RequestNewTokens(Guid userId)
+        private async Task SendRequestForNewTokenAndRefreshToken(Guid userId)
         {
-            var refreshTokenModel = new RenewTokenModel()
+            var renewTokenModel = new RenewTokenModel()
             {
                 UserID = userId,
                 Token = _cookieHandler.ReadPersistentCookie(Cookies.JWT_REFRESH_TOKEN)
             };
 
-            var result = await SendRequestAsync(ApiLocation.Users.REQUEST_NEW_TOKEN_ENDPOINT, HttpMethod.Post, refreshTokenModel);
+            var result = await SendHttpRequestAsync(ApiLocation.Users.REQUEST_NEW_TOKEN_ENDPOINT, HttpMethod.Post, renewTokenModel);
 
             if (result.IsSuccessStatusCode)
             {
