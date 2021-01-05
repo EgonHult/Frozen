@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Users.Models
+﻿namespace Users.Models
 {
-    public class LoginResponseModel
+    public class LoginResponseModel : TokenModel
     {
         public UserModel User { get; set; }
-        public string Token { get; set; }
-        public string RefreshToken { get; set; }
     }
 }

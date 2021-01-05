@@ -1,80 +1,77 @@
-﻿using Frozen.Models;
+﻿using Frozen.Common;
+using Frozen.Models;
+using Frozen.Services;
 using Frozen.ViewModels;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Frozen.Controllers
 {
     public class LoginController : Controller
     {
+        private readonly IClientService _clientService;
+        private readonly ICookieHandler _cookieHandler;
+
+        public LoginController(ICookieHandler cookieHandler, IClientService clientService)
+        {
+            this._cookieHandler = cookieHandler;
+            this._clientService = clientService;
+        }
+
         [HttpGet]
         public IActionResult LoginPage()
         {
             return View();
         }
-        [HttpPost]
-        public async Task<IActionResult> LoginPageAsync(LoginViewModel viewModel)
-        {
-            if (ModelState.IsValid)
-            {
-                using (var client = new HttpClient())
-                {
-                    var request = new HttpRequestMessage(HttpMethod.Post, "https://localhost:44350/user/login");
-                    string json = JsonConvert.SerializeObject(viewModel);
-                    request.Content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                    var response = await client.SendAsync(request);
-                    var responseMessage = await response.Content.ReadAsStringAsync();
-                    if(response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-                    {
-                        ViewBag.Message = "Felaktiga inloggningsuppgifter, Loser";
-                    }
-                    else if(response.IsSuccessStatusCode)
-                    {
-                        LoggedInUser loggedInUser = JsonConvert.DeserializeObject<LoggedInUser>(responseMessage);
-                        //ViewBag.Message = "Du är nu inloggad, " + loggedInUser.User.FirstName;
-                        return RedirectToAction("Index", "Home");
-                    }
-                }
-            }
-            return View("LoginPage");
-        }
         [HttpGet]
         public IActionResult RegisterPage()
         {
             return View();
         }
+
+        [HttpPost]
+        public async Task<IActionResult> LoginPageAsync(LoginViewModel viewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _clientService.SendRequestToGatewayAsync(ApiLocation.Users.LOGIN_ENDPOINT, HttpMethod.Post, viewModel);
+
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    ViewBag.Message = "Felaktiga inloggningsuppgifter, Loser";
+                }
+                else if (response.IsSuccessStatusCode)
+                {
+                    var loggedInUser = await _clientService.ReadResponseAsync<LoggedInUser>(response.Content);
+                    await _cookieHandler.CreateLoginCookiesAsync(loggedInUser, viewModel.Remember);
+
+                    return RedirectToAction("Index", "Home");
+                }
+            }
+
+            return View("LoginPage");
+        }
+
         [HttpPost]
         public async Task<IActionResult> RegisterPageAsync(RegisterViewModel viewModel)
         {
             if (ModelState.IsValid)
             {
-                using (var client = new HttpClient())
+                var response = await _clientService.SendRequestToGatewayAsync(ApiLocation.Users.REGISTER_ENDPOINT, HttpMethod.Post, viewModel);
+
+                if (response.StatusCode == HttpStatusCode.Conflict)
                 {
-                    var request = new HttpRequestMessage(HttpMethod.Post, "https://localhost:44350/user/register");
-                    string json = JsonConvert.SerializeObject(viewModel);
-                    request.Content = new StringContent(json, Encoding.UTF8, "application/json");
-
-                    var response = await client.SendAsync(request);
-                    var responseMessage = response.Content;
-                    if(response.StatusCode == System.Net.HttpStatusCode.Conflict)
-                    {
-                        ViewBag.Exists = "Användare med Email " + viewModel.Email + " finns redan!";
-                    }
-                    else if (response.IsSuccessStatusCode)
-                    {
-                        return RedirectToAction("LoginPage");
-                    }
+                    ViewBag.Exists = "Användare med Email " + viewModel.Email + " finns redan!";
                 }
-
+                else if (response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("LoginPage");
+                }
             }
+
             return View();
         }
     }

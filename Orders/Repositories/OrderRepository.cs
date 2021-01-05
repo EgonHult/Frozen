@@ -6,6 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+
+
+
 namespace Orders.Repositories
 {
     public class OrderRepository : IOrderRepository
@@ -19,23 +22,31 @@ namespace Orders.Repositories
 
         public async Task<Order> CreateOrderAsync(Order order)
         {
-            try
-            {
-                 _context.Order.Add(order);
-                var result = await _context.SaveChangesAsync();
+ 
+            bool orderExistInDatabase = await CheckIfOrderExistInDatabaseAsync(order.Id);
 
-                if (result > 0)
-                    return order;
-                else
-                    return null;
-            }
-            catch (Exception)
+            if (!orderExistInDatabase)
             {
-                return null;
-            }   
+                try
+                {
+                    _context.Order.Add(order);
+                    var result = await _context.SaveChangesAsync();
+
+                    if (result > 0)
+                        return order;
+                    else
+                        return null;
+                }
+                catch (Exception)
+                {
+                    return null;
+                }
+            }
+            else            
+                return null;            
         }
 
-        public async Task<Order> DeleteOrderByIdAsync(Guid orderId)
+        public async Task<Order> DeleteOrderByOrderIdAsync(Guid orderId)
         {
             try
             {
@@ -58,30 +69,46 @@ namespace Orders.Repositories
 
         public async Task<List<Order>> GetAllOrdersAsync()
         {
-            var result = await _context.Order.OrderBy(x => x.StatusId).ToListAsync();
+            var result = await _context.Order.OrderBy(x => x.Date).Include(x => x.Status).ToListAsync();
             return result;
         }
 
-        public async Task<Order> GetOrderByIdAsync(Guid orderId)
+        public async Task<Order> GetOrderByOrderIdAsync(Guid orderId)
         {
-            if(orderId == Guid.Empty)
+          
+            if (orderId == Guid.Empty)
                 return null;
-           
-            var user = await _context.Order.FindAsync(orderId);
 
-            return user ?? null;           
+            var order = await _context.Order.Where(x => x.Id == orderId).Include(x => x.Status).Include(x => x.OrderProduct).FirstOrDefaultAsync();
+                return order ?? null;           
+        }
+
+        public async Task<List<Order>> GetOrdersByUserIdAsync(Guid userId)
+        {
+            bool userWithOrdersExistInDatabase = await _context.Order.AnyAsync(x => x.UserId == userId);
+
+            if (!userWithOrdersExistInDatabase)
+                return null;
+
+            var order = await _context.Order.Where(x => x.UserId == userId).Include(x => x.Status).ToListAsync();
+                return order;
         }
 
         public async Task<Order> UpdateOrderAsync(Order order)
-        {
-            if (order.Id != Guid.Empty)
+        {       
+            bool orderExistInDatabase = await CheckIfOrderExistInDatabaseAsync(order.Id);
+
+            if (orderExistInDatabase && order.Id != Guid.Empty)
             {
                 _context.Entry(order).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
                 return order;
             }
             else
-                return order;
+                return null;
         }
+
+        public async Task<bool> CheckIfOrderExistInDatabaseAsync(Guid id)
+        => await _context.Order.AnyAsync(x => x.Id == id);
     }
 }
