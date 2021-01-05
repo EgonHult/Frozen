@@ -11,7 +11,7 @@ namespace Frozen.Services
         Task CreateLoginCookiesAsync(LoggedInUser user, bool rememberUser);
         Task CreateAuthCookieAsync(string content, bool isPersistent = false);
         void CreatePersitentCookie(string name, string content);
-        string ReadPersitentCookie(string name);
+        string ReadPersistentCookie(string name);
         void CreateSessionCookie(string name, string content);
         string ReadSessionCookieContent(string name);
         void DestroyAllCookies();

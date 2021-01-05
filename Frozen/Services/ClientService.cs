@@ -84,7 +84,7 @@ namespace Frozen.Services
         public async Task CheckTokenStatusAsync()
         {
             var isTokenValid = await _cookieHandler.ValidateJwtTokenAsync();
-            var refreshToken = _cookieHandler.ReadPersitentCookie(Cookies.JWT_REFRESH_TOKEN);
+            var refreshToken = _cookieHandler.ReadPersistentCookie(Cookies.JWT_REFRESH_TOKEN);
             var loggedInUserId = await _cookieHandler.GetClaimFromIdentityCookieAsync("UserId");
 
             if (!isTokenValid && refreshToken != null && loggedInUserId != null)
@@ -98,7 +98,7 @@ namespace Frozen.Services
             var refreshTokenModel = new RenewTokenModel()
             {
                 UserID = userId,
-                Token = _cookieHandler.ReadPersitentCookie(Cookies.JWT_REFRESH_TOKEN)
+                Token = _cookieHandler.ReadPersistentCookie(Cookies.JWT_REFRESH_TOKEN)
             };
 
             var result = await SendRequestAsync(ApiLocation.Users.REQUEST_NEW_TOKEN_ENDPOINT, HttpMethod.Post, refreshTokenModel);

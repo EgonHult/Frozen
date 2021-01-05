@@ -70,15 +70,6 @@ namespace Frozen.Services
             return await _tokenHandler.ValidateJwtTokenExpirationDateAsync(token);
         }
 
-        //public async Task<string> GetClaimFromAuthTokenAsync(string claimName)
-        //{
-        //    var token = ReadSessionCookieContent(CommonConfig.SessionCookie.COOKIE_NAME);
-        //    var claims = await _tokenHandler.GetClaimsAsync(token);
-        //    var userId = claims.FirstOrDefault(x => x.Type == claimName).Value;
-
-        //    return userId;
-        //}
-
         public async Task<string> GetClaimFromIdentityCookieAsync(string claimName)
         {
             var userId = await Task.FromResult(_accessor.HttpContext.User.FindFirstValue(claimName));
@@ -118,7 +109,7 @@ namespace Frozen.Services
         /// </summary>
         /// <param name="name">Name of cookie to read from</param>
         /// <returns>string</returns>
-        public string ReadPersitentCookie(string name)
+        public string ReadPersistentCookie(string name)
         {
             return _accessor.HttpContext.Request.Cookies[name];
         }
