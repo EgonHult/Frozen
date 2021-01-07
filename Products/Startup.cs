@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Products.Context;
+using Products.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -65,6 +66,9 @@ namespace Products
             {
                 options.DefaultAuthenticateScheme = "Bearer";
             });
+
+            //services.AddSingleton<JwtTokenHandler>();
+            services.AddTransient<IProductRepository, ProductRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
