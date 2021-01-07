@@ -47,7 +47,7 @@ namespace Frozen.Controllers
         {
             using (var client = new HttpClient())
             {
-                var request = new HttpRequestMessage(HttpMethod.Post, "https://localhost:44350/product/");
+                var request = new HttpRequestMessage(HttpMethod.Post, "https://localhost:44350/product/create");
                 string json = JsonConvert.SerializeObject(product);
                 request.Content = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = await client.SendAsync(request);

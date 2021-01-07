@@ -1,6 +1,8 @@
 ﻿using Frozen.Controllers;
 using Frozen.Models;
+using Frozen.UnitTests.DummyData;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Products.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +14,19 @@ namespace Frozen.UnitTests
     [TestClass]
     public class ProductsTests
     {
+        static ProductDummyData DummyData { get; set; }
+        static ProductModel DummyProduct { get; set; }
+        [ClassInitialize]
+        public static void TestFixtureSetup(TestContext Context)
+        {
+            DummyData = new ProductDummyData();
+            DummyProduct = DummyData.CreateDummyProduct();
+        }
+        [ClassCleanup]
+        public static void TestFixtureDispose()
+        {
+            DummyData.DeleteDummyProduct(DummyProduct.Id);
+        }
         [TestMethod]
         public void GetProducts_GetAllProducts_ReturnProductList()
         {
@@ -28,7 +43,7 @@ namespace Frozen.UnitTests
         {
             //Arrange
             ProductsController controller = new ProductsController();
-            var id = new Guid();
+            var id = DummyProduct.Id;
             //Act
             var product = controller.GetProductByIdAsync(id).Result;
             //Assert
@@ -40,8 +55,8 @@ namespace Frozen.UnitTests
             //Arrange
             Product product = new Product
             {
-                Name = "Test",
-                Details = "Test product",
+                Name = "Test2",
+                Details = "Test product2",
                 Price = 100,
                 Quantity = 50,
                 WeightInGrams = 100,
@@ -51,16 +66,16 @@ namespace Frozen.UnitTests
             //Act
             var result = controller.PostProductAsync(product).Result;
             //Assert
-            Assert.AreEqual(result, product);
+            Assert.AreEqual(result.Name, product.Name);
+            DummyData.DeleteDummyProduct(result.Id);
         }
         [TestMethod]
         public void UpdateProduct_UpdateProduct_ReturnUpdatedProduct()
         {
             //Arrange
-            Guid guid = new Guid();
             Product product = new Product
             {
-                Id = guid,
+                Id = DummyProduct.Id,
                 Name = "Uppdaterat namn",
                 Details = "Uppdaterade detaljer",
                 Image = "",
@@ -70,22 +85,27 @@ namespace Frozen.UnitTests
             };
             ProductsController controller = new ProductsController();
             //Act
-            var result = controller.UpdateProductAsync(guid, product).Result;
+            var result = controller.UpdateProductAsync(DummyProduct.Id, product).Result;
             //Assert
-            Assert.AreEqual(guid, result.Id);
+            Assert.AreEqual(DummyProduct.Id, result.Id);
             Assert.AreEqual(result.Name, product.Name);
         }
         [TestMethod]
         public void DeleteProduct_DeleteProduct_ReturnDeletedProduct()
         {
             //Arrange
-            var Id = new Guid();
+            var DummyProductTwo = DummyData.CreateDummyProduct();
+            var Id = DummyProductTwo.Id;
             ProductsController controller = new ProductsController();
-
             //Act
             var result = controller.DeleteProductAsync(Id).Result;
             //Assert
             Assert.AreEqual(result.Id, Id);
+            if(result == null)
+            {
+                DummyData.DeleteDummyProduct(Id);
+            }
         }
+        
     }
 }
