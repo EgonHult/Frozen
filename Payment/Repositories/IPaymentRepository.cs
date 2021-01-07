@@ -9,5 +9,6 @@ namespace Payments.Repositories
     public interface IPaymentRepository
     {
         List<PaymentModel> CreateAllTypesOfPayments();
+        bool VerifyPayment(int id, object paymentType);
     }
 }

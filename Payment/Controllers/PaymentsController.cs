@@ -8,8 +8,8 @@ using Payments.Repositories;
 
 namespace Payments.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
+    [ApiController]
     public class PaymentsController : ControllerBase
     {
         private readonly IPaymentRepository _paymentRepository;
@@ -19,11 +19,27 @@ namespace Payments.Controllers
             _paymentRepository = paymentRepository;
         }
 
-        [HttpGet]
+        [HttpGet("getpayments")]
         public List<PaymentModel> GetPayments()
         {
             var allPaymentTypes = _paymentRepository.CreateAllTypesOfPayments();
             return allPaymentTypes;
+        }
+
+        [HttpPost("verifypayment")]
+        public IActionResult VerifyPayment(int id, object payment)
+        {
+            if (id != 0 && payment != null)
+            {
+                var verifiedPayment = _paymentRepository.VerifyPayment(id, payment);
+                if (verifiedPayment)
+                {
+                    return Ok(verifiedPayment);
+                }
+
+                return BadRequest();
+            }
+            return BadRequest();
         }
     }
 }

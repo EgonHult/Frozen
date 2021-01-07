@@ -36,7 +36,7 @@
         }
       ],
       "UpstreamPathTemplate": "/payment/{catchAll}",
-      "UpstreamHttpMethod": [ "Get" ]
+      "UpstreamHttpMethod": [ "Get", "Post" ]
     }
   ],
   "GlobalConfiguration": {
