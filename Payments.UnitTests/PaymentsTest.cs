@@ -63,7 +63,9 @@ namespace Payments.UnitTests
 
         private PaymentModel GenerateRandomPayment()
         {
-            var random = new Random().Next(1, 4);
+            //var random = new Random().Next(1, 4);
+
+            int random = 2;
 
             switch (random)
             {
@@ -82,7 +84,7 @@ namespace Payments.UnitTests
                     {
                         Id = 2,
                         Type = "Swish",
-                        PhoneNumber = 0701234567
+                        PhoneNumber = "0701234567"
                     };
                     return swishPayment;
                 case 3:

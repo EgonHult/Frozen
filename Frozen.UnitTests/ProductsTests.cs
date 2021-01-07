@@ -13,29 +13,29 @@ namespace Frozen.UnitTests
     public class ProductsTests
     {
         [TestMethod]
-        public async void GetProductsAsync_GetAllProducts_ReturnProductList()
+        public void GetProducts_GetAllProducts_ReturnProductList()
         {
             //Arrange
             ProductsController controller = new ProductsController();
             //Act
-            var products = await controller.GetProductsAsync();
+            var products = controller.GetProductsAsync().Result;
             //Assert
-            Assert.AreSame(products, new List<Product>());
-            Assert.AreEqual(products.Count, 5);
+            Assert.IsInstanceOfType(products, typeof(List<Product>));
+            Assert.IsTrue(products.Count > 0);
         }
         [TestMethod]
-        public async void GetProductByIdAsync_GetProduct_ReturnProduct()
+        public void GetProductById_GetProduct_ReturnProduct()
         {
             //Arrange
             ProductsController controller = new ProductsController();
             var id = new Guid();
             //Act
-            var product = await controller.GetProductByIdAsync(id);
+            var product = controller.GetProductByIdAsync(id).Result;
             //Assert
             Assert.AreEqual(product.Id, id);
         }
         [TestMethod]
-        public async void PostProductAsync_PostProduct_ReturnPostedProduct()
+        public void PostProduct_PostProduct_ReturnPostedProduct()
         {
             //Arrange
             Product product = new Product
@@ -49,12 +49,12 @@ namespace Frozen.UnitTests
             };
             ProductsController controller = new ProductsController();
             //Act
-            //var result =  await controller.PostProductAsync(product);
+            var result = controller.PostProductAsync(product).Result;
             //Assert
-            //Assert.AreEqual(result, product);
+            Assert.AreEqual(result, product);
         }
         [TestMethod]
-        public async void UpdateProductAsync_UpdateProduct_ReturnUpdatedProduct()
+        public void UpdateProduct_UpdateProduct_ReturnUpdatedProduct()
         {
             //Arrange
             Guid guid = new Guid();
@@ -70,20 +70,20 @@ namespace Frozen.UnitTests
             };
             ProductsController controller = new ProductsController();
             //Act
-            var result = await controller.UpdateProductAsync(guid, product);
+            var result = controller.UpdateProductAsync(guid, product).Result;
             //Assert
             Assert.AreEqual(guid, result.Id);
             Assert.AreEqual(result.Name, product.Name);
         }
         [TestMethod]
-        public async void DeleteProductAsync_DeleteProduct_ReturnDeletedProduct()
+        public void DeleteProduct_DeleteProduct_ReturnDeletedProduct()
         {
             //Arrange
             var Id = new Guid();
             ProductsController controller = new ProductsController();
 
             //Act
-            var result = await controller.DeleteProductAsync(Id);
+            var result = controller.DeleteProductAsync(Id).Result;
             //Assert
             Assert.AreEqual(result.Id, Id);
         }

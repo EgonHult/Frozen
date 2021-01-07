@@ -66,8 +66,8 @@ namespace Payments.Repositories
         private static bool VerifySwish(object payment)
         {
             var swishPayment = (SwishModel)payment;
-            if (swishPayment.PhoneNumber.ToString().Length == 10 ||
-                swishPayment.PhoneNumber.ToString().Length == 13)
+            if (swishPayment.PhoneNumber.Length == 10 ||
+                swishPayment.PhoneNumber.Length == 13)
             {
                 return true;
             }
