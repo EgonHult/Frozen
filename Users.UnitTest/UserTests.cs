@@ -11,7 +11,7 @@ namespace Users.UnitTest
     [TestClass]
     public class UserTests
     {
-        public static UserRepository UserRepositoryClass { get; set; }
+        public static IUserRepository UserRepositoryClass { get; set; }
         public static TestUserContext UnitTestContext { get; set; }
         public static User FixtureUser { get; set; }
 
@@ -188,6 +188,10 @@ namespace Users.UnitTest
             // Assert
             Assert.AreEqual(userModel.Email, updatedUser.Email);
             Assert.AreNotEqual(oldEmail, updatedUser.Email);
+
+            // Restore testuser
+            updatedUser.Email = "testuser@frozen.se";
+            var tmp = UserRepositoryClass.UpdateEmailAddressAsync(updatedUser).Result;
         }
 
         [TestMethod]
@@ -199,7 +203,55 @@ namespace Users.UnitTest
             var newPass = "CaptenAmazing123!";
 
             // Act
-            var result = UserRepositoryClass.UpdatePasswordAsync(FixtureUser.Id, oldPass, newPass).Result;
+            var result = UserRepositoryClass.UpdatePasswordAsync(userId, oldPass, newPass).Result;
+
+            // Assert
+            Assert.IsNotNull(result);
+
+            // Restore password
+            var tmp = UserRepositoryClass.UpdatePasswordAsync(userId, newPass, oldPass).Result;
+        }
+
+        [TestMethod]
+        public void CheckIfUserExistsByEmailAsync_CheckIfEmailIsRegistered_ReturnNull()
+        {
+            // Arrange
+            var emailToTest = "funkydude666@frozen.se";
+
+            // Act
+            var result = UserRepositoryClass.CheckIfUserExistsByEmailAsync(emailToTest).Result;
+
+            // Assert
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod]
+        public void CheckIfUserExistsByEmailAsync_CheckIfEmailIsRegistered_ReturnTrue()
+        {
+            // Arrange
+            var emailToTest = "testuser@frozen.se";
+
+            // Act
+            var result = UserRepositoryClass.CheckIfUserExistsByEmailAsync(emailToTest).Result;
+
+            // Assert
+            Assert.IsTrue(result);
+        }
+
+        [TestMethod]
+        public void GenerateNewTokensAsync_RequestNewTokens_ReturnTokenModelNotNull()
+        {
+            // Arrange
+            var loginModel = new LoginModel()
+            {
+                Username = "testuser@frozen.se",
+                Password = "Test123!",
+            };
+
+            var response = UserRepositoryClass.LoginUserAsync(loginModel).Result;
+
+            // Act
+            var result = UserRepositoryClass.GenerateNewTokensAsync(response.User.Id, response.RefreshToken).Result;
 
             // Assert
             Assert.IsNotNull(result);

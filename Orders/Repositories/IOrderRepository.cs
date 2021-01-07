@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 
 namespace Orders.Repositories
 {
-    internal interface IOrderRepository
+    public interface IOrderRepository
     {
         Task<Order> CreateOrderAsync(Order order);
         Task<Order> UpdateOrderAsync(Order order);
-        Task<Order> DeleteOrderByIdAsync(Guid orderId);
-        Task<Order> GetOrderByIdAsync(Guid orderId);
+        Task<Order> DeleteOrderByOrderIdAsync(Guid orderId);
+        Task<Order> GetOrderByOrderIdAsync(Guid orderId);
         Task<List<Order>> GetAllOrdersAsync();
+        Task<List<Order>> GetOrdersByUserIdAsync(Guid userId);
 
     }
 }

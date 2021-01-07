@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 
 namespace Frozen.Models
 {
-    public class LoggedInUser : TokenModel
+    public class TokenModel
     {
-        public User User { get; set; }
+        public string Token { get; set; }
+        public string RefreshToken { get; set; }
     }
 }
