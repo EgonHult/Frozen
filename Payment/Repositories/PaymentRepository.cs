@@ -43,34 +43,47 @@ namespace Payments.Repositories
             switch(id)
             {
                 case 1:
-                    var cardPayment = (CardModel)payment;
-                    if (cardPayment.ExpiryDate > DateTime.Now.AddMonths(1) &&
-                        cardPayment.Number.ToString().Length == 16 &&
-                        cardPayment.CVV.ToString().Length == 3)
-                    {
-                        return true;
-                    }
-                    return false;
+                    return VerifyCard(payment);
                 case 2:
-                    var swishPayment = (SwishModel)payment;
-                    if (swishPayment.PhoneNumber.ToString().Length == 10 ||
-                        swishPayment.PhoneNumber.ToString().Length == 13)
-                    {
-                        return true;
-                    }
-                    return false;
+                    return VerifySwish(payment);
                 case 3:
-                    var internetBankPayment = (InternetBankModel)payment;
-                    if (InternetBanks.AvailableBanks().Any(x => x == internetBankPayment.Bank))
-                    {
-                        return true;
-                    }
-                    return false;
+                    return VerifyInternetBank(payment);
                 default:
                     return false;
             }
         }
 
-        //public bool CreateCardPayment()
+        private static bool VerifyInternetBank(object payment)
+        {
+            var internetBankPayment = (InternetBankModel)payment;
+            if (InternetBanks.AvailableBanks().Any(x => x == internetBankPayment.Bank))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private static bool VerifySwish(object payment)
+        {
+            var swishPayment = (SwishModel)payment;
+            if (swishPayment.PhoneNumber.ToString().Length == 10 ||
+                swishPayment.PhoneNumber.ToString().Length == 13)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private static bool VerifyCard(object payment)
+        {
+            var cardPayment = (CardModel)payment;
+            if (cardPayment.ExpiryDate > DateTime.Now.AddMonths(1) &&
+                cardPayment.Number.ToString().Length == 16 &&
+                cardPayment.CVV.ToString().Length == 3)
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }
