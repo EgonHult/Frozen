@@ -1,0 +1,86 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model Frozen.ViewModels.OrderViewModel
+@{
+    ViewData["Title"] = "OrderResponse";
+}
+
+<h1>OrderSuccess</h1>
+<div class="row">
+    <div class="col-sm-12 col-md-4">
+        <div class="card bg-light">
+            <div class="card-header">
+                @Html.LabelFor(modelItem => modelItem.Order.Id)
+                @Html.DisplayFor(modelItem => modelItem.Order.Id)
+            </div>
+            <div class="card-body">
+                <div class="card-text">
+                    <div>
+                        @Html.LabelFor(modelItem => modelItem.Order.Date)
+                        @Model.Order.Date.ToString("yyyy MMMM dd HH:mm:ss")
+                    </div>
+                    <h4> Contact Information</h4>
+                    <address>
+                        <div>
+                            @Html.DisplayFor(modelItem => modelItem.User.Id)
+                            <br />
+                            @Html.DisplayFor(modelItem => modelItem.User.FirstName)
+                            @Html.DisplayFor(modelItem => modelItem.User.LastName)
+                            <br />
+                            @Html.LabelFor(modelItem => modelItem.User.PhoneNumber)
+                            @Html.DisplayFor(modelItem => modelItem.User.PhoneNumber)
+                        </div>
+
+                    </address>
+
+                    <h4> Address</h4>
+                    <address>
+                        <div>
+                            @Html.DisplayFor(modelItem => modelItem.User.PhoneNumber)
+                            @Html.DisplayFor(modelItem => modelItem.User.Zip)
+                            @Html.DisplayFor(modelItem => modelItem.User.City)
+
+                        </div>
+                    </address>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-12 col-md-8">
+        <div class="card-body">
+            <table class="table table-responsive-sm table-striped">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => new OrderProduct().Name)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => new OrderProduct().Quantity)
+                        </th>
+                       
+
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Order.OrderProduct)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Name)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Quantity)
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr> <td>  </td><td> <b> Total: </b></td><td> @Model.Order.TotalPrice.ToString("C")</td> </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>

@@ -25,7 +25,7 @@ namespace Orders.Controllers
 
         // POST: api/OrderProducts
         [HttpPost]
-        public async Task<Order> CreateNewOrderAsync(Order order)
+        public async Task<ActionResult<Order>> CreateNewOrderAsync(Order order)
         {
             try
             {
@@ -38,12 +38,12 @@ namespace Orders.Controllers
 
                 throw;
             }
-            return null;
+            return BadRequest();
         }
 
         // Put: api/OrderProducts
         [HttpPut]
-        public async Task<Order> UpdateOrderAsync(Order order)
+        public async Task<ActionResult<Order>> UpdateOrderAsync(Order order)
         {
             try
             {
@@ -54,15 +54,15 @@ namespace Orders.Controllers
             catch (Exception)
             {
                 if (!OrderExists(order))
-                    return null;
+                    return BadRequest();
                 throw;
             }
-            return null;
+            return BadRequest();
 
         }
         // DELETE: api/OrderProducts/2
         [HttpDelete("{orderId}")]
-        public async Task<Order> DeleteOrderByIdAsync(Guid orderId)
+        public async Task<ActionResult<Order>> DeleteOrderByIdAsync(Guid orderId)
         {
             try
             {
@@ -73,15 +73,15 @@ namespace Orders.Controllers
             catch (Exception)
             {
                 if (!OrderByIdExists(orderId))
-                    return null;
+                    return BadRequest();
                 throw;
             }
-            return null;
+            return BadRequest();
         }
 
         // GET: api/OrderProducts/2
         [HttpGet("{orderId}")]
-        public async Task<Order> GetOrderByIdAsync(Guid orderId)
+        public async Task<ActionResult<Order>>GetOrderByIdAsync(Guid orderId)
         {
             try
             {
@@ -92,10 +92,10 @@ namespace Orders.Controllers
             catch (Exception)
             {
                 if (!OrderByIdExists(orderId))
-                    return null;
+                    return BadRequest();
                 throw;
             }
-            return null;
+            return BadRequest();
         }
 
         // GET: api/OrderProducts
@@ -103,8 +103,9 @@ namespace Orders.Controllers
         public async Task<List<Order>> GetAllOrdersAsync()
         {
             var result = await _orderRepository.GetAllOrdersAsync();
-            if (result != null)
+            if (result != null) 
                 return result;
+           
             return null;
         }
 
