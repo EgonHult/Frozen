@@ -16,7 +16,7 @@ namespace Frozen.UnitTests
             var token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJGaXJzdE5hbWUiOiJJY2VJY2UiLCJMYXN0TmFtZSI6IkJhYnkiLCJVc2VyRW1haWwiOiJhZG1pbkBmcm96ZW4uc2UiLCJVc2VySWQiOiJhMTVjNGU0My05Y2E1LTQ4MzktNWRlNC0wOGQ4OWQ0OGZmMzUiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL2V4cGlyYXRpb24iOiIyMDIwLTEyLTE1IDIwOjU4OjMyIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQWRtaW4iLCJleHAiOjE2MDgwNjU5MTIsImlzcyI6IkZyb3plbiIsImF1ZCI6IkZyb3plbiJ9.teiWBhgdg4PxG1jAAVPykKHfJeV_rE74jiJymcpg5jU";
             
             // Act
-            var result = tokenHandler.GetClaimsAsync(token).Result.ToList();
+            var result = tokenHandler.GetJwtClaimsAsync(token).Result.ToList();
 
             var userId = result.Where(x => x.Type == "UserId").FirstOrDefault().Value;
             var userEmail = result.Where(x => x.Type == "UserEmail").FirstOrDefault().Value;
@@ -36,7 +36,7 @@ namespace Frozen.UnitTests
                 string token = null;
 
                 // Act
-                var result = tokenHandler.GetClaimsAsync(token).Result;
+                var result = tokenHandler.GetJwtClaimsAsync(token).Result;
             }
             catch(Exception)
             {

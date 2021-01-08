@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Products.Context;
 using Products.Models;
@@ -49,6 +50,7 @@ namespace Products.Controllers
         }
 
         // POST api/<ProductsController>
+        [Authorize(Roles = "Admin")]
         [HttpPost("create")]
         public async Task<ActionResult<ProductModel>> PostProduct(ProductModel product)
         {

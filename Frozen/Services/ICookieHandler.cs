@@ -1,7 +1,4 @@
 ﻿using Frozen.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Frozen.Services
@@ -10,7 +7,7 @@ namespace Frozen.Services
     {
         Task CreateLoginCookiesAsync(LoggedInUser user, bool rememberUser);
         Task CreateAuthCookieAsync(string content, bool isPersistent = false);
-        void CreatePersitentCookie(string name, string content);
+        void CreatePersistentCookie(string name, string content);
         string ReadPersistentCookie(string name);
         void CreateSessionCookie(string name, string content);
         string ReadSessionCookieContent(string name);

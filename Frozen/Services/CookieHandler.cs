@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using System;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -24,19 +23,18 @@ namespace Frozen.Services
 
         /// <summary>
         /// Creates 3 cookies:
-        /// One [Authorization] cookie for authorizing logged in users.
-        /// One for storing RefreshToken.
-        /// One session cookie for storing token.
+        /// - Cookie for authorizing logged in users
+        /// - Cookie for storing RefreshToken.
+        /// - Session cookie for storing token.
         /// </summary>
         /// <param name="user"></param>
-        /// <returns></returns>
         public async Task CreateLoginCookiesAsync(LoggedInUser user, bool rememberUser)
         {
             var token = user.Token;
             var refreshToken = user.RefreshToken;
 
             await CreateAuthCookieAsync(token, rememberUser);
-            CreatePersitentCookie(Cookies.JWT_REFRESH_TOKEN, refreshToken);
+            CreatePersistentCookie(Cookies.JWT_REFRESH_TOKEN, refreshToken);
             CreateSessionCookie(Cookies.JWT_SESSION_TOKEN, token);
         }
 
@@ -47,7 +45,7 @@ namespace Frozen.Services
         /// <param name="isPersistent"></param>
         public async Task CreateAuthCookieAsync(string content, bool isPersistent = false)
         {
-            var claims = await _tokenHandler.GetClaimsAsync(content);
+            var claims = await _tokenHandler.GetJwtClaimsAsync(content);
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var authProperties = new AuthenticationProperties()
@@ -82,7 +80,7 @@ namespace Frozen.Services
         /// <param name="model"></param>
         public void RenewAuthTokens(TokenModel model)
         {
-            CreatePersitentCookie(Cookies.JWT_REFRESH_TOKEN, model.RefreshToken);
+            CreatePersistentCookie(Cookies.JWT_REFRESH_TOKEN, model.RefreshToken);
             CreateSessionCookie(Cookies.JWT_SESSION_TOKEN, model.Token);
         }
 
@@ -91,7 +89,7 @@ namespace Frozen.Services
         /// </summary>
         /// <param name="name">Name of cookie</param>
         /// <param name="content">string content</param>
-        public void CreatePersitentCookie(string name, string content)
+        public void CreatePersistentCookie(string name, string content)
         {
             CookieOptions options = new CookieOptions();
 
@@ -108,7 +106,6 @@ namespace Frozen.Services
         /// Read contents from a persistent cookie
         /// </summary>
         /// <param name="name">Name of cookie to read from</param>
-        /// <returns>string</returns>
         public string ReadPersistentCookie(string name)
         {
             return _accessor.HttpContext.Request.Cookies[name];
@@ -128,24 +125,18 @@ namespace Frozen.Services
         /// Read content from selected cookie
         /// </summary>
         /// <param name="name">Name of the cookie</param>
-        /// <returns>string</returns>
         public string ReadSessionCookieContent(string name)
         {
             return _accessor.HttpContext.Session.GetString(name);
         }
 
         /// <summary>
-        /// Destory all regular/session cookies!
+        /// Destory cookies and session cookies!
         /// </summary>
         public void DestroyAllCookies()
         {
-            // Remove JWT-token session cookie
             _accessor.HttpContext.Session.Remove(Cookies.JWT_SESSION_TOKEN);
-
-            // Remove Refreshtoken
             _accessor.HttpContext.Response.Cookies.Delete(Cookies.JWT_REFRESH_TOKEN);
-
-            // Remove Auth-cookie
             _accessor.HttpContext.SignOutAsync();
         }
     }

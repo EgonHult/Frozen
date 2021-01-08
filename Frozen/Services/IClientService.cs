@@ -7,6 +7,6 @@ namespace Frozen.Services
     {
         Task<HttpResponseMessage> SendRequestToGatewayAsync(string api, HttpMethod method, object obj = null, string jwtToken = null);
         Task<T> ReadResponseAsync<T>(HttpContent responseContent);
-        Task CheckTokenStatusAsync();
+        Task VerifyTokenValidationStatusAsync();
     }
 }
