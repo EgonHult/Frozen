@@ -33,26 +33,21 @@ namespace Frozen.Controllers
         [HttpGet]
         public async Task<List<Product>> GetProductsAsync()
         {
-            using (var client = new HttpClient())
-            {
-                var request = new HttpRequestMessage(HttpMethod.Get, "https://localhost:44350/product/getall");
-                var response = await client.SendAsync(request);
-                response.EnsureSuccessStatusCode();
-                var products = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<List<Product>>(products);
-            }
+            var apiLocation = "https://localhost:44350/product/getall";
+            var response = await _clientService.SendRequestToGatewayAsync(apiLocation, HttpMethod.Get);
+            response.EnsureSuccessStatusCode();
+            var products = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<List<Product>>(products);
+            
         }
         [HttpGet]
         public async Task<Product> GetProductByIdAsync(Guid Id)
         {
-            using (var client = new HttpClient())
-            {
-                var request = new HttpRequestMessage(HttpMethod.Get, "https://localhost:44350/product/"+Id);
-                var response = await client.SendAsync(request);
-                response.EnsureSuccessStatusCode();
-                var product = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<Product>(product);
-            }
+            var apiLocation = "https://localhost:44350/product/"+ Id;
+            var response = await _clientService.SendRequestToGatewayAsync(apiLocation, HttpMethod.Get);
+            response.EnsureSuccessStatusCode();
+            var product = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<Product>(product);
         }
 
         [Authorize(Roles = "Admin")]
@@ -67,31 +62,27 @@ namespace Frozen.Controllers
             var createdProduct = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<Product>(createdProduct);
         }
+        [Authorize(Roles = "Admin")]
         [HttpPut]
         public async Task<Product> UpdateProductAsync(Guid Id, Product product)
         {
-            using (var client = new HttpClient())
-            {
-                var request = new HttpRequestMessage(HttpMethod.Put, "https://localhost:44350/product/" + Id);
-                string json = JsonConvert.SerializeObject(product);
-                request.Content = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await client.SendAsync(request);
-                response.EnsureSuccessStatusCode();
-                var Updatedproduct = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<Product>(Updatedproduct);
-            }
+            var jwtToken = _cookieHandler.ReadSessionCookieContent(Cookies.JWT_SESSION_TOKEN);
+            var apiLocation = "https://localhost:44350/product/" + Id;
+            var response = await _clientService.SendRequestToGatewayAsync(apiLocation, HttpMethod.Put, product, jwtToken);
+            response.EnsureSuccessStatusCode();
+            var Updatedproduct = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<Product>(Updatedproduct);
         }
+        [Authorize(Roles = "Admin")]
         [HttpDelete]
         public async Task<Product> DeleteProductAsync(Guid Id)
         {
-            using (var client = new HttpClient())
-            {
-                var request = new HttpRequestMessage(HttpMethod.Delete, "https://localhost:44350/product/" + Id);
-                var response = await client.SendAsync(request);
-                response.EnsureSuccessStatusCode();
-                var product = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<Product>(product);
-            }
+            var jwtToken = _cookieHandler.ReadSessionCookieContent(Cookies.JWT_SESSION_TOKEN);
+            var apiLocation = "https://localhost:44350/product/" + Id;
+            var response = await _clientService.SendRequestToGatewayAsync(apiLocation, HttpMethod.Delete, null, jwtToken);
+            response.EnsureSuccessStatusCode();
+            var product = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<Product>(product);
         }
     }
 }
