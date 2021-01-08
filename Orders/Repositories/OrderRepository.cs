@@ -20,7 +20,7 @@ namespace Orders.Repositories
             _context = context;
         }
 
-        public async Task<Order> CreateOrderAsync(Order order)
+        public async Task<OrderModel> CreateOrderAsync(OrderModel order)
         {
  
             bool orderExistInDatabase = await CheckIfOrderExistInDatabaseAsync(order.Id);
@@ -46,7 +46,7 @@ namespace Orders.Repositories
                 return null;            
         }
 
-        public async Task<Order> DeleteOrderByOrderIdAsync(Guid orderId)
+        public async Task<OrderModel> DeleteOrderByOrderIdAsync(Guid orderId)
         {
             try
             {
@@ -67,13 +67,13 @@ namespace Orders.Repositories
             }
         }
 
-        public async Task<List<Order>> GetAllOrdersAsync()
+        public async Task<List<OrderModel>> GetAllOrdersAsync()
         {
             var result = await _context.Order.OrderBy(x => x.Date).Include(x => x.Status).ToListAsync();
             return result;
         }
 
-        public async Task<Order> GetOrderByOrderIdAsync(Guid orderId)
+        public async Task<OrderModel> GetOrderByOrderIdAsync(Guid orderId)
         {
           
             if (orderId == Guid.Empty)
@@ -83,7 +83,7 @@ namespace Orders.Repositories
                 return order ?? null;           
         }
 
-        public async Task<List<Order>> GetOrdersByUserIdAsync(Guid userId)
+        public async Task<List<OrderModel>> GetOrdersByUserIdAsync(Guid userId)
         {
             bool userWithOrdersExistInDatabase = await _context.Order.AnyAsync(x => x.UserId == userId);
 
@@ -94,7 +94,7 @@ namespace Orders.Repositories
                 return order;
         }
 
-        public async Task<Order> UpdateOrderAsync(Order order)
+        public async Task<OrderModel> UpdateOrderAsync(OrderModel order)
         {       
             bool orderExistInDatabase = await CheckIfOrderExistInDatabaseAsync(order.Id);
 

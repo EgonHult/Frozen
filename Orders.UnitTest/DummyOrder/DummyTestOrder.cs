@@ -9,10 +9,10 @@ namespace Orders.UnitTest.DummyOrder
 {
     public class DummyTestOrder
     {
-        public static Order TestOrder()
+        public static OrderModel TestOrder()
         {
 
-            var dummyOrder = new Order
+            var dummyOrder = new OrderModel
             {         
                 Id = Guid.NewGuid(),
                 StatusId = 1,
@@ -21,10 +21,10 @@ namespace Orders.UnitTest.DummyOrder
                 UserId = Guid.NewGuid(),
                 Date = DateTime.Now,
 
-                OrderProduct = new List<OrderProduct>()
+                OrderProduct = new List<OrderProductModel>()
                 {
-                    new OrderProduct { Quantity = 2, ProductId = Guid.NewGuid(), Name = "Isglass" },
-                    new OrderProduct { Quantity = 2, ProductId = Guid.NewGuid(), Name = "Mjukglass" }
+                    new OrderProductModel { Quantity = 2, ProductId = Guid.NewGuid(), Name = "Isglass" },
+                    new OrderProductModel { Quantity = 2, ProductId = Guid.NewGuid(), Name = "Mjukglass" }
                 }               
             };
 
