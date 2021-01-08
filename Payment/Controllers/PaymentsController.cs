@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Payments.Models;
 using Payments.Repositories;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Payments.Controllers
 {
@@ -19,6 +20,7 @@ namespace Payments.Controllers
             _paymentRepository = paymentRepository;
         }
 
+        [Authorize]
         [HttpGet("getpayments")]
         public List<PaymentModel> GetPayments()
         {
@@ -26,6 +28,7 @@ namespace Payments.Controllers
             return allPaymentTypes;
         }
 
+        [Authorize]
         [HttpPost("verifypayment")]
         public IActionResult VerifyPayment(int id, object payment)
         {
