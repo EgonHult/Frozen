@@ -1,6 +1,10 @@
-﻿using Frozen.Controllers;
+﻿using Frozen.Common;
+using Frozen.Controllers;
 using Frozen.Models;
+using Frozen.Services;
 using Frozen.UnitTests.DummyData;
+using Frozen.UnitTests.Sessions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Products.Models;
 using System;
@@ -16,39 +20,61 @@ namespace Frozen.UnitTests
     {
         static ProductDummyData DummyData { get; set; }
         static ProductModel DummyProduct { get; set; }
+        static string JwtToken { get; set; }
+
+        static ProductsController Controller { get; set; }
+
         [ClassInitialize]
         public static void TestFixtureSetup(TestContext Context)
         {
             DummyData = new ProductDummyData();
             DummyProduct = DummyData.CreateDummyProduct();
+
+            // Initialize HttpContext for accessing session functionality
+            var config = new HttpContextConfig();
+            IHttpContextAccessor httpContext = config.HttpContext;
+            ICookieHandler _cookieHandler = new CookieHandler(httpContext);
+            IClientService clientService = new ClientService(_cookieHandler);
+
+            // Mock a session cookie with JwtToken
+            JwtToken = AdminToken.LoginAdmin(clientService);
+            _cookieHandler.CreateSessionCookie(Cookies.JWT_SESSION_TOKEN, JwtToken);
+
+            // Arrange for all tests
+            Controller = new ProductsController(_cookieHandler, clientService);
+
         }
+
         [ClassCleanup]
         public static void TestFixtureDispose()
         {
             DummyData.DeleteDummyProduct(DummyProduct.Id);
         }
+
         [TestMethod]
-        public void GetProducts_GetAllProducts_ReturnProductList()
+        public void GetProducts_GetAllProducts_ReturnTrue()
         {
-            //Arrange
-            ProductsController controller = new ProductsController();
             //Act
-            var products = controller.GetProductsAsync().Result;
+            var products = Controller.GetProductsAsync().Result;
+
             //Assert
             Assert.IsInstanceOfType(products, typeof(List<Product>));
             Assert.IsTrue(products.Count > 0);
         }
+
         [TestMethod]
         public void GetProductById_GetProduct_ReturnProduct()
         {
             //Arrange
-            ProductsController controller = new ProductsController();
             var id = DummyProduct.Id;
+
             //Act
-            var product = controller.GetProductByIdAsync(id).Result;
+            var product = Controller.GetProductByIdAsync(id).Result;
+
             //Assert
             Assert.AreEqual(product.Id, id);
         }
+
         [TestMethod]
         public void PostProduct_PostProduct_ReturnPostedProduct()
         {
@@ -62,13 +88,15 @@ namespace Frozen.UnitTests
                 WeightInGrams = 100,
                 Image = ""
             };
-            ProductsController controller = new ProductsController();
+
             //Act
-            var result = controller.PostProductAsync(product).Result;
+            var result = Controller.PostProductAsync(product).Result;
+
             //Assert
             Assert.AreEqual(result.Name, product.Name);
             DummyData.DeleteDummyProduct(result.Id);
         }
+
         [TestMethod]
         public void UpdateProduct_UpdateProduct_ReturnUpdatedProduct()
         {
@@ -83,22 +111,25 @@ namespace Frozen.UnitTests
                 Price = 2200,
                 Quantity = 5
             };
-            ProductsController controller = new ProductsController();
+
             //Act
-            var result = controller.UpdateProductAsync(DummyProduct.Id, product).Result;
+            var result = Controller.UpdateProductAsync(DummyProduct.Id, product).Result;
+
             //Assert
             Assert.AreEqual(DummyProduct.Id, result.Id);
             Assert.AreEqual(result.Name, product.Name);
         }
+
         [TestMethod]
         public void DeleteProduct_DeleteProduct_ReturnDeletedProduct()
         {
             //Arrange
             var DummyProductTwo = DummyData.CreateDummyProduct();
             var Id = DummyProductTwo.Id;
-            ProductsController controller = new ProductsController();
+
             //Act
-            var result = controller.DeleteProductAsync(Id).Result;
+            var result = Controller.DeleteProductAsync(Id).Result;
+
             //Assert
             Assert.AreEqual(result.Id, Id);
             if(result == null)
