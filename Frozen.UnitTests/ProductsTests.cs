@@ -52,7 +52,7 @@ namespace Frozen.UnitTests
         }
 
         [TestMethod]
-        public void GetProducts_GetAllProducts_ReturnTrue()
+        public void GetProducts_GetAllProducts_ReturnAllProducts()
         {
             //Act
             var products = Controller.GetProductsAsync().Result;

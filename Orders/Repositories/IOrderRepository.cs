@@ -8,12 +8,12 @@ namespace Orders.Repositories
 {
     public interface IOrderRepository
     {
-        Task<Order> CreateOrderAsync(Order order);
-        Task<Order> UpdateOrderAsync(Order order);
-        Task<Order> DeleteOrderByOrderIdAsync(Guid orderId);
-        Task<Order> GetOrderByOrderIdAsync(Guid orderId);
-        Task<List<Order>> GetAllOrdersAsync();
-        Task<List<Order>> GetOrdersByUserIdAsync(Guid userId);
+        Task<OrderModel> CreateOrderAsync(OrderModel order);
+        Task<OrderModel> UpdateOrderAsync(OrderModel order);
+        Task<OrderModel> DeleteOrderByOrderIdAsync(Guid orderId);
+        Task<OrderModel> GetOrderByOrderIdAsync(Guid orderId);
+        Task<List<OrderModel>> GetAllOrdersAsync();
+        Task<List<OrderModel>> GetOrdersByUserIdAsync(Guid userId);
 
     }
 }

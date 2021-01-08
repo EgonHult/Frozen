@@ -1,14 +1,13 @@
-﻿using Frozen.Models;
+﻿using Frozen.Common;
+using Frozen.Models;
+using Frozen.Services;
 using Frozen.ViewModels;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Frozen.Controllers
@@ -16,13 +15,15 @@ namespace Frozen.Controllers
     [Authorize]
     public class OrderController : Controller
     {
-
-        private readonly UserManager<User> _userManager;
-
-    
-        public OrderController(UserManager<User> userManager)
+        private readonly ICookieHandler _cookieHandler;
+        private readonly IClientService _clientService;
+        private readonly string jwtToken;
+        public OrderController(ICookieHandler cookieHandler, IClientService clientService)
         {
-            _userManager = userManager;
+            this._cookieHandler = cookieHandler;
+            this._clientService = clientService;
+            jwtToken = _cookieHandler.ReadSessionCookieContent(Cookies.JWT_SESSION_TOKEN);
+
         }
 
         [HttpGet]
@@ -30,49 +31,62 @@ namespace Frozen.Controllers
         {
             return View();
         }
-
-        public async Task<IActionResult> OrderProductsPage()
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public async Task<List<Order>> GetOrdersAsync()
         {
-            var listOfProducts = new List<OrderProduct>
-            {
-                
-                new OrderProduct { Id = new Guid(), Name = "Sak", OrderId = new Guid(), ProductId = new Guid(), Quantity= 1},
-                new OrderProduct { Id = new Guid(), Name = "Grej", OrderId = new Guid(), ProductId = new Guid(), Quantity= 2},
-            };
-            var user = new User
-            {
-                Id = new Guid(), FirstName="FName", LastName ="LName", PhoneNumber = "0789123456", Email = "Test@gmail.com", Address="NewAddress", City="NewCity", Zip= "3746"
-            };
-            var order = new OrderResponse
-            {
-               Id = new Guid(), Date = DateTime.UtcNow, UserId = new Guid(), OrderProduct = listOfProducts, PaymentId = 32415, TotalPrice = 3452
-               
-            };
-           
-            var vm = new OrderViewModel
-            {
-                Order = order,
-
-            };
-           
-            return View(order);
+            var apiLocation = "https://localhost:44350/order/getall";
+            var response = await _clientService.SendRequestToGatewayAsync(apiLocation, HttpMethod.Get, null, jwtToken);
+            response.EnsureSuccessStatusCode();
+            var orders = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<List<Order>>(orders);
         }
-
-
-
-       
-       [HttpGet]
-        public async Task<OrderResponse> GetOrderProducts()
+        [HttpGet]
+        public async Task<Order> GetOrderByIdAsync(Guid Id)
         {
-            using (var client = new HttpClient())
-            {
-                var request = new HttpRequestMessage(HttpMethod.Get, "https://localhost:44350/order/orderregistration");
-                var response = await client.SendAsync(request);
-                response.EnsureSuccessStatusCode();
-                var order = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<OrderResponse>(order);
-            
-            }
+            var apiLocation = "https://localhost:44350/order/" + Id;
+            var response = await _clientService.SendRequestToGatewayAsync(apiLocation, HttpMethod.Get, null, jwtToken);
+            response.EnsureSuccessStatusCode();
+            var order = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<Order>(order);
+        }
+        [HttpPost]
+        public async Task<Order> PostOrderAsync(Order order)
+        {
+            var apiLocation = "https://localhost:44350/order/create";
+            var response = await _clientService.SendRequestToGatewayAsync(apiLocation, HttpMethod.Post, order, jwtToken);
+            response.EnsureSuccessStatusCode();
+            var createdOrder = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<Order>(createdOrder);
+        }
+        [Authorize(Roles = "Admin")]
+        [HttpPut]
+        public async Task<Order> UpdateOrderAsync(Guid Id, Order order)
+        {
+            var apiLocation = "https://localhost:44350/order/" + Id;
+            var response = await _clientService.SendRequestToGatewayAsync(apiLocation, HttpMethod.Put, order, jwtToken);
+            response.EnsureSuccessStatusCode();
+            var UpdatedOrder = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<Order>(UpdatedOrder);
+        }
+        [Authorize(Roles = "Admin")]
+        [HttpDelete]
+        public async Task<Order> DeleteOrderAsync(Guid Id)
+        {
+            var apiLocation = "https://localhost:44350/order/" + Id;
+            var response = await _clientService.SendRequestToGatewayAsync(apiLocation, HttpMethod.Delete, null, jwtToken);
+            response.EnsureSuccessStatusCode();
+            var order = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<Order>(order);
+        }
+        [HttpGet]
+        public async Task<List<Order>> GetOrdersByUserIdAsync(Guid Id)
+        {
+            var apiLocation = "https://localhost:44350/order/user/" + Id;
+            var response = await _clientService.SendRequestToGatewayAsync(apiLocation, HttpMethod.Get, null, jwtToken);
+            response.EnsureSuccessStatusCode();
+            var orders = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<List<Order>>(orders);
         }
     }
 }
