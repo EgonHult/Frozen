@@ -8,7 +8,7 @@ namespace Frozen.ViewModels
 {
     public class OrderViewModel
     {
-        public OrderResponse Order { get; set; }
+        public Order Order { get; set; }
         public User User { get; set; }
     }
 }

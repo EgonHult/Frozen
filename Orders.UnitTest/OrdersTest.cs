@@ -44,7 +44,7 @@ namespace Orders.UnitTest
                 // Arrange
                 
                 var orderRepository = new OrderRepository(context);
-                Order dummyOrder = null;
+                OrderModel dummyOrder = null;
 
                 try
                 {
@@ -179,7 +179,7 @@ namespace Orders.UnitTest
                 var orders = orderrepository.GetAllOrdersAsync().Result;
 
                 // Assert
-                Assert.IsInstanceOfType(orders, typeof(List<Order>));         
+                Assert.IsInstanceOfType(orders, typeof(List<OrderModel>));         
             }
         }
 
@@ -224,7 +224,7 @@ namespace Orders.UnitTest
                 var orders = orderRepository.GetOrdersByUserIdAsync(dummyOrder.UserId).Result;
 
                 // Assert
-                Assert.IsInstanceOfType(orders, typeof(List<Order>));
+                Assert.IsInstanceOfType(orders, typeof(List<OrderModel>));
 
                 // Delete dummyOrder from DB
                 context.Remove(dummyOrder);

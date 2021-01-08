@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Orders.Context;
 using Orders.Models;
@@ -25,16 +26,18 @@ namespace Orders.Controllers
 
 
         // GET: api/Orders
-        [HttpGet]
-        public async Task<ActionResult<List<Order>>> GetOrders()
+        [Authorize(Roles = "Admin")]
+        [HttpGet("getall")]
+        public async Task<ActionResult<List<OrderModel>>> GetOrders()
         {
             var result = await _orderRepository.GetAllOrdersAsync();
             return Ok(result);
         }
 
         // GET: api/Orders/5
+        [Authorize]
         [HttpGet("{id}")]
-        public async Task<ActionResult<Order>> GetOrder(Guid id)
+        public async Task<ActionResult<OrderModel>> GetOrder(Guid id)
         {
             var orderExist = OrderExists(id);
 
@@ -53,8 +56,9 @@ namespace Orders.Controllers
 
         // PUT: api/Orders/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutOrder(Order order)
+        public async Task<IActionResult> PutOrder(OrderModel order)
         {
             if (order.Id == Guid.Empty)
                 return BadRequest();
@@ -81,8 +85,9 @@ namespace Orders.Controllers
         }
 
         // GET: api/Orders/user/id      
+        [Authorize]
         [HttpGet("user/{id}")]
-        public async Task<ActionResult<List<Order>>> GetOrdersByUserId(Guid id)
+        public async Task<ActionResult<List<OrderModel>>> GetOrdersByUserId(Guid id)
         {
             var orderExist = OrdersWithUserIdExists(id);
 
@@ -100,8 +105,9 @@ namespace Orders.Controllers
 
         // POST: api/Orders
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize]
         [HttpPost("create")]
-        public async Task<ActionResult<Order>> PostOrder(Order order)
+        public async Task<ActionResult<OrderModel>> PostOrder(OrderModel order)
         {
             if (order != null)
             {
@@ -121,8 +127,9 @@ namespace Orders.Controllers
         }
 
         // DELETE: api/Orders/5
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Order>> DeleteOrder(Guid id)
+        public async Task<ActionResult<OrderModel>> DeleteOrder(Guid id)
         {
             if (id != Guid.Empty)
             {
