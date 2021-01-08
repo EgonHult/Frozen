@@ -14,7 +14,7 @@
     },
 
     {
-      "DownstreamPathTemplate": "/api/test/{catchAll}",
+      "DownstreamPathTemplate": "/api/Orders/{catchAll}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -23,7 +23,32 @@
         }
       ],
       "UpstreamPathTemplate": "/order/{catchAll}",
-      "UpstreamHttpMethod": [ "Get" ]
+      "UpstreamHttpMethod": [ "Get", "Put", "Delete", "Post" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Products/{catchAll}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+
+          "Port": 44339
+        }
+      ],
+      "UpstreamPathTemplate": "/product/{catchAll}",
+      "UpstreamHttpMethod": [ "Get", "Put", "Delete", "Post" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/Payments/{catchAll}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 44333
+        }
+      ],
+      "UpstreamPathTemplate": "/payment/{catchAll}",
+      "UpstreamHttpMethod": [ "Get", "Post" ]
     }
   ],
   "GlobalConfiguration": {

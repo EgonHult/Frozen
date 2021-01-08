@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Users.Context;
@@ -24,6 +25,7 @@ namespace Users.Controllers
         }
 
         // GET: api/Users
+        [Authorize(Policy = "Admin")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserModel>>> GetUsersAsync()
         {
@@ -32,6 +34,7 @@ namespace Users.Controllers
         }
 
         // GET: api/Users/5
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<ActionResult<UserModel>> GetUser(Guid id)
         {
@@ -50,6 +53,7 @@ namespace Users.Controllers
 
         // PUT: api/Users/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUser(Guid id, UserModel user)
         {
@@ -79,6 +83,7 @@ namespace Users.Controllers
 
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [AllowAnonymous]
         [HttpPost("register")]
         public async Task<ActionResult<UserModel>> PostUser(RegisterUserModel user)
         {
@@ -105,6 +110,7 @@ namespace Users.Controllers
         }
 
         // POST: api/Users/login/
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<ActionResult<LoginResponseModel>> LoginUserAsync(LoginModel loginModel)
         {
@@ -123,6 +129,7 @@ namespace Users.Controllers
 
 
         // DELETE: api/Users/5
+        [Authorize(Policy = "Admin")]
         [HttpDelete("{id}")]
         public async Task<ActionResult<UserModel>> DeleteUser(Guid id)
         {
@@ -137,15 +144,25 @@ namespace Users.Controllers
             return BadRequest();
         }
 
-        [HttpGet("token/{id}/{refreshToken}")]
-        public async Task<ActionResult<TokenModel>> RequestNewTokenAsync(Guid id, string refreshToken)
+        [HttpPost("token")]
+        public async Task<ActionResult<TokenModel>> RequestNewTokenAsync(RenewTokenModel model)
         {
-            var result = await _userRepository.GenerateNewTokensAsync(id, refreshToken);
+            if (ModelState.IsValid)
+            {
+                var userExists = UserExists(model.UserId);
 
-            if (result == null)
-                return BadRequest();
+                if (userExists)
+                {
+                    var tokenModel = await _userRepository.GenerateNewTokensAsync(model.UserId, model.Token);
 
-            return Ok(result);
+                    if (tokenModel != null)
+                        return Ok(tokenModel);
+                }
+                else
+                    return NotFound();
+            }
+
+            return BadRequest();
         }
 
         private bool UserExists(Guid id)

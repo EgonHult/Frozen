@@ -47,6 +47,8 @@ namespace Orders
                 options.UseSqlServer(Configuration.GetConnectionString("SqlDatabase"));
             });
 
+            services.AddTransient<IOrderRepository, OrderRepository>();
+
             // Add JWT token functionality
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>

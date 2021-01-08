@@ -106,6 +106,7 @@ namespace Users.Repositories
 
             return null;
         }
+
         public async Task<bool> CheckIfUserExistsByEmailAsync(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
@@ -113,6 +114,7 @@ namespace Users.Repositories
             {
                 return true;
             }
+
             return false;
         }
 
@@ -174,7 +176,6 @@ namespace Users.Repositories
                 var token = _tokenHandler.CreateToken(user, isAdmin);
                 var refreshToken = _tokenHandler.CreateRefreshToken(user);
 
-                // Build response model with user object and tokens
                 var responseModel = new LoginResponseModel()
                 {
                     User = await ConvertUserToUserModelAsync(user),
@@ -192,7 +193,6 @@ namespace Users.Repositories
         {
             var emailAvailable = await _userManager.FindByEmailAsync(userModel.Email);
 
-            // Emailaddress is available
             if (emailAvailable == null)
             {
                 var user = await _userManager.FindByIdAsync(userModel.Id.ToString());
@@ -223,14 +223,14 @@ namespace Users.Repositories
             return null;
         }
 
-        public async Task<TokenModel> GenerateNewTokensAsync(Guid id, string refreshToken)
+        public async Task<TokenModel> GenerateNewTokensAsync(Guid userId, string refreshToken)
         {
             var result = _tokenHandler.ValidateRefreshToken(refreshToken);
 
             if (result.Identity.IsAuthenticated)
             {
-                // Get user and its role
-                var user = await _userManager.FindByIdAsync(id.ToString());
+                // Get user and role
+                var user = await _userManager.FindByIdAsync(userId.ToString());
                 var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
 
                 var tokenModel = new TokenModel()

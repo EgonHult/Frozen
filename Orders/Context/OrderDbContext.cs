@@ -26,7 +26,8 @@ namespace Orders.Context
         {
             builder.Entity<Order>(entity => {
                 entity.Property(x => x.Date).IsRequired();
-                entity.Property(x => x.TotalPrice).IsRequired().HasColumnType("decimal(18,2)");       
+                entity.Property(x => x.TotalPrice).IsRequired().HasColumnType("decimal(18,2)");
+                entity.Property(x => x.StatusId).IsRequired().HasDefaultValue(1);
             });
 
 
