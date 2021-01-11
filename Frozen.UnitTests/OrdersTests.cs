@@ -81,11 +81,11 @@ namespace Frozen.UnitTests
                 UserId = Guid.NewGuid(),
                 Date = DateTime.Now,
 
-                //OrderProduct = new List<OrderProduct>()
-                //{
-                //    new OrderProduct { Quantity = 2, ProductId = Guid.NewGuid(), Name = "Testglass" },
-                //    new OrderProduct { Quantity = 2, ProductId = Guid.NewGuid(), Name = "Provglass" }
-                //}
+                OrderProduct = new List<OrderProduct>()
+                {
+                    new OrderProduct { Quantity = 2, ProductId = Guid.NewGuid(), Name = "Testglass" },
+                    new OrderProduct { Quantity = 2, ProductId = Guid.NewGuid(), Name = "Provglass" }
+                }
             };
             //Act
             var result = Controller.PostOrderAsync(order).Result;
