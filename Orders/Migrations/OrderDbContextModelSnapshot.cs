@@ -60,10 +60,7 @@ namespace Orders.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<Guid>("OrderId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("OrderModelId")
+                    b.Property<Guid>("OrderModelId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("ProductId")
@@ -126,7 +123,9 @@ namespace Orders.Migrations
                 {
                     b.HasOne("Orders.Models.OrderModel", null)
                         .WithMany("OrderProduct")
-                        .HasForeignKey("OrderModelId");
+                        .HasForeignKey("OrderModelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Orders.Models.OrderModel", b =>
