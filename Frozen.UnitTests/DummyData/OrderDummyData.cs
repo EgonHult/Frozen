@@ -34,11 +34,11 @@ namespace Frozen.UnitTests.DummyData
                 UserId = Guid.Parse("a5fa1093-aebc-49ac-8636-5c171c4d3991"),
                 Date = DateTime.Now,
 
-                //OrderProduct = new List<OrderProductModel>()
-                //{
-                //    new OrderProductModel { Quantity = 2, ProductId = Guid.NewGuid(), Name = "Isglass" },
-                //    new OrderProductModel { Quantity = 2, ProductId = Guid.NewGuid(), Name = "Mjukglass" }
-                //}
+                OrderProduct = new List<OrderProductModel>()
+                {
+                    new OrderProductModel { Quantity = 2, ProductId = Guid.NewGuid(), Name = "Isglass" },
+                    new OrderProductModel { Quantity = 2, ProductId = Guid.NewGuid(), Name = "Mjukglass" }
+                }
             };
             DbContext.Order.Add(dummyOrder);
             DbContext.SaveChanges();
