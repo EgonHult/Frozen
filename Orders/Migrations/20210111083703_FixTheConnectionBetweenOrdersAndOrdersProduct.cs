@@ -1,9 +1,8 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Orders.Migrations
 {
-    public partial class RenameOrderModel : Migration
+    public partial class FixTheConnectionBetweenOrdersAndOrdersProduct : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -11,20 +10,15 @@ namespace Orders.Migrations
                 name: "FK_OrderProduct_Order_OrderId",
                 table: "OrderProduct");
 
-            migrationBuilder.DropIndex(
+            migrationBuilder.RenameColumn(
+                name: "OrderId",
+                table: "OrderProduct",
+                newName: "OrderModelId");
+
+            migrationBuilder.RenameIndex(
                 name: "IX_OrderProduct_OrderId",
-                table: "OrderProduct");
-
-            migrationBuilder.AddColumn<Guid>(
-                name: "OrderModelId",
                 table: "OrderProduct",
-                type: "uniqueidentifier",
-                nullable: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_OrderProduct_OrderModelId",
-                table: "OrderProduct",
-                column: "OrderModelId");
+                newName: "IX_OrderProduct_OrderModelId");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_OrderProduct_Order_OrderModelId",
@@ -32,7 +26,7 @@ namespace Orders.Migrations
                 column: "OrderModelId",
                 principalTable: "Order",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
+                onDelete: ReferentialAction.Cascade);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -41,18 +35,15 @@ namespace Orders.Migrations
                 name: "FK_OrderProduct_Order_OrderModelId",
                 table: "OrderProduct");
 
-            migrationBuilder.DropIndex(
-                name: "IX_OrderProduct_OrderModelId",
-                table: "OrderProduct");
-
-            migrationBuilder.DropColumn(
+            migrationBuilder.RenameColumn(
                 name: "OrderModelId",
-                table: "OrderProduct");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_OrderProduct_OrderId",
                 table: "OrderProduct",
-                column: "OrderId");
+                newName: "OrderId");
+
+            migrationBuilder.RenameIndex(
+                name: "IX_OrderProduct_OrderModelId",
+                table: "OrderProduct",
+                newName: "IX_OrderProduct_OrderId");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_OrderProduct_Order_OrderId",

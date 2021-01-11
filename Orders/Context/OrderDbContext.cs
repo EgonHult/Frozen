@@ -32,7 +32,7 @@ namespace Orders.Context
 
 
             builder.Entity<OrderProductModel>(entity => {
-                entity.Property(x => x.OrderId).IsRequired();
+                entity.Property(x => x.OrderModelId).IsRequired();
                 entity.Property(x => x.ProductId).IsRequired();
                 entity.Property(x => x.Name).IsRequired().HasMaxLength(50);  
             });
