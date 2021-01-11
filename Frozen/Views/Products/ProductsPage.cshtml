@@ -14,7 +14,7 @@
                 <h5 class="card-title">@item.Name</h5>
                 <p class="card-text">@item.Details</p>
                 <p class="card-text">@item.Price kr</p>
-                <input type="button" value="Lägg i varukorg" @*onclick="AddToCart('@item.ID')"*@ class="btn btn-danger cartButton" />
+                <input type="button" value="Lägg i varukorg" onclick="AddToCart('@item.Id')" class="btn btn-danger cartButton" />
             </div>
         </div>
     }
