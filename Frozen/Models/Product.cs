@@ -10,7 +10,7 @@ namespace Frozen.Models
     {
         public Guid Id { get; set; }
 
-        [DisplayName("Namn")]
+        [DisplayName("Produkter")]
         public string Name { get; set; }
 
         [DisplayName("Pris")]

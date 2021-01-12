@@ -3,52 +3,61 @@
 @{
     ViewData["Title"] = "Index";
 }
+<div class="card  mb-3 simple-linear shadow-lg cart-padding">
+    <h1>Kundvagn</h1>
 
-<h1>ShowCart</h1>
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-primary" role="alert">
+            <h4 class="alert-heading">OBS!</h4>
+            <p>@ViewBag.Message</p>
+        </div>
+    }
 
-<form method="post" asp-action="PostOrderAsync">
+    <form method="post" asp-action="PostOrderAsync">
 
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => new CartItem().Product.Name)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => new CartItem().Product.Price)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => new CartItem().Quantity)
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-           @for (int i = 0; i < Model.CartItems.Count; i++)
-            {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => modelItem.CartItems[i].Product.Name)
-                    @Html.HiddenFor(modelItem => modelItem.CartItems[i].Product.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => modelItem.CartItems[i].Product.Price)
-                    @Html.HiddenFor(modelItem => modelItem.CartItems[i].Product.Price)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => modelItem.CartItems[i].Quantity)
-                    @Html.HiddenFor(modelItem => modelItem.CartItems[i].Quantity)
-                </td>
-            </tr>
-            }
-        </tbody>
-    </table>
-    <div>
-        <p class="bold-text"> Totalt pris: @Model.TotalPrice.ToString("C")</p>
-    </div>
-
-
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => new CartItem().Product.Name)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => new CartItem().Product.Price)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => new CartItem().Quantity)
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.CartItems.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => modelItem.CartItems[i].Product.Name)
+                            @Html.HiddenFor(modelItem => modelItem.CartItems[i].Product.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => modelItem.CartItems[i].Product.Price)
+                            @Html.HiddenFor(modelItem => modelItem.CartItems[i].Product.Price)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => modelItem.CartItems[i].Quantity)
+                            @Html.HiddenFor(modelItem => modelItem.CartItems[i].Quantity)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div>
+            <p class="bold-text"> Totalt pris: @Model.TotalPrice.ToString("C")</p>
+        </div>
 
 
 
-    @Html.HiddenFor(modelItem => modelItem.TotalPrice)
-</form>
+
+
+        @Html.HiddenFor(modelItem => modelItem.TotalPrice)
+    </form>
+</div>

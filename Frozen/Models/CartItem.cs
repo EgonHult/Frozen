@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Frozen.Models
 {
     public class CartItem
-    {
+    {     
         public Product Product { get; set; }
 
         [DisplayName("Antal")]
