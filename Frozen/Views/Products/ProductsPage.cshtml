@@ -6,6 +6,8 @@
 <h1>Produkter</h1>
 
 <div class="card-deck">
+@if (Model != null)
+{
     @foreach (var item in Model)
     {
         <div class="card m-2" style="min-width:20rem">
@@ -18,4 +20,5 @@
             </div>
         </div>
     }
+}
 </div>

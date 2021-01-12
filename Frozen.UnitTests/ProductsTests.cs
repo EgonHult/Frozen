@@ -41,7 +41,7 @@ namespace Frozen.UnitTests
             _cookieHandler.CreateSessionCookie(Cookies.JWT_SESSION_TOKEN, JwtToken);
 
             // Arrange for all tests
-            Controller = new ProductsController(_cookieHandler, clientService);
+            Controller = new ProductsController(clientService);
 
         }
 
