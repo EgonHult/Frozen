@@ -61,7 +61,7 @@ html {
 body {
     /* Margin bottom by footer height */
     margin-bottom: 60px;
-    background-image: url('../Images/IceIceBaby.PNG');
+    background-image: url('../Images/IceIceBaby2.PNG');
     height: 100%;
     background-position: center;
     background-repeat: no-repeat;
@@ -81,3 +81,30 @@ body {
     margin-left: auto;
     margin-right: auto; 
 }
+
+.button {
+    background-color: pink; 
+    border: none;
+    color: white;
+    padding: 16px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition-duration: 0.5s;
+    cursor: pointer;
+    border-radius: 15px;
+}
+
+.button1 {
+    background-color: pink;
+    color: black;
+    border: 2px solid #e67070;
+}
+
+    .button1:hover {
+        background-color: #e67070;
+        color: black;
+    }
+

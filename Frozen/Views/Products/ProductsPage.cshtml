@@ -10,7 +10,7 @@
         @foreach (var item in Model)
         {
          <div class="col-sm-12 col-md-6 col-lg-4 mb-5 d-flex justify-content-center">
-            <div  class="card text-center shadow rounded border-0 product">
+            <div  class="card text-center shadow rounded-lg border-0 product">
                 <div class="rounded product-image">
                     <img class="card-img-top" src="@item.Image" alt="bild" width="350" height="250">
                 </div>
@@ -18,7 +18,7 @@
                     <h5 class="card-title">@item.Name</h5>
                     <p class="card-text">@item.Details</p>
                     <p class="card-text">@item.Price kr</p>
-                    <input type="button" value="Lägg i varukorg" onclick="AddToCart('@item.Id')" class="btn btn-danger cartButton" />
+                    <input type="button" value="Lägg i varukorg" onclick="AddToCart('@item.Id')" class="button button1" />
                 </div>
             </div>
          </div>
