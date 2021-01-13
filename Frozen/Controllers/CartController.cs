@@ -40,11 +40,17 @@ namespace Frozen.Controllers
             {
 
                 cartViewModel.CartItems = cart;
-                cartViewModel.TotalPrice = cart.Sum(cartItem => cartItem.Product.Price * cartItem.Quantity);
-                
+                cartViewModel.TotalPrice = CalculateTotalPrice();
+
                 return cartViewModel;
             }
             return cartViewModel;
+        }
+
+        public decimal CalculateTotalPrice()
+        {
+            var cart = GetCart();
+            return cart.Sum(cartItem => cartItem.Product.Price * cartItem.Quantity);        
         }
 
         public List<CartItem> GetCart()
@@ -103,21 +109,19 @@ namespace Frozen.Controllers
         {
             var cart = GetCart();
             if (cart != null)
-            {
-                if (cart.Count == 1)
+            {             
+                int index = FindIndexOfCartItem(cart, productId);
+                if (index != -1)
+                {
+                    cart[index].Quantity--;
+                    SetCart(cart);
+                }
+                if (cart[index].Quantity < 1)
                 {
                     RemoveFromCart(productId);
                 }
-                else
-                {
-                    int index = FindIndexOfCartItem(cart, productId);
-                    if (index != -1)
-                    {
-                        cart[index].Quantity--;
-                    }
-                    SetCart(cart);
-                }                
-                return RedirectToAction("Index");
+
+                return Ok(CountProductsInCart());
             }
             else
             {
@@ -135,7 +139,8 @@ namespace Frozen.Controllers
                     cart.RemoveAt(index);
                 }
                 SetCart(cart);
-                return RedirectToAction("Index");
+
+                return Ok(CountProductsInCart());
             }
             else
             {
