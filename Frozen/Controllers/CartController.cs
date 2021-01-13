@@ -84,20 +84,38 @@ namespace Frozen.Controllers
                 }
                 SessionHandler.SetObjectAsJson(HttpContext.Session, "cart", cart);
             }
-            var totalItemsInCart = cart.Sum(cartItem => cartItem.Quantity);
+            int totalItemsInCart = CountProductsInCart();
             return Ok(totalItemsInCart);
         }
+
+        public int CountProductsInCart()
+        {
+            var cart = GetCart();
+            if (cart == null)
+            {
+                return 0;
+            }
+            return cart.Sum(cartItem => cartItem.Quantity);
+        }
+
         public IActionResult ReduceFromCart(Guid productId)
         {
             var cart = GetCart();
             if (cart != null)
             {
-                int index = FindIndexOfCartItem(cart, productId);
-                if (index != -1)
+                if (cart.Count == 1)
                 {
-                    cart[index].Quantity--;
+                    RemoveFromCart(productId);
                 }
-                SetCart(cart);
+                else
+                {
+                    int index = FindIndexOfCartItem(cart, productId);
+                    if (index != -1)
+                    {
+                        cart[index].Quantity--;
+                    }
+                    SetCart(cart);
+                }                
                 return RedirectToAction("Index");
             }
             else

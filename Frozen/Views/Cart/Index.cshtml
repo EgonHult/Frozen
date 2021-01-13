@@ -46,6 +46,13 @@
                             @Html.DisplayFor(modelItem => modelItem.CartItems[i].Quantity)
                             @Html.HiddenFor(modelItem => modelItem.CartItems[i].Quantity)
                         </td>
+                        <td>
+                            <button type="button" onclick="ReduceFromCart('@Model.CartItems[i].Product.Id')">-</button>
+                            <button type="button" onclick="AddToCart('@Model.CartItems[i].Product.Id')">+</button>
+                        </td>
+                        <td>
+                            <button type="button" onclick="RemoveFromCart('@Model.CartItems[i].Product.Id')">Remove</button>
+                        </td>
                     </tr>
                 }
             </tbody>

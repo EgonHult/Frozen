@@ -12,3 +12,35 @@ function AddToCart(productId) {
             document.getElementById("cartButtonCount").innerHTML = data;
         });
 }
+function ReduceFromCart(productId) {
+    fetch("https://localhost:44362/cart/reducefromcart/?productId=" + productId)
+        .then(cartResponse => {
+            if (cartResponse.Ok) {
+                return cartResponse.text();
+            }
+        }).then(data => {
+            document.getElementById("cartButtonCount").innerHTML = data;
+        });
+}
+function RemoveFromCart(productId) {
+    fetch("https://localhost:44362/cart/removefromcart/?productId=" + productId)
+        .then(cartResponse => {
+            if (cartResponse.Ok) {
+                return cartResponse.text();
+            }
+        }).then(data => {
+            document.getElementById("cartButtonCount").innerHTML = data;
+        });
+}
+function CountProductsInCart() {
+    fetch("https://localhost:44362/cart/countproductsincart/")
+        .then(cartResponse => {
+            if (cartResponse.Ok) {
+                return cartResponse.text();
+            }
+        }).then(data => {
+            console.log(data);
+            document.getElementById("cartButtonCount").innerHTML = data;
+        });
+}
+CountProductsInCart();
