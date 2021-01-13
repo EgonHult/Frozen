@@ -1,8 +1,8 @@
-﻿using Frozen.Models;
+﻿using Frozen.Common;
+using Frozen.Models;
 using Frozen.Services;
 using Frozen.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,22 +22,28 @@ namespace Frozen.Controllers
         public IActionResult Index()
         {
             var cart = ShowCart();
-            if (cart != null)
+            if (cart.CartItems.Count == 0)
             {
+                ViewBag.Message = "Er kundvagn är tom";
                 return View(cart);
             }
-
-            return View();
+            else
+                return View(cart);
         }
 
         public CartViewModel ShowCart()
         {
             var cart = GetCart();
-            CartViewModel cartViewModel = new CartViewModel()
+            CartViewModel cartViewModel = new CartViewModel();
+
+            if (cart != null)
             {
-                CartItems = cart,
-                TotalPrice = cart.Sum(cartItem => cartItem.Product.Price * cartItem.Quantity)
-            };
+
+                cartViewModel.CartItems = cart;
+                cartViewModel.TotalPrice = cart.Sum(cartItem => cartItem.Product.Price * cartItem.Quantity);
+                
+                return cartViewModel;
+            }
             return cartViewModel;
         }
 
@@ -47,16 +53,14 @@ namespace Frozen.Controllers
         }
         public void SetCart(List<CartItem> cartItems)
         {
-            SessionHandler.SetObjectAsJson(HttpContext.Session, "cart", cartItems); 
+            SessionHandler.SetObjectAsJson(HttpContext.Session, "cart", cartItems);
         }
         [HttpGet]
         public async Task<IActionResult> AddToCart(Guid productId)
         {
-            var apiLocation = "https://localhost:44350/product/" + productId;
-            var response = await _clientService.SendRequestToGatewayAsync(apiLocation, HttpMethod.Get);
-            response.EnsureSuccessStatusCode();
-            var product = await response.Content.ReadAsStringAsync();
-            var cartItem = JsonConvert.DeserializeObject<Product>(product);
+            var response = await _clientService.SendRequestToGatewayAsync(ApiLocation.Products.GATEWAY_BASEURL + productId, HttpMethod.Get);
+            var cartItem = await _clientService.ReadResponseAsync<Product>(response.Content);
+
             List<CartItem> cart = GetCart();
 
             if (cart == null)

@@ -12,7 +12,7 @@ namespace Frozen.Services
     public class ClientService : IClientService
     {
         private readonly ICookieHandler _cookieHandler;
-        private const string TOKEN_SCHEME  = "Bearer";
+        private const string TOKEN_SCHEME = "Bearer";
         private const string MEDIA_TYPE_JSON = "application/json";
 
         public ClientService(ICookieHandler cookieHandler)
@@ -26,31 +26,31 @@ namespace Frozen.Services
         /// <param name="api"></param>
         /// <param name="method"></param>
         /// <param name="obj"></param>
-        /// <param name="jwtToken"></param>
-        public async Task<HttpResponseMessage> SendRequestToGatewayAsync(string api, HttpMethod method, object obj = null, string jwtToken = null)
+        public async Task<HttpResponseMessage> SendRequestToGatewayAsync(string api, HttpMethod method, object obj = null)
         {
-            await VerifyTokenValidationStatusAsync();
-
-            return await SendHttpRequestAsync(api, method, obj, jwtToken);
+            await ValidateJwtTokenStatusAsync();
+            return await SendHttpRequestAsync(api, method, obj);
         }
 
-        private async Task<HttpResponseMessage> SendHttpRequestAsync(string apiLocation, HttpMethod httpMethod, object obj = null, string jwtToken = null)
+        private async Task<HttpResponseMessage> SendHttpRequestAsync(string apiLocation, HttpMethod method, object obj = null)
         {
             using (var client = new HttpClient())
             {
                 var json = JsonConvert.SerializeObject(obj);
 
-                var request = new HttpRequestMessage(httpMethod, apiLocation);
+                var request = new HttpRequestMessage(method, apiLocation);
 
-                request = AddAuthorizationHeader(request, jwtToken);
+                request = AddJwtAuthorizationHeader(request);
                 request.Content = new StringContent(json, Encoding.UTF8, MEDIA_TYPE_JSON);
 
                 return await client.SendAsync(request);
             }
         }
 
-        private HttpRequestMessage AddAuthorizationHeader(HttpRequestMessage requestMessage, string jwtToken)
+        private HttpRequestMessage AddJwtAuthorizationHeader(HttpRequestMessage requestMessage)
         {
+            var jwtToken = _cookieHandler.ReadSessionCookieContent(Cookies.JWT_SESSION_TOKEN);
+
             if (jwtToken == null)
                 return requestMessage;
 
@@ -73,7 +73,7 @@ namespace Frozen.Services
         /// <summary>
         /// Check if current JWT-token is valid. If not, a new JWT-token request will be sent
         /// </summary>
-        public async Task VerifyTokenValidationStatusAsync()
+        public async Task ValidateJwtTokenStatusAsync()
         {
             var isTokenValid = await _cookieHandler.ValidateJwtTokenAsync();
             var refreshToken = _cookieHandler.ReadPersistentCookie(Cookies.JWT_REFRESH_TOKEN);
