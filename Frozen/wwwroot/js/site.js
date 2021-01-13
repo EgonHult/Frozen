@@ -32,15 +32,16 @@ function RemoveFromCart(productId) {
             document.getElementById("cartButtonCount").innerHTML = data;
         });
 }
+
 function CountProductsInCart() {
-    fetch("https://localhost:44362/cart/countproductsincart/")
+    fetch("https://localhost:44362/cart/countproductsincart")
         .then(cartResponse => {
-            if (cartResponse.Ok) {
+            if (cartResponse.ok) {
                 return cartResponse.text();
             }
         }).then(data => {
-            console.log(data);
             document.getElementById("cartButtonCount").innerHTML = data;
         });
 }
+
 CountProductsInCart();

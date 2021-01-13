@@ -95,6 +95,7 @@ namespace Frozen.Controllers
             {
                 return 0;
             }
+
             return cart.Sum(cartItem => cartItem.Quantity);
         }
 
