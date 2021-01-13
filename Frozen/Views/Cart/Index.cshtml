@@ -33,7 +33,7 @@
             <tbody>
                 @for (int i = 0; i < Model.CartItems.Count; i++)
                 {
-                    <tr>
+                    <tr id="productInCart_@Model.CartItems[i].Product.Id">
                         <td>
                             @Html.DisplayFor(modelItem => modelItem.CartItems[i].Product.Name)
                             @Html.HiddenFor(modelItem => modelItem.CartItems[i].Product.Name)
@@ -42,9 +42,10 @@
                             @Html.DisplayFor(modelItem => modelItem.CartItems[i].Product.Price)
                             @Html.HiddenFor(modelItem => modelItem.CartItems[i].Product.Price)
                         </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => modelItem.CartItems[i].Quantity)
-                            @Html.HiddenFor(modelItem => modelItem.CartItems[i].Quantity)
+                        <td>                  
+                            <span id="productinCartQuantity_@Model.CartItems[i].Product.Id">
+                                 @Model.CartItems[i].Quantity
+                            </span>
                         </td>
                         <td>
                             <button type="button" onclick="ReduceFromCart('@Model.CartItems[i].Product.Id')">-</button>
@@ -58,7 +59,8 @@
             </tbody>
         </table>
         <div>
-            <p class="bold-text"> Totalt pris: @Model.TotalPrice.ToString("C")</p>
+            <p class="bold-text"> Totalt pris: <span id="totalPrice">@Model.TotalPrice.ToString("C")</span></p>
+           
         </div>
 
 
