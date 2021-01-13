@@ -22,22 +22,28 @@ namespace Frozen.Controllers
         public IActionResult Index()
         {
             var cart = ShowCart();
-            if (cart != null)
+            if (cart.CartItems.Count == 0)
             {
+                ViewBag.Message = "Er kundvagn är tom";
                 return View(cart);
             }
-
-            return View();
+            else
+                return View(cart);
         }
 
         public CartViewModel ShowCart()
         {
             var cart = GetCart();
-            CartViewModel cartViewModel = new CartViewModel()
+            CartViewModel cartViewModel = new CartViewModel();
+
+            if (cart != null)
             {
-                CartItems = cart,
-                TotalPrice = cart.Sum(cartItem => cartItem.Product.Price * cartItem.Quantity)
-            };
+
+                cartViewModel.CartItems = cart;
+                cartViewModel.TotalPrice = cart.Sum(cartItem => cartItem.Product.Price * cartItem.Quantity);
+                
+                return cartViewModel;
+            }
             return cartViewModel;
         }
 

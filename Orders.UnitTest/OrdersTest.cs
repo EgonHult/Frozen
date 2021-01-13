@@ -37,7 +37,7 @@ namespace Orders.UnitTest
         }
 
         [TestMethod]
-        public void CreateOrderAsync_TryCreateNullOrder_CatchExceptionReturnTrue()
+        public void CreateOrderAsync_TryCreateNullOrder_ReturnNull()
         {
             using(var context = new TestOrdersDbContext().DbContext)
             {
@@ -45,17 +45,12 @@ namespace Orders.UnitTest
                 
                 var orderRepository = new OrderRepository(context);
                 OrderModel dummyOrder = null;
+              
+                //Act 
+                var nullOrder = orderRepository.CreateOrderAsync(dummyOrder).Result;
 
-                try
-                {
-                    //Act 
-                    var nullOrder = orderRepository.CreateOrderAsync(dummyOrder).Result;
-                }
-                catch (Exception)
-                {
-
-                    return;
-                }
+                //Assert
+                Assert.IsNull(nullOrder);
             }
         }
 
@@ -81,7 +76,6 @@ namespace Orders.UnitTest
                 // Delete dummyOrder from DB
                 context.Remove(dummyOrder);
                 context.SaveChanges();
-
             }
         }
 
@@ -100,9 +94,7 @@ namespace Orders.UnitTest
                 var deletedProduct = productRepository.DeleteOrderByOrderIdAsync(dummyOrder.Id).Result;
 
                 // Assert
-                Assert.AreEqual(dummyOrder, deletedProduct);
-
-          
+                Assert.AreEqual(dummyOrder, deletedProduct);         
             }
         }
 
@@ -111,20 +103,16 @@ namespace Orders.UnitTest
         {
             using (var context = new TestOrdersDbContext().DbContext)
             {
-                try
-                {
-                    // Arrange
-                    var nonExistingOrderId = Guid.NewGuid();
+                
+                // Arrange
+                var nonExistingOrderId = Guid.NewGuid();
 
-                    // Act
-                    var orderRepository = new OrderRepository(context);
-                    var order = orderRepository.DeleteOrderByOrderIdAsync(nonExistingOrderId);
-                }
-                catch (Exception)
-                {
-                    // Arrange
-                    return;
-                }
+                // Act
+                var orderRepository = new OrderRepository(context);
+                var order = orderRepository.DeleteOrderByOrderIdAsync(nonExistingOrderId).Result;
+
+                // Arrange
+                Assert.IsNull(order);               
             }
         }
 

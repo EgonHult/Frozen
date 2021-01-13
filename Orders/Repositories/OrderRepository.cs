@@ -22,28 +22,32 @@ namespace Orders.Repositories
 
         public async Task<OrderModel> CreateOrderAsync(OrderModel order)
         {
- 
-            bool orderExistInDatabase = await CheckIfOrderExistInDatabaseAsync(order.Id);
-
-            if (!orderExistInDatabase)
+            if (order != null)
             {
-                try
-                {
-                    _context.Order.Add(order);
-                    var result = await _context.SaveChangesAsync();
+                bool orderExistInDatabase = await CheckIfOrderExistInDatabaseAsync(order.Id);
 
-                    if (result > 0)
-                        return order;
-                    else
-                        return null;
-                }
-                catch (Exception)
+                if (!orderExistInDatabase)
                 {
-                    return null;
+                    try
+                    {
+                        _context.Order.Add(order);
+                        var result = await _context.SaveChangesAsync();
+
+                        if (result > 0)
+                            return order;
+                        else
+                            return null;
+                    }
+                    catch (Exception)
+                    {
+                        return null;
+                    }
                 }
+                else
+                    return null;
             }
-            else            
-                return null;            
+            else
+                return null;
         }
 
         public async Task<OrderModel> DeleteOrderByOrderIdAsync(Guid orderId)
