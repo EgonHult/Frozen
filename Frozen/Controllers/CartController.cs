@@ -13,11 +13,13 @@ namespace Frozen.Controllers
 {
     public class CartController : Controller
     {
-
+        private readonly CartService _cartService;
         private readonly IClientService _clientService;
-        public CartController(IClientService clientService)
+        public CartController(IClientService clientService, CartService cartService)
         {
             this._clientService = clientService;
+            this._cartService = cartService;
+
         }
         public IActionResult Index()
         {
@@ -33,30 +35,24 @@ namespace Frozen.Controllers
 
         public CartViewModel ShowCart()
         {
-            var cart = GetCart();
+            var cart = _cartService.GetCart();
             CartViewModel cartViewModel = new CartViewModel();
 
             if (cart != null)
             {
 
                 cartViewModel.CartItems = cart;
-                cartViewModel.TotalPrice = CalculateTotalPrice();
+                cartViewModel.TotalPrice = _cartService.CalculateTotalPrice();
 
                 return cartViewModel;
             }
             return cartViewModel;
         }
-
-        public decimal CalculateTotalPrice()
+        public ActionResult CalculateTotalPrice()
         {
-            var cart = GetCart();
-            return cart.Sum(cartItem => cartItem.Product.Price * cartItem.Quantity);        
+            return Ok(_cartService.CalculateTotalPrice());
         }
-
-        public List<CartItem> GetCart()
-        {
-            return SessionHandler.GetObjectFromJson<List<CartItem>>(HttpContext.Session, "cart");
-        }
+        
         public void SetCart(List<CartItem> cartItems)
         {
             SessionHandler.SetObjectAsJson(HttpContext.Session, "cart", cartItems);
@@ -67,7 +63,7 @@ namespace Frozen.Controllers
             var response = await _clientService.SendRequestToGatewayAsync(ApiLocation.Products.GATEWAY_BASEURL + productId, HttpMethod.Get);
             var cartItem = await _clientService.ReadResponseAsync<Product>(response.Content);
 
-            List<CartItem> cart = GetCart();
+            List<CartItem> cart = _cartService.GetCart();
 
             if (cart == null)
             {
@@ -96,7 +92,7 @@ namespace Frozen.Controllers
 
         public int CountProductsInCart()
         {
-            var cart = GetCart();
+            var cart = _cartService.GetCart();
             if (cart == null)
             {
                 return 0;
@@ -107,7 +103,7 @@ namespace Frozen.Controllers
 
         public IActionResult ReduceFromCart(Guid productId)
         {
-            var cart = GetCart();
+            var cart = _cartService.GetCart();
             if (cart != null)
             {             
                 int index = FindIndexOfCartItem(cart, productId);
@@ -130,7 +126,7 @@ namespace Frozen.Controllers
         }
         public IActionResult RemoveFromCart(Guid productId)
         {
-            var cart = GetCart();
+            var cart = _cartService.GetCart();
             if (cart != null)
             {
                 int index = FindIndexOfCartItem(cart, productId);

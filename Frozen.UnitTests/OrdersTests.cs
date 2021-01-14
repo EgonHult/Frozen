@@ -36,12 +36,14 @@ namespace Frozen.UnitTests
             ICookieHandler _cookieHandler = new CookieHandler(httpContext);
             IClientService clientService = new ClientService(_cookieHandler);
 
+            CartService cartService = new CartService(httpContext);
+
             // Mock a session cookie with JwtToken
             JwtToken = AdminToken.LoginAdmin(clientService);
             _cookieHandler.CreateSessionCookie(Cookies.JWT_SESSION_TOKEN, JwtToken);
 
             // Arrange for all tests
-            Controller = new OrderController(clientService);
+            Controller = new OrderController(clientService, cartService, _cookieHandler);
         }
         [ClassCleanup]
         public static void TestFixtureDispose()

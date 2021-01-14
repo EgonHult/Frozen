@@ -36,6 +36,7 @@ namespace Frozen
             // Add to DI
             services.AddTransient<ICookieHandler, CookieHandler>();
             services.AddTransient<IClientService, ClientService>();
+            services.AddSingleton<CartService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

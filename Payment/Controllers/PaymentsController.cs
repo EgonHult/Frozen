@@ -22,14 +22,14 @@ namespace Payments.Controllers
 
         [Authorize]
         [HttpGet("getpayments")]
-        public List<PaymentModel> GetPayments()
+        public ActionResult<List<PaymentModel>> GetPayments()
         {
             var allPaymentTypes = _paymentRepository.CreateAllTypesOfPayments();
-            return allPaymentTypes;
+            return Ok(allPaymentTypes);
         }
 
         [Authorize]
-        [HttpPost("verifypayment")]
+        [HttpPost("verifypayment/{id}")]
         public IActionResult VerifyPayment(int id, object payment)
         {
             if (id != 0 && payment != null)

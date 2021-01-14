@@ -1,0 +1,151 @@
+﻿@model Frozen.ViewModels.OrderViewModel
+@{
+    ViewData["Title"] = "Din Order";
+}
+<div class="card  mb-3 simple-linear shadow-lg cart-padding">
+    <h1>Dina uppgifter</h1>
+    <table class="table table-striped">
+        <tbody>
+            <tr>
+                <td>
+                    <address style="font-weight: bold; font-size:large">
+                        <div>@Model.User.FirstName @Model.User.LastName</div>
+                        <div>@Model.User.Address</div>
+                        <div>@Model.User.Zip @Model.User.City</div>
+                        <div>@Model.User.PhoneNumber</div>
+                        <div>@Model.User.Email</div>
+                    </address>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="card  mb-3 simple-linear shadow-lg cart-padding">
+    <h1>Din beställning</h1>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => new CartItem().Product.Name)
+                </th>
+                <th>
+                    &nbsp; @Html.DisplayNameFor(model => new CartItem().Product.Price)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => new CartItem().Quantity)
+                </th>
+                <th>
+
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.Cart.Count; i++)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => modelItem.Cart[i].Product.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => modelItem.Cart[i].Product.Price)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => modelItem.Cart[i].Quantity)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div>
+        <p class="bold-text"><span>Totalt pris: @ViewBag.TotalPrice</span></p>
+    </div>
+</div>
+<div class="card  mb-3 simple-linear shadow-lg cart-padding">
+    <h1>Ditt betalsätt</h1>
+        <table class="table table-striped">
+            <tbody>
+                <tr>
+                    <td>
+                        <select name="selectPayment" onchange="CheckSelectedPayment(this)">
+                            <option>Välj betalsätt</option>
+                            @foreach (var paymentmethod in Model.PaymentMethods)
+                            {
+                                <option value="@paymentmethod.Id">@paymentmethod.Type</option>
+                            }
+                        </select>
+                    </td>
+                </tr>
+                <tr id="SwishOption" style="display:none">
+                    <td>
+                        <form asp-action="SendSwishRequest" asp-controller="Order">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <label>Ditt telefonnummer: </label>
+                                        <input name="phoneNumber" />
+                                        <input name="id" type="hidden" value="@Model.PaymentMethods.Find(x => x.Type == "Swish").Id" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <button type="submit">Lägg order</button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </form>
+                    </td>
+                </tr>
+                <tr id="CardOption" style="display:none">
+                    <td>
+                        <form asp-action="SendCardRequest" asp-controller="Order">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <label>Kortnummer: </label>
+                                        <input name="cardNumber" />
+                                        <label>Giltig till: </label>
+                                        <input type="date" name="expiryDate" />
+                                        <label>CVV: </label>
+                                        <input name="cvv" />
+                                        <input name="id" type="hidden" value="@Model.PaymentMethods.Find(x => x.Type == "Bankkort").Id" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <button type="submit">Lägg order</button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </form>
+                    </td>
+                </tr>
+                <tr id="BankOption" style="display:none">
+                    <td>
+                        <form asp-action="SendInternetBankRequest" asp-controller="Order">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <label>Välj din bank: </label>
+                                        <select name="bank">
+                                            <option>Välj Bank</option>
+                                            <option>Swedbank</option>
+                                            <option>Nordea</option>
+                                            <option>Handelsbanken</option>
+                                            <option>SEB</option>
+                                            <option>Avanza</option>
+                                        </select>
+                                        <input name="id" type="hidden" value="@Model.PaymentMethods.Find(x => x.Type == "Internetbank").Id" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <button type="submit">Lägg order</button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</div>
