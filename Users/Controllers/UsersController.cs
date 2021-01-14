@@ -35,7 +35,7 @@ namespace Users.Controllers
 
         // GET: api/Users/5
         [Authorize]
-        [HttpGet("{id}")]
+        [HttpGet("getuserbyid/{id}")]
         public async Task<ActionResult<UserModel>> GetUser(Guid id)
         {
             var userExist = UserExists(id);

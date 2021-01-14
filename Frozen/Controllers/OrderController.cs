@@ -1,6 +1,7 @@
 ﻿using Frozen.Common;
 using Frozen.Models;
 using Frozen.Services;
+using Frozen.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -10,16 +11,39 @@ using System.Threading.Tasks;
 
 namespace Frozen.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class OrderController : Controller
     {
         private readonly IClientService _clientService;
+        private readonly ICookieHandler _cookieHandler;
+        private readonly CartService _cartService;
 
-        public OrderController(IClientService clientService)
+        public OrderController(IClientService clientService, CartService cartService, ICookieHandler cookieHandler)
         {
-            this._clientService = clientService;
+            _clientService = clientService;
+            _cartService = cartService;
+            _cookieHandler = cookieHandler;
         }
+        public async Task<IActionResult> ViewOrderPage()
+        {
+            var userId = await _cookieHandler.GetClaimFromIdentityCookieAsync("UserId");
+            var cart = _cartService.GetCart();
 
+            var paymentResult = await _clientService.SendRequestToGatewayAsync(ApiLocation.Payments.GET_PAYMENTS, HttpMethod.Get);
+            var paymentMethods = await _clientService.ReadResponseAsync<List<Payment>>(paymentResult.Content);
+
+            var userResult = await _clientService.SendRequestToGatewayAsync(ApiLocation.Users.GET_USER + userId, HttpMethod.Get);
+            var user = await _clientService.ReadResponseAsync<User>(userResult.Content);
+
+            OrderViewModel vm = new OrderViewModel
+            {
+                User = user,
+                PaymentMethods = paymentMethods,
+                Cart = cart
+            };
+            ViewBag.TotalPrice = _cartService.CalculateTotalPrice();
+            return View(vm);
+        }
         [HttpGet]
         public IActionResult OrderRegistrationPage()
         {
@@ -81,6 +105,38 @@ namespace Frozen.Controllers
 
             return (response.IsSuccessStatusCode)
                 ? await _clientService.ReadResponseAsync<List<Order>>(response.Content) : null;
+        }
+        [HttpPost]
+        public async Task<ActionResult> SendSwishRequest(int id, string phoneNumber)
+        {
+            var response = await _clientService.SendRequestToGatewayAsync(ApiLocation.Payments.VERIFY_PAYMENT + id, HttpMethod.Post, phoneNumber);
+            if (response.IsSuccessStatusCode)
+            {
+                return Ok("Snygg mannen");
+            }
+            return BadRequest("Betalning kunde inte slutföras");
+        }
+        [HttpPost]
+        public async Task<ActionResult> SendCardRequest(int id, long cardNumber, int cvv, DateTime expiryDate)
+        {
+            //DateTime date = DateTime.Parse(expiryDate);
+            CardModel card = new CardModel { CVV = cvv, ExpiryDate = expiryDate, Number = cardNumber, Id = id, Type = "Bankkort" };
+            var response = await _clientService.SendRequestToGatewayAsync(ApiLocation.Payments.VERIFY_PAYMENT + id, HttpMethod.Post, card);
+            if (response.IsSuccessStatusCode)
+            {
+                return Ok("Snygg mannen");
+            }
+            return BadRequest("Betalning kunde inte slutföras");
+        }
+        [HttpPost]
+        public async Task<ActionResult> SendInternetBankRequest(int id, string bank)
+        {
+            var response = await _clientService.SendRequestToGatewayAsync(ApiLocation.Payments.VERIFY_PAYMENT + id, HttpMethod.Post, bank);
+            if (response.IsSuccessStatusCode)
+            {
+                return Ok("Snygg mannen");
+            }
+            return BadRequest("Betalning kunde inte slutföras");
         }
     }
 }

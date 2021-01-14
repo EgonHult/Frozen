@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Payments.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,6 +58,7 @@ namespace Payment
             {
                 options.DefaultAuthenticateScheme = "Bearer";
             });
+            services.AddTransient<IPaymentRepository, PaymentRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
