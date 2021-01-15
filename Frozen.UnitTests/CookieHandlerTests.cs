@@ -33,7 +33,7 @@ namespace Frozen.UnitTests
 
             // Act
             CookieHandler.CreateSessionCookie(sessioncookieName, content);
-            var result = CookieHandler.ReadSessionCookieContent(sessioncookieName);
+            var result = CookieHandler.GetSessionCookieContent(sessioncookieName);
 
             // Act
             Assert.AreEqual(content, result);

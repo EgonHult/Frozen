@@ -26,7 +26,7 @@ namespace Frozen.Controllers
         }
         public async Task<IActionResult> ViewOrderPage()
         {
-            var userId = await _cookieHandler.GetClaimFromIdentityCookieAsync("UserId");
+            var userId = await _cookieHandler.GetClaimFromAuthenticationCookieAsync("UserId");
             var cart = _cartService.GetCart();
 
             var paymentResult = await _clientService.SendRequestToGatewayAsync(ApiLocation.Payments.GET_PAYMENTS, HttpMethod.Get);

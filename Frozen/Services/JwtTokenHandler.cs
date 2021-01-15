@@ -13,7 +13,7 @@ namespace Frozen.Services
         /// Extract a specific Claim from JWT token
         /// </summary>
         /// <param name="token"></param>
-        public async Task<IEnumerable<Claim>> GetJwtClaimsAsync(string token)
+        public async Task<IEnumerable<Claim>> GetJwtTokenClaimsAsync(string token)
         {
             if (String.IsNullOrEmpty(token) || String.IsNullOrWhiteSpace(token))
                 throw new ArgumentNullException("Token kan inte vara null eller tom!");
@@ -30,7 +30,7 @@ namespace Frozen.Services
         /// <param name="token"></param>
         public async Task<bool> ValidateJwtTokenExpirationDateAsync(string token)
         {
-            var claims = await GetJwtClaimsAsync(token);
+            var claims = await GetJwtTokenClaimsAsync(token);
             var expireDate = claims.FirstOrDefault(x => x.Type == ClaimTypes.Expiration).Value;
 
             var now = DateTime.UtcNow;
