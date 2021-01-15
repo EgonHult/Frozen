@@ -106,37 +106,65 @@ namespace Frozen.Controllers
             return (response.IsSuccessStatusCode)
                 ? await _clientService.ReadResponseAsync<List<Order>>(response.Content) : null;
         }
+
         [HttpPost]
-        public async Task<ActionResult> SendSwishRequest(int id, string phoneNumber)
+        public async Task<ActionResult> SendSwishRequest(int paymentId, string phoneNumber)
         {
-            var response = await _clientService.SendRequestToGatewayAsync(ApiLocation.Payments.VERIFY_PAYMENT + id, HttpMethod.Post, phoneNumber);
+            var response = await _clientService.SendRequestToGatewayAsync(ApiLocation.Payments.VERIFY_PAYMENT + paymentId, HttpMethod.Post, phoneNumber);
+            
             if (response.IsSuccessStatusCode)
             {
-                return Ok("Snygg mannen");
+                var orderResponse = await PostOrderToGatewayAsync(paymentId);
+
+                if (orderResponse.IsSuccessStatusCode)
+                    return Ok("Snygg mannen");
             }
+
             return BadRequest("Betalning kunde inte slutföras");
         }
+
         [HttpPost]
-        public async Task<ActionResult> SendCardRequest(int id, long cardNumber, int cvv, DateTime expiryDate)
+        public async Task<ActionResult> SendCardRequest(int paymentId, long cardNumber, int cvv, DateTime expiryDate)
         {
-            //DateTime date = DateTime.Parse(expiryDate);
-            CardModel card = new CardModel { CVV = cvv, ExpiryDate = expiryDate, Number = cardNumber, Id = id, Type = "Bankkort" };
-            var response = await _clientService.SendRequestToGatewayAsync(ApiLocation.Payments.VERIFY_PAYMENT + id, HttpMethod.Post, card);
+            CardModel card = new CardModel { CVV = cvv, ExpiryDate = expiryDate, Number = cardNumber, Id = paymentId, Type = "Bankkort" };
+
+            var response = await _clientService.SendRequestToGatewayAsync(ApiLocation.Payments.VERIFY_PAYMENT + paymentId, HttpMethod.Post, card);
+
             if (response.IsSuccessStatusCode)
             {
-                return Ok("Snygg mannen");
+                var orderResponse = await PostOrderToGatewayAsync(paymentId);
+
+                if (orderResponse.IsSuccessStatusCode)
+                    return Ok("Snygg mannen");
             }
+
             return BadRequest("Betalning kunde inte slutföras");
         }
+
         [HttpPost]
-        public async Task<ActionResult> SendInternetBankRequest(int id, string bank)
+        public async Task<ActionResult> SendInternetBankRequest(int paymentId, string bank)
         {
-            var response = await _clientService.SendRequestToGatewayAsync(ApiLocation.Payments.VERIFY_PAYMENT + id, HttpMethod.Post, bank);
+            var response = await _clientService.SendRequestToGatewayAsync(ApiLocation.Payments.VERIFY_PAYMENT + paymentId, HttpMethod.Post, bank);
+
             if (response.IsSuccessStatusCode)
             {
-                return Ok("Snygg mannen");
+                var orderResponse = await PostOrderToGatewayAsync(paymentId);
+
+                if (orderResponse.IsSuccessStatusCode)
+                    return Ok("Snygg mannen");
             }
+
             return BadRequest("Betalning kunde inte slutföras");
+        }
+
+        private async Task<HttpResponseMessage> PostOrderToGatewayAsync(int paymentId)
+        {
+            var orderService = new OrderService(_cookieHandler, _cartService);
+
+            var order           = await orderService.BuildNewOrderAsync(paymentId);
+            var gatewayResponse = await _clientService.SendRequestToGatewayAsync(ApiLocation.Gateway.CREATE_ORDER, HttpMethod.Post, order);
+
+            return gatewayResponse;
         }
     }
 }

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace Products.Repositories
 {
@@ -65,7 +66,7 @@ namespace Products.Repositories
             }
         }
 
-        public async Task<List<ProductModel>> GetAllProducts()
+        public async Task<List<ProductModel>> GetAllProductsAsync()
         {
             //try
             //{
@@ -106,6 +107,40 @@ namespace Products.Repositories
             catch (Exception)
             {
                 return null;
+            }
+        }
+
+        /// <summary>
+        /// Remove items in stock by providing a Dictionary<Guid, int>() that represents
+        /// product id and quantity to be reduced in database
+        /// </summary>
+        /// <param name="products"></param>
+        /// <returns></returns>
+        public async Task<bool> UpdateProductsInStockAsync(Dictionary<Guid, int> products)
+        {
+            try
+            {
+                // Start a transaction that will roll back all changes in case of SQL-failure!
+                using (var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                {
+                    foreach (var item in products)
+                    {
+                        var product = await GetProductByIdAsync(item.Key);
+                        product.Quantity -= item.Value;
+
+                        if (product.Quantity < 0)
+                            product.Quantity = 0;
+
+                        await UpdateProductAsync(product);
+                    }
+
+                    transaction.Complete();
+                    return true;
+                }
+            }
+            catch (Exception)
+            {
+                return false;
             }
         }
     }

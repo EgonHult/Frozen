@@ -78,13 +78,19 @@ namespace Payments.Repositories
         private static bool VerifyCard(object payment)
         {
             var cardPayment = JsonConvert.DeserializeObject<CardModel>(payment.ToString());
-            if (cardPayment.ExpiryDate > DateTime.Now.AddMonths(1) &&
-                cardPayment.Number.ToString().Length == 16 &&
-                cardPayment.CVV.ToString().Length == 3)
-            {
+
+            var cardExpire = ParseDateToYearMonthInt(cardPayment.ExpiryDate);
+            var now = ParseDateToYearMonthInt(DateTime.Now);
+
+            if (cardExpire >= now)
                 return true;
-            }
-            return false;
+            else
+                return false;
+        }
+
+        private static int ParseDateToYearMonthInt(DateTime date)
+        {
+            return int.Parse(date.ToString("yyyyM"));
         }
     }
 }

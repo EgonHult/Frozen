@@ -83,7 +83,7 @@
                                     <td>
                                         <label>Ditt telefonnummer: </label>
                                         <input name="phoneNumber" />
-                                        <input name="id" type="hidden" value="@Model.PaymentMethods.Find(x => x.Type == "Swish").Id" />
+                                        <input name="paymentId" type="hidden" value="@Model.PaymentMethods.Find(x => x.Type == "Swish").Id" />
                                     </td>
                                 </tr>
                                 <tr>
@@ -107,7 +107,7 @@
                                         <input type="date" name="expiryDate" />
                                         <label>CVV: </label>
                                         <input name="cvv" />
-                                        <input name="id" type="hidden" value="@Model.PaymentMethods.Find(x => x.Type == "Bankkort").Id" />
+                                        <input name="paymentId" type="hidden" value="@Model.PaymentMethods.Find(x => x.Type == "Bankkort").Id" />
                                     </td>
                                 </tr>
                                 <tr>
@@ -134,7 +134,7 @@
                                             <option>SEB</option>
                                             <option>Avanza</option>
                                         </select>
-                                        <input name="id" type="hidden" value="@Model.PaymentMethods.Find(x => x.Type == "Internetbank").Id" />
+                                        <input name="paymentId" type="hidden" value="@Model.PaymentMethods.Find(x => x.Type == "Internetbank").Id" />
                                     </td>
                                 </tr>
                                 <tr>

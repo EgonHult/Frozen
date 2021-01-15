@@ -115,7 +115,7 @@ namespace Products.UnitTest
             {
                 // Act
                 var productRepository = new ProductRepository(context);
-                var products = productRepository.GetAllProducts().Result;
+                var products = productRepository.GetAllProductsAsync().Result;
 
                 // Assert
                 Assert.IsInstanceOfType(products, typeof(List<ProductModel>));
