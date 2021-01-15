@@ -1,4 +1,5 @@
-﻿using Payments.Models;
+﻿using Newtonsoft.Json;
+using Payments.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,8 +56,8 @@ namespace Payments.Repositories
 
         private static bool VerifyInternetBank(object payment)
         {
-            var internetBankPayment = (InternetBankModel)payment;
-            if (InternetBanks.AvailableBanks().Any(x => x == internetBankPayment.Bank))
+            string internetBankPayment = payment.ToString();
+            if (InternetBanks.AvailableBanks().Any(x => x == internetBankPayment))
             {
                 return true;
             }
@@ -65,9 +66,9 @@ namespace Payments.Repositories
 
         private static bool VerifySwish(object payment)
         {
-            var swishPayment = (SwishModel)payment;
-            if (swishPayment.PhoneNumber.Length == 10 ||
-                swishPayment.PhoneNumber.Length == 13)
+            string swishPayment = payment.ToString();
+            if (swishPayment.Length == 10 ||
+                swishPayment.Length == 13)
             {
                 return true;
             }
@@ -76,7 +77,7 @@ namespace Payments.Repositories
 
         private static bool VerifyCard(object payment)
         {
-            var cardPayment = (CardModel)payment;
+            var cardPayment = JsonConvert.DeserializeObject<CardModel>(payment.ToString());
             if (cardPayment.ExpiryDate > DateTime.Now.AddMonths(1) &&
                 cardPayment.Number.ToString().Length == 16 &&
                 cardPayment.CVV.ToString().Length == 3)

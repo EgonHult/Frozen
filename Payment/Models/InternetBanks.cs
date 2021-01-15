@@ -8,7 +8,7 @@ namespace Payments.Models
             List<string> Banks = new List<string> { 
                 "Nordea", 
                 "Handelsbanken", 
-                "Swebank", 
+                "Swedbank", 
                 "SEB", 
                 "Avanza" };
             return Banks;
