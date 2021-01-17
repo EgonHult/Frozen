@@ -1,0 +1,19 @@
+﻿@model Frozen.Models.Product
+
+
+@{
+    ViewData["Title"] = "ProductDetails"; 
+ }
+
+
+<div class="card  mb-3 simple-linear shadow-lg cart-padding">
+    <table class="table table-striped">
+        <div>
+            <h5 class="card-title">@Model.Name</h5>
+            <p class="card-text">@Model.Details</p>
+            <p class="card-text">@Model.Price kr</p>
+            <p class="card-text">@Model.WeightInGrams gram</p>
+            <input type="button" value="Lägg i varukorg" onclick="AddToCart('@Model.Id')" class="button button1" />          
+        </div>
+    </table>
+</div>

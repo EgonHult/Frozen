@@ -25,6 +25,12 @@ namespace Frozen.Controllers
             return View(products);
         }
 
+        public async Task<IActionResult> ProductDetails(Guid id)
+        {
+            var product = await GetProductByIdAsync(id);
+            return View(product);
+        }
+
         [HttpGet]
         public async Task<List<Product>> GetProductsAsync()
         {

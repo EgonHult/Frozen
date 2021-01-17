@@ -16,9 +16,10 @@
             </div>
             <div class="card-body pt-2 pb-0">
                 <h5 class="card-title">@item.Name</h5>
-                <p class="card-text">@item.Details</p>
+                @*<p class="card-text">@item.Details</p>*@
                 <p class="card-text">@item.Price kr</p>
                 <input type="button" value="Lägg i varukorg" onclick="AddToCart('@item.Id')" class="button button1" />
+                <a style="margin-left: 5px" asp-controller="Products" asp-action="ProductDetails" asp-route-id="@item.Id"><i class="fas fa-info"></i></a>              
             </div>
         </div>
      </div>
