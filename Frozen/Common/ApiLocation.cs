@@ -21,6 +21,8 @@
             public const string GATEWAY_BASEURL             = "https://localhost:44350/product/";
             public const string ALL_PRODUCTS                = GATEWAY_BASEURL + "getall/";
             public const string CREATE_PRODUCT              = GATEWAY_BASEURL + "create/";
+            public const string EDIT_PRODUCT                = GATEWAY_BASEURL + "edit/";
+            public const string DELETE_PRODUCT              = GATEWAY_BASEURL + "delete/";
         }
 
         public class Orders
