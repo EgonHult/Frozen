@@ -10,16 +10,20 @@ namespace Frozen.Models
         public int Id { get; set; }
         public string Type { get; set; }
     }
+
     public class CardModel : Payment
     {
+        public string CardOwner { get; set; }
         public long Number { get; set; }
         public DateTime ExpiryDate { get; set; }
         public int CVV { get; set; }
     }
+
     public class InternetBankModel : Payment
     {
         public string Bank { get; set; }
     }
+
     public static class InternetBanks
     {
         public static List<string> AvailableBanks()

@@ -103,9 +103,13 @@ namespace Frozen.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> SendCardRequest(int paymentId, long cardNumber, int cvv, DateTime expiryDate)
+        public async Task<ActionResult> SendCardRequest(string cardOwner, int paymentId, string cardNumber, int cvv, int month, int year)
         {
-            CardModel card = new CardModel { CVV = cvv, ExpiryDate = expiryDate, Number = cardNumber, Id = paymentId, Type = "Bankkort" };
+            long number = long.Parse(cardNumber.Replace(" ", ""));
+            var expiryDate = DateTime.Parse($"{year}-{month}");
+
+            CardModel card = new CardModel { CardOwner = cardOwner, CVV = cvv, ExpiryDate = expiryDate, Number = number, Id = paymentId, Type = "Bankkort" };
+
             var response = await _clientService.SendRequestToGatewayAsync(ApiLocation.Payments.VERIFY_PAYMENT + paymentId, HttpMethod.Post, card);
 
             return await PaymentResponse(paymentId, response);
@@ -117,10 +121,6 @@ namespace Frozen.Controllers
             var response = await _clientService.SendRequestToGatewayAsync(ApiLocation.Payments.VERIFY_PAYMENT + paymentId, HttpMethod.Post, bank);
             return await PaymentResponse(paymentId, response);
         }
-
-
-
-
 
         private async Task<HttpResponseMessage> PostOrderToGatewayAsync(int paymentId)
         {
@@ -139,7 +139,10 @@ namespace Frozen.Controllers
                 var orderResponse = await PostOrderToGatewayAsync(paymentId);
 
                 if (orderResponse.IsSuccessStatusCode)
-                    return Ok("Snygg mannen");
+                {
+                    var newOrder = await _clientService.ReadResponseAsync<Order>(orderResponse.Content);
+                    return Ok("Snygg mannen! Ditt order id är: " + newOrder.Id);
+                }
             }
 
             return BadRequest("Betalning kunde inte slutföras");

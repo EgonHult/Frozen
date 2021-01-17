@@ -34,9 +34,6 @@
                 <th>
                     @Html.DisplayNameFor(model => new CartItem().Quantity)
                 </th>
-                <th>
-
-                </th>
             </tr>
         </thead>
         <tbody>
@@ -60,92 +57,175 @@
         <p class="bold-text"><span>Totalt pris: @ViewBag.TotalPrice</span></p>
     </div>
 </div>
-<div class="card  mb-3 simple-linear shadow-lg cart-padding">
-    <h1>Ditt betalsätt</h1>
-        <table class="table table-striped">
-            <tbody>
-                <tr>
-                    <td>
-                        <select name="selectPayment" onchange="CheckSelectedPayment(this)">
-                            <option>Välj betalsätt</option>
-                            @foreach (var paymentmethod in Model.PaymentMethods)
-                            {
-                                <option value="@paymentmethod.Id">@paymentmethod.Type</option>
-                            }
+
+<div class="card mb-3 simple-linear shadow-lg cart-padding">
+   
+    <div class="row">
+        <div class="col-md-3">
+            <h1>Ditt betalsätt</h1>
+
+            <div class="form-group">
+                <select class="form-control" name="selectPayment" onchange="CheckSelectedPayment(this)">
+                    <option selected disabled>Välj betalsätt</option>
+                    @foreach (var paymentmethod in Model.PaymentMethods)
+                    {
+                        <option value="@paymentmethod.Id">@paymentmethod.Type</option>
+                    }
+                </select>
+                <hr />
+            </div>
+
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6" id="SwishOption" style="display: none">
+
+            <form asp-action="SendSwishRequest" asp-controller="Order">
+
+                <div class="col-auto">
+                    <div class="form-group">
+                        <label for="phoneNumber">Ditt telefonnummer: </label>
+                        <input type="text" class="form-control" name="phoneNumber" id="phoneNumber" placeholder="Ange telefonnummer" maxlength="13" required oninvalid="this.setCustomValidity('Fyll i telefonnummer')" onchange="this.setCustomValidity('')" />
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <input name="paymentId" type="hidden" value="@Model.PaymentMethods.Find(x => x.Type == "Swish").Id" />
+                    <button type="submit" class="subscribe btn btn-primary btn-block rounded-pill shadow-sm">Lägg order</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6" id="CardOption" style="display: none">
+
+            <form asp-action="SendCardRequest" asp-controller="Order">
+
+                <div class="col-auto">
+                    <div class="form-group">
+                        <label for="cardOwner">Namn</label>
+                        <input type="text" name="cardOwner" id="cardOwner" placeholder="Namn på kortet" required pattern="^\p{L}{2,20}(?:\s|-)[-\s\p{L}]+\p{L}$" class="form-control" oninvalid="this.setCustomValidity('Fyll i namn')" onchange="this.setCustomValidity('')" onblur="TrimInput(this)" />
+                    </div>
+                </div>
+
+                <div class="col-auto">
+                    <div class="form-group">
+                        <label for="cardNumber">Kortnummer</label>
+                        <div class="input-group">
+                            <input type="text" name="cardNumber" id="cardNumber" maxlength="19" pattern="^\d{4} \d{4} \d{4} \d{4}$" placeholder="Ditt kortnummer" class="form-control" required oninvalid="this.setCustomValidity('Fyll kortnummer')" onchange="this.setCustomValidity('')">
+                            <div class="input-group-append">
+                                <span class="input-group-text text-muted">
+                                    <i class="fa fa-cc-visa mx-1"></i>
+                                    <i class="fa fa-cc-mastercard mx-1"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <div class="form-group">
+                                <label><span class="hidden-xs">Utgångsdatum</span></label>
+                                <div class="input-group">
+                                    <select name="month" class="form-control" required oninvalid="this.setCustomValidity('Ange månad')" onchange="this.setCustomValidity('')">
+                                        <option value="" disabled selected>Månad</option>
+                                        @for (var i = 1; i <= 12; i++)
+                                        {
+                                            <option>@i</option>
+                                        }
+                                    </select>
+                                    <select name="year" class="form-control" required oninvalid="this.setCustomValidity('Ange år')" onchange="this.setCustomValidity('')">
+                                        <option value="" disabled selected>År</option>
+                                        @for (var i = DateTime.Now.Year; i <= DateTime.Now.AddYears(5).Year; i++)
+                                        {
+                                            <option>@i</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group mb-4">
+                                <label data-toggle="tooltip" title="3-siffrig kod på baksidan av ditt kort">
+                                    CVV
+                                    <i class="fa fa-question-circle"></i>
+                                </label>
+                                <input type="text" name="cvv" id="cvv" pattern="^\d{3}$" maxlength="3" required class="form-control" oninvalid="this.setCustomValidity('Ange CVV')" onchange="this.setCustomValidity('')">
+                            </div>
+                        </div>
+                    </div>
+                    <input name="paymentId" type="hidden" value="@Model.PaymentMethods.Find(x => x.Type == "Bankkort").Id" />
+                    <button type="submit" class="subscribe btn btn-primary btn-block rounded-pill shadow-sm">Lägg order</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6" id="BankOption" style="display:none">
+
+            <form asp-action="SendInternetBankRequest" asp-controller="Order">
+                <div class="col-auto">
+                    <div class="form-group">
+                        <label for="bank">Välj din bank: </label>
+                        <select class="form-control" name="bank" id="bank" required oninvalid="this.setCustomValidity('Välj internetbank')" onchange="this.setCustomValidity('')">
+                            <option value="" disabled selected>Välj Bank</option>
+                            <option>Swedbank</option>
+                            <option>Nordea</option>
+                            <option>Handelsbanken</option>
+                            <option>SEB</option>
+                            <option>Avanza</option>
                         </select>
-                    </td>
-                </tr>
-                <tr id="SwishOption" style="display:none">
-                    <td>
-                        <form asp-action="SendSwishRequest" asp-controller="Order">
-                            <table>
-                                <tr>
-                                    <td>
-                                        <label>Ditt telefonnummer: </label>
-                                        <input name="phoneNumber" />
-                                        <input name="paymentId" type="hidden" value="@Model.PaymentMethods.Find(x => x.Type == "Swish").Id" />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <button type="submit">Lägg order</button>
-                                    </td>
-                                </tr>
-                            </table>
-                        </form>
-                    </td>
-                </tr>
-                <tr id="CardOption" style="display:none">
-                    <td>
-                        <form asp-action="SendCardRequest" asp-controller="Order">
-                            <table>
-                                <tr>
-                                    <td>
-                                        <label>Kortnummer: </label>
-                                        <input name="cardNumber" />
-                                        <label>Giltig till: </label>
-                                        <input type="date" name="expiryDate" />
-                                        <label>CVV: </label>
-                                        <input name="cvv" />
-                                        <input name="paymentId" type="hidden" value="@Model.PaymentMethods.Find(x => x.Type == "Bankkort").Id" />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <button type="submit">Lägg order</button>
-                                    </td>
-                                </tr>
-                            </table>
-                        </form>
-                    </td>
-                </tr>
-                <tr id="BankOption" style="display:none">
-                    <td>
-                        <form asp-action="SendInternetBankRequest" asp-controller="Order">
-                            <table>
-                                <tr>
-                                    <td>
-                                        <label>Välj din bank: </label>
-                                        <select name="bank">
-                                            <option>Välj Bank</option>
-                                            <option>Swedbank</option>
-                                            <option>Nordea</option>
-                                            <option>Handelsbanken</option>
-                                            <option>SEB</option>
-                                            <option>Avanza</option>
-                                        </select>
-                                        <input name="paymentId" type="hidden" value="@Model.PaymentMethods.Find(x => x.Type == "Internetbank").Id" />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <button type="submit">Lägg order</button>
-                                    </td>
-                                </tr>
-                            </table>
-                        </form>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+                    </div>
+                </div>
+
+                <div class="col-auto">
+                    <input name="paymentId" type="hidden" value="@Model.PaymentMethods.Find(x => x.Type == "Internetbank").Id" />
+                    <button type="submit" class="subscribe btn btn-primary btn-block rounded-pill shadow-sm">Lägg order</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
 </div>
+
+<script>
+
+    document.getElementById('phoneNumber').addEventListener('input', function (event) {
+
+        event.target.value = event.target.value
+            .replace(/[^\d]/g, '')
+            .replace(/(.{3})(.{3})(.{2})(.{2})/, '$1-$2 $3 $4')
+            .trim();
+    });
+
+    document.getElementById('cardOwner').addEventListener('input', function (event) {
+
+        event.target.value = event.target.value
+            .replace(/[^-\s\p{L}]/ug, '')
+            .replace(/\s*-+\s*/g, '-')
+            .replace(/\s+/g, ' ');
+    });
+
+    document.getElementById('cardNumber').addEventListener('input', function (event) {
+
+        event.target.value = event.target.value
+            .replace(/[^\d]/g, '')
+            .replace(/(.{4})/ig, '$1 ')
+            .trim();
+    });
+
+    document.getElementById('cvv').addEventListener('input', function (event) {
+
+        event.target.value = event.target.value
+            .replace(/[^\d]/g, '');
+    });
+
+    function TrimInput(input) {
+        input.value = input.value.replace(/[-\s]+$/g, '');
+    }
+
+</script>
