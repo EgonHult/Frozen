@@ -112,6 +112,22 @@ namespace Orders.Repositories
                 return null;
         }
 
+        public async Task<bool> UpdateOrderStatusAsync(int statusId, Guid orderId)
+        {
+            var listOfStatusId = await _context.Status.ToListAsync();
+            var statusIdExist = listOfStatusId.Any(x => x.Id == statusId);
+            var orderToUpdate = await _context.Order.FindAsync(orderId);
+
+            if (statusIdExist && orderToUpdate != null)
+            {
+                orderToUpdate.StatusId = statusId;
+                await _context.SaveChangesAsync();
+                return true;
+            }
+
+            return false;
+        }
+
         public async Task<bool> CheckIfOrderExistInDatabaseAsync(Guid id)
         => await _context.Order.AnyAsync(x => x.Id == id);
     }

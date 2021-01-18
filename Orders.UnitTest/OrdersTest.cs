@@ -239,5 +239,69 @@ namespace Orders.UnitTest
 
         }
 
-   }
+        [TestMethod]
+        public void UpdateOrderStatusAsync_UpdateOrderStatusToSent_ReturnTrue()
+        {
+            using (var context = new TestOrdersDbContext().DbContext)
+            {
+                // Arrange 
+                var dummyOrder = DummyTestOrder.TestOrder();
+                context.Order.Add(dummyOrder);
+                context.SaveChanges();
+
+                // Act
+                var orderRepository = new OrderRepository(context);
+                var result = orderRepository.UpdateOrderStatusAsync(2, dummyOrder.Id).Result;
+
+                // Assert
+                Assert.IsTrue(result);
+
+                // Delete dummyOrder from DB
+                context.Remove(dummyOrder);
+                context.SaveChanges();
+            }
+
+        }
+
+        [TestMethod]
+        public void UpdateOrderStatusAsync_UpdateOrderStatusToNonExistingStatus_ReturnFalse()
+        {
+            using (var context = new TestOrdersDbContext().DbContext)
+            {
+                // Arrange 
+                var dummyOrder = DummyTestOrder.TestOrder();
+                context.Order.Add(dummyOrder);
+                context.SaveChanges();
+
+                // Act
+                var orderRepository = new OrderRepository(context);
+                var result = orderRepository.UpdateOrderStatusAsync(10, dummyOrder.Id).Result;
+
+                // Assert
+                Assert.IsFalse(result);
+
+                // Delete dummyOrder from DB
+                context.Remove(dummyOrder);
+                context.SaveChanges();
+            }
+        }
+
+        [TestMethod]
+        public void UpdateOrderStatusAsync_TryUpdateStatusOfNonExistingOrder_ReturnFalse()
+        {
+            using (var context = new TestOrdersDbContext().DbContext)
+            {
+                // Arrange 
+                var nonExistingOrderId = Guid.NewGuid();
+
+                // Act
+                var orderRepository = new OrderRepository(context);
+                var result = orderRepository.UpdateOrderStatusAsync(3, nonExistingOrderId).Result;
+
+                // Assert
+                Assert.IsFalse(result);
+            }
+        }
+
+    }
 }

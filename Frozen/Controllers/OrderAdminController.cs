@@ -34,7 +34,7 @@ namespace Frozen.Controllers
             return View();
         }
 
-        public async Task<IActionResult> OrderUpdate(Guid id, bool updated = false)
+        public async Task<IActionResult> OrderUpdate(Guid id)
         {
             if (id == Guid.Empty)
                 return RedirectToAction(nameof(Index));
@@ -44,10 +44,6 @@ namespace Frozen.Controllers
             if (result.IsSuccessStatusCode)
             {
                 var order = await _clientService.ReadResponseAsync<Order>(result.Content);
-
-                if (updated)
-                    ViewBag.OrderStatus = "Uppdaterad";
-
                 return View(order);
             }
 
@@ -55,29 +51,44 @@ namespace Frozen.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> OrderUpdate(Order order)
+        public async Task<IActionResult> OrderUpdate(int statusId, Guid id)
         {
-            if (ModelState.IsValid)
-            {
-                var id = order.Id;
-                var orderResult = await _clientService.SendRequestToGatewayAsync(ApiLocation.Orders.GATEWAY_BASEURL + order.Id, HttpMethod.Get);
-                
-                if(orderResult.IsSuccessStatusCode)
-                {
-                    var orderToUpdate = await _clientService.ReadResponseAsync<Order>(orderResult.Content);
-                    orderToUpdate.StatusId = order.StatusId;
+            var apiLocation = ApiLocation.Orders.GATEWAY_BASEURL + $"{statusId}/{id}";
+            var response = await _clientService.SendRequestToGatewayAsync(apiLocation, HttpMethod.Put);
 
-                    var result = await _clientService.SendRequestToGatewayAsync(ApiLocation.Orders.GATEWAY_BASEURL + id, HttpMethod.Put, orderToUpdate);
+            var updateSuccessFlag = false;
 
-                    if (result.IsSuccessStatusCode)
-                    {
-                        var updatedOrder = await _clientService.ReadResponseAsync<Order>(result.Content);
-                        return RedirectToAction(nameof(OrderUpdate), new { id = updatedOrder.Id, updated=true });
-                    }
-                }
-            }
+            if (response.IsSuccessStatusCode)
+                updateSuccessFlag = true;
 
-            return View();
+            TempData["StatusUpdated"] = updateSuccessFlag;
+            return RedirectToAction(nameof(OrderUpdate), new { id = id });
         }
+
+        //[HttpPost]
+        //public async Task<IActionResult> OrderUpdate(Order order)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        var id = order.Id;
+        //        var orderResult = await _clientService.SendRequestToGatewayAsync(ApiLocation.Orders.GATEWAY_BASEURL + order.Id, HttpMethod.Get);
+
+        //        if(orderResult.IsSuccessStatusCode)
+        //        {
+        //            var orderToUpdate = await _clientService.ReadResponseAsync<Order>(orderResult.Content);
+        //            orderToUpdate.StatusId = order.StatusId;
+
+        //            var result = await _clientService.SendRequestToGatewayAsync(ApiLocation.Orders.GATEWAY_BASEURL + id, HttpMethod.Put, orderToUpdate);
+
+        //            if (result.IsSuccessStatusCode)
+        //            {
+        //                var updatedOrder = await _clientService.ReadResponseAsync<Order>(result.Content);
+        //                return RedirectToAction(nameof(OrderUpdate), new { id = updatedOrder.Id, updated=true });
+        //            }
+        //        }
+        //    }
+
+        //    return View();
+        //}
     }
 }
