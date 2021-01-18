@@ -31,7 +31,7 @@ namespace Orders.Controllers
         public async Task<ActionResult<List<OrderModel>>> GetOrders()
         {
             var result = await _orderRepository.GetAllOrdersAsync();
-            return Ok(result);
+            return Ok(result.OrderByDescending(x => x.Date));
         }
 
         // GET: api/Orders/5

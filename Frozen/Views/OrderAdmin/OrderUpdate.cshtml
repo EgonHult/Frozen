@@ -1,0 +1,40 @@
+﻿@model Order
+@{
+
+    var statusOptions = new Dictionary<int, string>()
+    {
+        { 1, "Lagd" },
+        { 2, "Behandlad" },
+        { 3, "Skickad" },
+    };
+}
+
+@if (ViewBag.OrderStatus != null)
+{
+<div class="alert alert-success" role="alert">
+    Orderstatus uppdaterad!
+</div>
+}
+
+<h3>Uppdatera Order</h3>
+
+<form asp-action="OrderUpdate">
+
+    <select asp-for="StatusId">
+
+        @foreach (var option in statusOptions)
+        {
+            @if (Model.StatusId == option.Key)
+            {
+                <option value="@option.Key" selected>@option.Value</option>
+            }
+            else
+            {
+                <option value="@option.Key">@option.Value</option>
+            }
+        }
+
+    </select>
+
+    <button type="submit" class="btn btn-danger">Uppdatera Orderstatus</button>
+</form>
