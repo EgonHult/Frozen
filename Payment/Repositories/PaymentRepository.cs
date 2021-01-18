@@ -82,7 +82,7 @@ namespace Payments.Repositories
             var cardExpire = ParseDateYearMonthToInt(cardPayment.ExpiryDate);
             var now = ParseDateYearMonthToInt(DateTime.Now);
 
-            if (cardExpire >= now)
+            if (cardExpire >= now && cardPayment.Number.ToString().Length == 16)
                 return true;
             else
                 return false;
