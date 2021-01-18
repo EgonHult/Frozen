@@ -31,7 +31,7 @@ namespace Orders.Controllers
         public async Task<ActionResult<List<OrderModel>>> GetOrders()
         {
             var result = await _orderRepository.GetAllOrdersAsync();
-            return Ok(result);
+            return Ok(result.OrderByDescending(x => x.Date));
         }
 
         // GET: api/Orders/5
@@ -52,7 +52,22 @@ namespace Orders.Controllers
             return BadRequest();
         }
 
-        
+        [Authorize(Roles = "Admin")]
+        [HttpPut("{statusId}/{id}")]
+        public async Task<ActionResult<OrderModel>> OrderStatus(int statusId, Guid id)
+        {
+            var orderExist = OrderExists(id);
+
+            if (!orderExist)
+                return NotFound();
+
+            var result = await _orderRepository.UpdateOrderStatusAsync(statusId, id);
+
+            if (result)
+                return Ok(true);
+
+            return BadRequest();
+        }
 
         // PUT: api/Orders/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

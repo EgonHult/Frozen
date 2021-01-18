@@ -58,7 +58,7 @@ namespace Frozen.UnitTests
 
             //Assert
             Assert.AreEqual("LoginPage", response.ViewName);
-            Assert.AreEqual("Felaktiga inloggningsuppgifter, Loser", LoginController.ViewBag.Message);
+            Assert.AreEqual("Felaktiga inloggningsuppgifter", LoginController.ViewBag.Message);
         }
     }
 }

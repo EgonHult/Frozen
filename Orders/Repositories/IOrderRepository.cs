@@ -14,6 +14,6 @@ namespace Orders.Repositories
         Task<OrderModel> GetOrderByOrderIdAsync(Guid orderId);
         Task<List<OrderModel>> GetAllOrdersAsync();
         Task<List<OrderModel>> GetOrdersByUserIdAsync(Guid userId);
-
+        Task<bool> UpdateOrderStatusAsync(int statusId, Guid orderId);
     }
 }
