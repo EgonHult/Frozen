@@ -1,0 +1,79 @@
+﻿@model List<Frozen.Models.Product>
+@{
+    ViewData["Title"] = "Hantera produkter";
+
+    var alertMessage = TempData["AlertMessage"];
+}
+
+@if (alertMessage != null)
+{
+    <div class="alert alert-success" role="alert">
+        @alertMessage
+    </div>
+}
+
+<div class="card  mb-3 simple-linear shadow-lg cart-padding">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>
+                    Namn
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => new Product().Price)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => new Product().Details)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => new Product().Quantity)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => new Product().Image)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => new Product().WeightInGrams)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                <tr id="product_@Model[i].Id">
+                    <td>
+                        @Html.DisplayFor(modelItem => modelItem[i].Name)
+                        @Html.HiddenFor(modelItem => modelItem[i].Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => modelItem[i].Price)
+                        @Html.HiddenFor(modelItem => modelItem[i].Price)
+                    </td>
+                    <td width="200">
+                        @Html.DisplayFor(modelItem => modelItem[i].Details)
+                        @Html.HiddenFor(modelItem => modelItem[i].Details)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => modelItem[i].Quantity)
+                        @Html.HiddenFor(modelItem => modelItem[i].Quantity)
+                    </td>
+                    <td width="100">
+                        <img class="card-img-top" src="@Model[i].Image" alt="bild" height="50">
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => modelItem[i].WeightInGrams)
+                        @Html.HiddenFor(modelItem => modelItem[i].WeightInGrams)
+                    </td>
+                    <td>
+                        <div>
+                            <a asp-action="EditProductPage" asp-route-id="@Model[i].Id">Redigera</a>
+                        </div>
+                        <div>
+                            <a asp-action="DeleteProduct" asp-route-id="@Model[i].Id">Ta bort</a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <a class="btn btn-danger" style="width:200px" asp-action="CreateProductPage">Skapa ny produkt</a>
+</div>

@@ -7,6 +7,11 @@ a.navbar-brand {
   word-break: break-all;
 }
 
+.bg-navbar {
+    background-color: #f5d7da;
+}
+
+
 /* Provide sufficient contrast against white background */
 a {
   color: #0366d6;
@@ -19,9 +24,10 @@ a {
 }
 
 .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+    color: #fff;
+    /*background-color: #1b6ec2;*/
+    background-color: #ffe9ec;
+    border-color: #ffe9ec;
 }
 
 /* Sticky footer styles
@@ -59,13 +65,94 @@ html {
 }
 
 body {
-  /* Margin bottom by footer height */
-  margin-bottom: 60px;
+    /* Margin bottom by footer height */
+    margin-bottom: 60px;
+    background-image: url('../Images/IceIceBaby2.PNG');
+    height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 .footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  white-space: nowrap;
-  line-height: 60px; /* Vertically center the text there */
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    white-space: nowrap;
+    line-height: 60px; /* Vertically center the text there */
+    background-color: #f5d7da;
 }
+
+.center {
+    margin-top: 70px;
+    margin-left: auto;
+    margin-right: auto; 
+}
+
+.button {
+    background-color: pink; 
+    border: none;
+    color: white;
+    padding: 16px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition-duration: 0.5s;
+    cursor: pointer;
+    border-radius: 15px;
+}
+
+.button1 {
+    background-color: pink;
+    color: black;
+    border: 2px solid #e67070;
+}
+
+    .button1:hover {
+        background-color: #e67070;
+        color: black;
+    }
+
+.bold-text {
+    font-weight: bold;
+}
+
+.cart-padding {
+    padding: 20px 20px 20px 20px;
+}
+
+.simple-linear {
+    
+    background: linear-gradient(#39e6d6, pink)
+}
+
+#CartContent {
+    border-collapse: separate;
+    border-spacing: 0px 1px;
+}
+
+.increase-button {
+    background-color: transparent;
+    border: none;
+    outline: none;
+    color: #1b7948;
+}
+
+.decrease-button {
+    background-color: transparent;
+    border: none;
+    outline: none;
+    color: #9c1010;
+}
+
+.sticky {
+    position: fixed;
+    top: 0;
+    width: 100%;
+}
+
+#stickyNavbar {
+    z-index: 9999;
+}
+

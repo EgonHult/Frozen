@@ -1,0 +1,52 @@
+﻿@model Order
+@{
+
+    var statusOptions = new Dictionary<int, string>()
+{
+        { 1, "Lagd" },
+        { 2, "Behandlad" },
+        { 3, "Skickad" },
+    };
+
+    var statusUpdateSuccessful = TempData["StatusUpdated"];
+}
+
+@if (statusUpdateSuccessful != null)
+{
+    if ((bool)statusUpdateSuccessful)
+    {
+        <div class="alert alert-success" role="alert">
+            Holy crap, Batman! Order <strong>@Model.Id</strong> har uppdaterats
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning" role="alert">
+            Kunde inte uppdatera order <strong>@Model.Id</strong>
+        </div>
+    }
+}
+
+<h3>Uppdatera Order</h3>
+
+<form asp-action="OrderUpdate">
+
+    <select asp-for="StatusId">
+
+        @foreach (var option in statusOptions)
+        {
+            @if (Model.StatusId == option.Key)
+            {
+                <option value="@option.Key" selected>@option.Value</option>
+            }
+            else
+            {
+                <option value="@option.Key">@option.Value</option>
+            }
+        }
+
+    </select>
+
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Uppdatera Orderstatus</button>
+</form>

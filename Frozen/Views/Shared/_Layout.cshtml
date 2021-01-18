@@ -6,28 +6,44 @@
     <title>@ViewData["Title"] - Frozen</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
+    @*<link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">*@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Frozen</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
+        <div id="stickyNavbar">
+            <nav class="navbar navbar-expand-sm navbar-toggleable-sm bg-navbar mb-3">
+                <div class="container">
+                    <a class="navbar-brand" style="color:darkblue" asp-area="" asp-controller="Home" asp-action="Index">Frozen</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Toggle navigation" style="color:darkblue">
+                        <i class="fas fa-igloo"></i>
+                    </button>
+                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                        <ul class="navbar-nav flex-grow-1">
+                            @*<li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            </li>*@
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            </li>
+                            @*<li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Login" asp-action="LoginPage">Logga in</a>
+                        </li>*@
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Products" asp-action="ProductsPage">Produkter</a>
+                            </li>
+                        </ul>
+                        <partial name="_LoginPartial" />
+                        <div>
+                            <a asp-area="" asp-controller="Cart" asp-action="Index" class="btn">
+                                <i class="fas fa-shopping-cart "></i>
+                                <span id="cartButtonCount"></span>
+                            </a>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </nav>
+            </nav>
+        </div>
     </header>
     <div class="container">
         <main role="main" class="pb-3">
@@ -43,6 +59,8 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/payment.js" asp-append-version="true"></script>
+    <script src="https://kit.fontawesome.com/a59e8a19b5.js" crossorigin="anonymous"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
