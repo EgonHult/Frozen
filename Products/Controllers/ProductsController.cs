@@ -74,7 +74,7 @@ namespace Products.Controllers
 
         // PUT api/<ProductsController>/5
         [Authorize(Roles = "Admin")]
-        [HttpPut("{id}")]
+        [HttpPut("edit/{id}")]
         public async Task<ActionResult<ProductModel>> UpdateProduct(Guid id, ProductModel product)
         {
             if(id != product.Id) { return BadRequest(); }
@@ -112,7 +112,7 @@ namespace Products.Controllers
 
         // DELETE api/<ProductsController>/5
         [Authorize(Roles = "Admin")]
-        [HttpDelete("{id}")]
+        [HttpDelete("delete/{id}")]
         public async Task<ActionResult<ProductModel>> DeleteProduct(Guid id)
         {
             if (id != Guid.Empty)

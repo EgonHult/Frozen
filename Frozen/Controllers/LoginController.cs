@@ -41,7 +41,7 @@ namespace Frozen.Controllers
 
                 if (response.StatusCode == HttpStatusCode.Unauthorized)
                 {
-                    ViewBag.Message = "Felaktiga inloggningsuppgifter, Loser";
+                    ViewBag.Message = "Felaktiga inloggningsuppgifter";
                 }
                 else if (response.IsSuccessStatusCode)
                 {

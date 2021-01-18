@@ -12,7 +12,7 @@ namespace Products.Context
         {
             context.Database.EnsureCreated();
             var result = context.Product.ToList();
-            if (result.Count >= 5)
+            if (result.Count > 0)
             {
                 return;
             }

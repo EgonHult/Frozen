@@ -25,11 +25,51 @@ namespace Frozen.Controllers
             return View(products);
         }
 
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ManageProductsPage(string message)
+        {
+            ViewBag.Message = message;
+            var products = await GetProductsAsync();
+            return View(products);
+        }
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> EditProductPage(Guid Id)
+        {
+            var product = await GetProductByIdAsync(Id);
+            return View(product);
+        }
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public async Task<IActionResult> EditProductPageAsync(Product product)
+        {
+            if (ModelState.IsValid)
+            {
+                var responseProduct = await UpdateProductAsync(product.Id, product);
+                if (responseProduct != null)
+                {
+                    return RedirectToAction("ManageProductsPage", new { message = "Produkten har uppdaterats!" });
+                }
+            }
+            return View(product);
+        }
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteProduct(Guid Id)
+        {
+            var response = await DeleteProductAsync(Id);
+            if (response != null)
+            {
+                return RedirectToAction("ManageProductsPage", new { message = "Produkt borttagen!" });
+            }
+            return RedirectToAction("ManageProductsPage", new { message = "Kunde inte ta bort produkten" });
+        }
+
+
         public async Task<IActionResult> ProductDetails(Guid id)
         {
             var product = await GetProductByIdAsync(id);
             return View(product);
         }
+
 
         [HttpGet]
         public async Task<List<Product>> GetProductsAsync()
@@ -63,7 +103,7 @@ namespace Frozen.Controllers
         [HttpPut]
         public async Task<Product> UpdateProductAsync(Guid id, Product product)
         {
-            var response = await _clientService.SendRequestToGatewayAsync(ApiLocation.Products.GATEWAY_BASEURL + id, HttpMethod.Put, product);
+            var response = await _clientService.SendRequestToGatewayAsync(ApiLocation.Products.EDIT_PRODUCT + id, HttpMethod.Put, product);
 
             return (response.IsSuccessStatusCode)
                 ? await _clientService.ReadResponseAsync<Product>(response.Content) : null;
@@ -73,7 +113,7 @@ namespace Frozen.Controllers
         [HttpDelete]
         public async Task<Product> DeleteProductAsync(Guid id)
         {
-            var response = await _clientService.SendRequestToGatewayAsync(ApiLocation.Products.GATEWAY_BASEURL + id, HttpMethod.Delete);
+            var response = await _clientService.SendRequestToGatewayAsync(ApiLocation.Products.DELETE_PRODUCT + id, HttpMethod.Delete);
 
             return (response.IsSuccessStatusCode)
                 ? await _clientService.ReadResponseAsync<Product>(response.Content) : null;
