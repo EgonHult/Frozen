@@ -48,7 +48,7 @@ namespace Frozen.Services
         {
             var orderProducts = new List<OrderProduct>();
 
-            foreach (var item in _cartService.GetCart())
+            foreach (var item in _cartService.GetCartContent())
             {
                 orderProducts.Add(new OrderProduct
                 {
