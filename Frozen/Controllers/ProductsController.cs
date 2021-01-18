@@ -26,9 +26,8 @@ namespace Frozen.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> ManageProductsPage(string message)
+        public async Task<IActionResult> ManageProductsPage()
         {
-            ViewBag.Message = message;
             var products = await GetProductsAsync();
             return View(products);
         }
@@ -47,7 +46,8 @@ namespace Frozen.Controllers
                 var responseProduct = await UpdateProductAsync(product.Id, product);
                 if (responseProduct != null)
                 {
-                    return RedirectToAction("ManageProductsPage", new { message = "Produkten har uppdaterats!" });
+                    TempData["AlertMessage"] = "Produkten är uppdaterad!";
+                    return RedirectToAction("ManageProductsPage");
                 }
             }
             return View(product);
@@ -58,18 +58,18 @@ namespace Frozen.Controllers
             var response = await DeleteProductAsync(Id);
             if (response != null)
             {
-                return RedirectToAction("ManageProductsPage", new { message = "Produkt borttagen!" });
+                TempData["AlertMessage"] = "Produkten borttagen!";
+                return RedirectToAction("ManageProductsPage");
             }
-            return RedirectToAction("ManageProductsPage", new { message = "Kunde inte ta bort produkten" });
+            TempData["AlertMessage"] = "Kunde inte ta bort produkten!";
+            return RedirectToAction("ManageProductsPage");
         }
-
 
         public async Task<IActionResult> ProductDetails(Guid id)
         {
             var product = await GetProductByIdAsync(id);
             return View(product);
         }
-
 
         [HttpGet]
         public async Task<List<Product>> GetProductsAsync()
@@ -117,6 +117,28 @@ namespace Frozen.Controllers
 
             return (response.IsSuccessStatusCode)
                 ? await _clientService.ReadResponseAsync<Product>(response.Content) : null;
+        }
+
+        [Authorize(Roles = "Admin")]
+        public IActionResult CreateProductPage()
+        {
+            return View();
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public async Task<IActionResult> CreateProductPage(Product product)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await PostProductAsync(product);
+                if(result != null)
+                {
+                    TempData["AlertMessage"] = "Ny produkt tillagd!";
+                    return RedirectToAction("ManageProductsPage");
+                }
+            }
+            return View();
         }
     }
 }

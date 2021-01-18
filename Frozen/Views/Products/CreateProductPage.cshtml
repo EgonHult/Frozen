@@ -1,48 +1,49 @@
 ﻿@model Frozen.Models.Product
+
 @{
-    ViewData["Title"] = Model.Name;
+    ViewData["Title"] = "Skapa produkt";
 }
+
 <div class="card  mb-3 simple-linear shadow-lg cart-padding">
-    <form method="post" asp-action="EditProductPage">
+    <form method="post" asp-action="CreateProductPage">
         <div class="form-row">
             <div class="form-group col-md-6">
-                <label asp-for="Id">Id</label>
-                <input asp-for="Id" disabled="disabled" value="@Model.Id" class="form-control">
+                <input asp-for="Id" hidden="hidden" disabled="disabled" class="form-control">
             </div>
         </div>
         <div class="form-row">
             <div class="form-group col-md-6">
                 <label asp-for="Name">Namn</label>
-                <input asp-for="Name" value="@Model.Name" class="form-control">
+                <input asp-for="Name" class="form-control">
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group col-md-6">
                 <label asp-for="Price">Pris</label>
-                <input asp-for="Price" value="@Model.Price" class="form-control">
+                <input asp-for="Price" class="form-control">
                 <span asp-validation-for="Price" class="text-danger"></span>
             </div>
         </div>
         <div class="form-row">
             <div class="form-group col-md-6">
                 <label asp-for="Details">Beskrivning</label>
-                <input type="text" asp-for="Details" value="@Model.Details" class="form-control">
+                <input type="text" asp-for="Details" class="form-control">
                 <span asp-validation-for="Details" class="text-danger"></span>
             </div>
             <div class="form-group col-md-6">
                 <label asp-for="Quantity">Antal i lager</label>
-                <input type="text" asp-for="Quantity" value="@Model.Quantity" class="form-control">
+                <input type="text" asp-for="Quantity" class="form-control">
                 <span asp-validation-for="Quantity" class="text-danger"></span>
             </div>
         </div>
         <div class="form-row">
             <div class="form-group col-md-6">
                 <label asp-for="Image">Bildadress</label>
-                <input type="text" asp-for="Image" value="@Model.Image" class="form-control">
+                <input type="text" asp-for="Image"class="form-control">
                 <span asp-validation-for="Image" class="text-danger"></span>
             </div>
             <div class="form-group col-md-6">
                 <label asp-for="WeightInGrams">Vikt i gram</label>
-                <input type="text" asp-for="WeightInGrams" value="@Model.WeightInGrams" class="form-control">
+                <input type="text" asp-for="WeightInGrams" class="form-control">
                 <span asp-validation-for="WeightInGrams" class="text-danger"></span>
             </div>
         </div>
