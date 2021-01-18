@@ -44,7 +44,7 @@ namespace Users.UnitTest
         }
         
         [TestMethod]
-        public void CreateUser_RegisterNewUser_ReturnCreatedUserAreEqual()
+        public void CreateUserAsync_RegisterNewUser_ReturnCreatedUser()
         {
             // Arrange
             var userModel = DummyUser.TestUserModel();
@@ -61,6 +61,70 @@ namespace Users.UnitTest
                 var user = UnitTestContext.UserManager.FindByEmailAsync(createdUser.Email).Result;
                 UnitTestContext.UserManager.DeleteAsync(user).Wait();
             }
+        }
+
+        [TestMethod]
+        public void CreateUserAsync_TryRegisterNewUserWithEmptyModel_ReturnException()
+        {
+            // Arrange
+            var userModel = new RegisterUserModel();
+
+            try
+            {
+                // Act
+                var createdUser = UserRepositoryClass.CreateUserAsync(userModel).Result;
+            }
+            catch(Exception)
+            {
+                // Success!
+                return;
+            }
+        }
+
+        [TestMethod]
+        public void CreateUserAsync_TryRegisterNewUserWithExistingEmail_ReturnNull()
+        {
+            // Arrange
+            var newUser = new RegisterUserModel()
+            {
+                FirstName = "Test",
+                LastName = "Test",
+                Address = "Test",
+                City = "Test",
+                Zip = "12345",
+                PhoneNumber = "+46-12-3456789",
+                Email = "testuser@frozen.se",
+                Password = "Test123!"
+            };
+
+            // Act
+            var createdUser = UserRepositoryClass.CreateUserAsync(newUser).Result;
+
+            // Assert
+            Assert.IsNull(createdUser);
+        }
+
+        [TestMethod]
+        public void CreateUserAsync_TryRegisterNewUserWithInvalidPasswordFormat_ReturnNull()
+        {
+            // Arrange
+            var newUser = new RegisterUserModel()
+            {
+                FirstName = "Test",
+                LastName = "Test",
+                Address = "Test",
+                City = "Test",
+                Zip = "12345",
+                PhoneNumber = "+46-12-3456789",
+                Email = "someotheremail@frozen.se",
+                Password = "123fdghfghfgh8"
+            };
+
+            // Act
+            var createdUser = UserRepositoryClass.CreateUserAsync(newUser).Result;
+
+            // Assert
+            Assert.IsNull(createdUser);
         }
 
         [TestMethod]
@@ -104,7 +168,35 @@ namespace Users.UnitTest
         }
 
         [TestMethod]
-        public void UpdateUserAsync_UpdateUserName_ReturnUpdatedUser()
+        public void DeleteUserAsync_DeleteUserByEmptyGuidId_ReturnNull()
+        {
+            // Arrange
+            var emptyUserId = Guid.Empty;
+
+            // Act
+            var result = UserRepositoryClass.DeleteUserAsync(emptyUserId).Result;
+
+            // Assert
+            Assert.IsNull(result);
+
+        }
+
+        [TestMethod]
+        public void DeleteUserAsync_TryDeleteUserNonExistingUserId_ReturnNull()
+        {
+            // Arrange
+            var nonexistingUserId = Guid.NewGuid();
+
+            // Act
+            var result = UserRepositoryClass.DeleteUserAsync(nonexistingUserId).Result;
+
+            // Assert
+            Assert.IsNull(result);
+
+        }
+
+        [TestMethod]
+        public void UpdateUserAsync_UpdateUserFirstNameAndLastName_ReturnUpdatedUser()
         {
             // Arrange
             var userModel = new UserModel()
@@ -120,7 +212,7 @@ namespace Users.UnitTest
             };
 
             // Act
-            var updatedUser = UserRepositoryClass.UpdateUserAsync(FixtureUser.Id, userModel).Result;
+            var updatedUser = UserRepositoryClass.UpdateUserAsync(userModel.Id, userModel).Result;
 
             // Assert
             Assert.AreEqual(userModel.FirstName, updatedUser.FirstName);
@@ -195,6 +287,31 @@ namespace Users.UnitTest
         }
 
         [TestMethod]
+        public void UpdateEmailAddressAsync_TryUpdateUserEmailToAlreadyExistingEmail_ReturnNull()
+        {
+            // Arrange
+            var existingEmail = "admin@frozen.se";
+
+            var userModel = new UserModel()
+            {
+                Id = FixtureUser.Id,
+                FirstName = FixtureUser.FirstName,
+                LastName = FixtureUser.LastName,
+                Email = existingEmail,
+                PhoneNumber = FixtureUser.PhoneNumber,
+                Address = FixtureUser.Address,
+                City = FixtureUser.City,
+                Zip = FixtureUser.Zip
+            };
+
+            // Act
+            var result = UserRepositoryClass.UpdateEmailAddressAsync(userModel).Result;
+
+            // Assert
+            Assert.IsNull(result);
+        }
+
+        [TestMethod]
         public void UpdatePasswordAsync_UpdateUserPassword_ReturnUpdatedUser()
         {
             // Arrange
@@ -213,7 +330,7 @@ namespace Users.UnitTest
         }
 
         [TestMethod]
-        public void CheckIfUserExistsByEmailAsync_CheckIfEmailIsRegistered_ReturnNull()
+        public void CheckIfUserExistsByEmailAsync_CheckIfNonExistingEmailIsRegistered_ReturnFalse()
         {
             // Arrange
             var emailToTest = "funkydude666@frozen.se";
@@ -226,7 +343,7 @@ namespace Users.UnitTest
         }
 
         [TestMethod]
-        public void CheckIfUserExistsByEmailAsync_CheckIfEmailIsRegistered_ReturnTrue()
+        public void CheckIfUserExistsByEmailAsync_CheckAlreadyRegisteredEmail_ReturnTrue()
         {
             // Arrange
             var emailToTest = "testuser@frozen.se";

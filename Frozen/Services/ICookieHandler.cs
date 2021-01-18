@@ -12,7 +12,7 @@ namespace Frozen.Services
         void CreateSessionCookie(string name, string content);
         string GetSessionCookieContent(string name);
         void DestroyAllCookies();
-        Task<bool> ValidateJwtTokenSessionCookieAsync();
+        Task<bool> ValidateJwtTokenSessionExpirationAsync();
         Task<string> GetClaimFromAuthenticationCookieAsync(string claimName);
         void RenewJwtTokens(TokenModel model);
     }

@@ -62,7 +62,7 @@ namespace Frozen.Services
         /// Validates JWT-token in session cookie
         /// </summary>
         /// <returns>bool</returns>
-        public async Task<bool> ValidateJwtTokenSessionCookieAsync()
+        public async Task<bool> ValidateJwtTokenSessionExpirationAsync()
         {
             var token = GetSessionCookieContent(Cookies.JWT_SESSION_TOKEN);
 
