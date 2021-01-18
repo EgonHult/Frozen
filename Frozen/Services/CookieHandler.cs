@@ -33,34 +33,38 @@ namespace Frozen.Services
             var token = user.Token;
             var refreshToken = user.RefreshToken;
 
-            await CreateAuthCookieAsync(token, rememberUser);
+            await CreateAuthenticationCookieAsync(token, rememberUser);
             CreatePersistentCookie(Cookies.JWT_REFRESH_TOKEN, refreshToken);
             CreateSessionCookie(Cookies.JWT_SESSION_TOKEN, token);
         }
 
         /// <summary>
-        /// Creates an [Authorization] cookie
+        /// Creates a cookie for [Authorization] usage
         /// </summary>
         /// <param name="content"></param>
         /// <param name="isPersistent"></param>
-        public async Task CreateAuthCookieAsync(string content, bool isPersistent = false)
+        public async Task CreateAuthenticationCookieAsync(string content, bool isPersistent = false)
         {
-            var claims = await _tokenHandler.GetJwtClaimsAsync(content);
+            var jwtClaims = await _tokenHandler.GetJwtTokenClaimsAsync(content);
 
-            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var claimsIdentity = new ClaimsIdentity(jwtClaims, CookieAuthenticationDefaults.AuthenticationScheme);
             var authProperties = new AuthenticationProperties()
             {
                 IsPersistent = isPersistent,
-                ExpiresUtc = DateTime.UtcNow.AddMonths(2) // Expire in 2 months
+                ExpiresUtc = DateTime.UtcNow.AddMonths(2)
             };
 
             await _accessor.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
                 new ClaimsPrincipal(claimsIdentity), authProperties);
         }
 
-        public async Task<bool> ValidateJwtTokenAsync()
+        /// <summary>
+        /// Validates JWT-token in session cookie
+        /// </summary>
+        /// <returns>bool</returns>
+        public async Task<bool> ValidateJwtTokenSessionCookieAsync()
         {
-            var token = ReadSessionCookieContent(Cookies.JWT_SESSION_TOKEN);
+            var token = GetSessionCookieContent(Cookies.JWT_SESSION_TOKEN);
 
             if (token == null)
                 return false;
@@ -68,17 +72,22 @@ namespace Frozen.Services
             return await _tokenHandler.ValidateJwtTokenExpirationDateAsync(token);
         }
 
-        public async Task<string> GetClaimFromIdentityCookieAsync(string claimName)
+        /// <summary>
+        /// Get a value from a specific claim in the authentication cookie
+        /// </summary>
+        /// <param name="claimName"></param>
+        /// <returns>string</returns>
+        public async Task<string> GetClaimFromAuthenticationCookieAsync(string claimName)
         {
             var userId = await Task.FromResult(_accessor.HttpContext.User.FindFirstValue(claimName));
             return userId;
         }
 
         /// <summary>
-        /// Renew authentication Jwt-Tokens
+        /// Renew authentication Jwt-Token and Jwt refreshtoken
         /// </summary>
         /// <param name="model"></param>
-        public void RenewAuthTokens(TokenModel model)
+        public void RenewJwtTokens(TokenModel model)
         {
             CreatePersistentCookie(Cookies.JWT_REFRESH_TOKEN, model.RefreshToken);
             CreateSessionCookie(Cookies.JWT_SESSION_TOKEN, model.Token);
@@ -93,7 +102,6 @@ namespace Frozen.Services
         {
             CookieOptions options = new CookieOptions();
 
-            // Security parameters
             options.HttpOnly = true;
             options.Secure = true;
             options.SameSite = SameSiteMode.Strict;
@@ -103,29 +111,31 @@ namespace Frozen.Services
         }
 
         /// <summary>
-        /// Read contents from a persistent cookie
+        /// Get all content from selected persistent cookie
         /// </summary>
-        /// <param name="name">Name of cookie to read from</param>
-        public string ReadPersistentCookie(string name)
+        /// <param name="name">Name of cookie</param>
+        /// <returns>string</returns>
+        public string GetPersistentCookieContent(string name)
         {
             return _accessor.HttpContext.Request.Cookies[name];
         }
 
         /// <summary>
-        /// Creates a session cookie
+        /// Create session cookie and store data
         /// </summary>
-        /// <param name="name">Name of the cookie</param>
-        /// <param name="content">String-value to store in the cookie</param>
+        /// <param name="name">Name of cookie</param>
+        /// <param name="content">String to store</param>
         public void CreateSessionCookie(string name, string content)
         {
             _accessor.HttpContext.Session.SetString(name, content);
         }
 
         /// <summary>
-        /// Read content from selected cookie
+        /// Read content from selected session cookie
         /// </summary>
-        /// <param name="name">Name of the cookie</param>
-        public string ReadSessionCookieContent(string name)
+        /// <param name="name">Name of cookie</param>
+        /// <returns>string</returns>
+        public string GetSessionCookieContent(string name)
         {
             return _accessor.HttpContext.Session.GetString(name);
         }

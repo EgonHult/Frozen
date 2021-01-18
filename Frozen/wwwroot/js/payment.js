@@ -1,7 +1,6 @@
 ﻿function CheckSelectedPayment(paymentId) {
     switch (paymentId.value) {
         case "1":
-            console.log("hello");
             document.getElementById("CardOption").style.display = "block";
             document.getElementById("SwishOption").style.display = "none";
             document.getElementById("BankOption").style.display = "none";

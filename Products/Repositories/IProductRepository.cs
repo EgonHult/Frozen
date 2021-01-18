@@ -12,7 +12,7 @@ namespace Products.Repositories
         Task<ProductModel> UpdateProductAsync(ProductModel product);
         Task<ProductModel> DeleteProductByIdAsync(Guid productId);
         Task<ProductModel> GetProductByIdAsync(Guid productId);
-        Task<List<ProductModel>> GetAllProducts();
-
+        Task<List<ProductModel>> GetAllProductsAsync();
+        Task<bool> UpdateProductsInStockAsync(Dictionary<Guid, int> products);
     }
 }

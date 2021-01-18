@@ -49,7 +49,7 @@ namespace Frozen.Services
 
         private HttpRequestMessage AddJwtAuthorizationHeader(HttpRequestMessage requestMessage)
         {
-            var jwtToken = _cookieHandler.ReadSessionCookieContent(Cookies.JWT_SESSION_TOKEN);
+            var jwtToken = _cookieHandler.GetSessionCookieContent(Cookies.JWT_SESSION_TOKEN);
 
             if (jwtToken == null)
                 return requestMessage;
@@ -75,9 +75,9 @@ namespace Frozen.Services
         /// </summary>
         public async Task ValidateJwtTokenStatusAsync()
         {
-            var isTokenValid = await _cookieHandler.ValidateJwtTokenAsync();
-            var refreshToken = _cookieHandler.ReadPersistentCookie(Cookies.JWT_REFRESH_TOKEN);
-            var loggedInUserId = await _cookieHandler.GetClaimFromIdentityCookieAsync("UserId");
+            var isTokenValid = await _cookieHandler.ValidateJwtTokenSessionCookieAsync();
+            var refreshToken = _cookieHandler.GetPersistentCookieContent(Cookies.JWT_REFRESH_TOKEN);
+            var loggedInUserId = await _cookieHandler.GetClaimFromAuthenticationCookieAsync("UserId");
 
             if (!isTokenValid && refreshToken != null && loggedInUserId != null)
             {
@@ -90,7 +90,7 @@ namespace Frozen.Services
             var renewTokenModel = new RenewTokenModel()
             {
                 UserID = userId,
-                Token = _cookieHandler.ReadPersistentCookie(Cookies.JWT_REFRESH_TOKEN)
+                Token = _cookieHandler.GetPersistentCookieContent(Cookies.JWT_REFRESH_TOKEN)
             };
 
             var result = await SendHttpRequestAsync(ApiLocation.Users.REQUEST_NEW_TOKEN_ENDPOINT, HttpMethod.Post, renewTokenModel);
@@ -98,7 +98,7 @@ namespace Frozen.Services
             if (result.IsSuccessStatusCode)
             {
                 var tokenPayload = await ReadResponseAsync<TokenModel>(result.Content);
-                _cookieHandler.RenewAuthTokens(tokenPayload);
+                _cookieHandler.RenewJwtTokens(tokenPayload);
             }
         }
 

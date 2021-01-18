@@ -6,7 +6,7 @@ namespace Frozen.Services
 {
     interface IJwtTokenHandler
     {
-        Task<IEnumerable<Claim>> GetJwtClaimsAsync(string token);
+        Task<IEnumerable<Claim>> GetJwtTokenClaimsAsync(string token);
         Task<bool> ValidateJwtTokenExpirationDateAsync(string token);
     }
 }

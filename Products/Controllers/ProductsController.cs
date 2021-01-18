@@ -26,7 +26,7 @@ namespace Products.Controllers
         [HttpGet("getall")]
         public async Task<ActionResult<IEnumerable<ProductModel>>> GetProductsAsync()
         {
-            var result = await _productsRepository.GetAllProducts();
+            var result = await _productsRepository.GetAllProductsAsync();
             return Ok(result);
         }
 
@@ -96,6 +96,18 @@ namespace Products.Controllers
                 }
             }
             return NoContent();
+        }
+
+        [Authorize]
+        [HttpPost("updatestock")]
+        public async Task<ActionResult> UpdateProductQuantity(Dictionary<Guid, int> products)
+        {
+            var result = await _productsRepository.UpdateProductsInStockAsync(products);
+
+            if (result)
+                return Ok();
+            else
+                return BadRequest();
         }
 
         // DELETE api/<ProductsController>/5

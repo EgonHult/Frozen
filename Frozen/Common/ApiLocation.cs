@@ -2,6 +2,11 @@
 {
     public class ApiLocation
     {
+        public class Gateway
+        {
+            public const string CREATE_ORDER = "https://localhost:44350/api/aggregate/";
+        }
+
         public class Users
         {
             public const string GATEWAY_BASEURL             = "https://localhost:44350/user/";
