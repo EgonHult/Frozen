@@ -79,8 +79,8 @@ namespace Payments.Repositories
         {
             var cardPayment = JsonConvert.DeserializeObject<CardModel>(payment.ToString());
 
-            var cardExpire = ParseDateToYearMonthInt(cardPayment.ExpiryDate);
-            var now = ParseDateToYearMonthInt(DateTime.Now);
+            var cardExpire = ParseDateYearMonthToInt(cardPayment.ExpiryDate);
+            var now = ParseDateYearMonthToInt(DateTime.Now);
 
             if (cardExpire >= now)
                 return true;
@@ -88,7 +88,7 @@ namespace Payments.Repositories
                 return false;
         }
 
-        private static int ParseDateToYearMonthInt(DateTime date)
+        private static int ParseDateYearMonthToInt(DateTime date)
         {
             return int.Parse(date.ToString("yyyyM"));
         }

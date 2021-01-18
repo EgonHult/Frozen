@@ -1,0 +1,45 @@
+﻿@model Frozen.Models.Product
+
+
+@{
+    ViewData["Title"] = "ProductDetails";
+}
+
+
+@*<div class="card  mb-3 simple-linear shadow-lg cart-padding">
+        <table class="table table-striped">
+            <div>
+                <h5 class="card-title">@Model.Name</h5>
+                <p class="card-text">@Model.Details</p>
+                <p class="card-text">@Model.Price kr</p>
+                <p class="card-text">@Model.WeightInGrams gram</p>
+                <input type="button" value="Lägg i varukorg" onclick="AddToCart('@Model.Id')" class="button button1" />
+            </div>
+        </table>
+    </div>*@
+
+<div class="row mt-4 simple-linear cart-padding">
+
+    <div class="col-md-12 col-lg-6 mt-3">
+
+        <h3>@Model.Name</h3>       
+        <p class="lead">Vikt: @Model.WeightInGrams gram</p>
+
+        <div class="d-flex justify-content-between">
+            <div class="form-inline">
+                <h3 class="p-0 m-0 mr-3 ">@Model.Price kr</h3>
+
+            </div>
+            <input type="button" value="Lägg i varukorg" onclick="AddToCart('@Model.Id')" class="button button1" />
+        </div>
+
+        <hr />
+
+        <p>@Model.Details</p>
+
+    </div>
+
+    <div class="col-md-12 col-lg-6 text-center">       
+            <img src="@Model.Image" alt="Bild på produkten" class="img-fluid rounded-lg" width="350" height="250" />    
+    </div>
+</div>
