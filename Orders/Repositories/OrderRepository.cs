@@ -22,14 +22,15 @@ namespace Orders.Repositories
 
         public async Task<OrderModel> CreateOrderAsync(OrderModel order)
         {
-            if (order != null)
+           
+            if (order != null && order.OrderProduct != null)
             {
                 bool orderExistInDatabase = await CheckIfOrderExistInDatabaseAsync(order.Id);
 
                 if (!orderExistInDatabase)
                 {
-                    try
-                    {
+                    //try
+                    //{
                         _context.Order.Add(order);
                         var result = await _context.SaveChangesAsync();
 
@@ -37,11 +38,11 @@ namespace Orders.Repositories
                             return order;
                         else
                             return null;
-                    }
-                    catch (Exception)
-                    {
-                        return null;
-                    }
+                    //}
+                    //catch (Exception)
+                    //{
+                    //    return null;
+                    //}
                 }
                 else
                     return null;

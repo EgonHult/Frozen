@@ -37,6 +37,22 @@ namespace Orders.UnitTest
         }
 
         [TestMethod]
+        public void CreateOrderAsync_CreateOrderWithoutOrderProducts_ReturnNull()
+        {
+            using (var context = new TestOrdersDbContext().DbContext)
+            {
+                //Arrange
+                var orderRepository = new OrderRepository(context);
+                var dummyOrder = DummyTestOrder.TestOrderWithoutOrderProduct();
+
+                //Act
+                var result = orderRepository.CreateOrderAsync(dummyOrder).Result;
+
+                Assert.IsNull(result);
+            }
+        }
+
+        [TestMethod]
         public void CreateOrderAsync_TryCreateNullOrder_ReturnNull()
         {
             using(var context = new TestOrdersDbContext().DbContext)
@@ -90,11 +106,28 @@ namespace Orders.UnitTest
                 context.SaveChanges();
 
                 // Act
-                var productRepository = new OrderRepository(context);
-                var deletedProduct = productRepository.DeleteOrderByOrderIdAsync(dummyOrder.Id).Result;
+                var orderRepository = new OrderRepository(context);
+                var deletedProduct = orderRepository.DeleteOrderByOrderIdAsync(dummyOrder.Id).Result;
 
                 // Assert
                 Assert.AreEqual(dummyOrder, deletedProduct);         
+            }
+        }
+
+        [TestMethod]
+        public void DeleteOrderByIdAsync_TryDeleteByEmtyId_ReturnNull()
+        {
+            using (var context = new TestOrdersDbContext().DbContext)
+            {
+                //Arrange
+                var emtyOrderId = Guid.Empty;
+
+                //Act
+                var orderRepository  = new OrderRepository(context);
+                var result = orderRepository.DeleteOrderByOrderIdAsync(emtyOrderId).Result;
+
+                //Assert
+                Assert.IsNull(result);
             }
         }
 
