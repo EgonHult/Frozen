@@ -141,6 +141,7 @@ namespace Frozen.Controllers
                 if (orderResponse.IsSuccessStatusCode)
                 {
                     var newOrder = await _clientService.ReadResponseAsync<Order>(orderResponse.Content);
+                    _cartService.EmptyCart();
                     return Ok("Snygg mannen! Ditt order id är: " + newOrder.Id);
                 }
             }

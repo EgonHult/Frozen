@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = "Din Order";
 }
-@if (Model.Cart.Count > 0)
+@if (Model.Cart != null && Model.Cart.Count > 0)
 {
 
 
