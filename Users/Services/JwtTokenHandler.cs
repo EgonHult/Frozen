@@ -88,15 +88,16 @@ namespace Users.Services
             return claims;
         }
 
-        // Construct JWT token with its claims based on the security credentials
         private JwtSecurityToken ConstructJwtToken(IEnumerable<Claim> claims, SigningCredentials credentials, DateTime expires)
         {
             var token = new JwtSecurityToken(
-                issuer: _config[AppSettings.JWT_ISSUER],
-                audience: _config[AppSettings.JWT_ISSUER],
+                _config[AppSettings.JWT_ISSUER],
+                _config[AppSettings.JWT_ISSUER],
                 claims,
-                expires: expires,
-                signingCredentials: credentials);
+                null,
+                expires,
+                credentials
+                );
 
             return token;
         }
@@ -132,7 +133,8 @@ namespace Users.Services
                 ValidateIssuerSigningKey = true,
                 ValidateActor = false,
                 ValidateLifetime = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config[securityKey]))
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config[securityKey])),
+                ClockSkew = TimeSpan.Zero
             };
 
             return validationParameters;
@@ -140,11 +142,17 @@ namespace Users.Services
 
         private ClaimsPrincipal Validate(string token, string securityKey)
         {
-            var validationParameters = TokenValidationSetup(securityKey);
-            var handler = new JwtSecurityTokenHandler();
-            var result = handler.ValidateToken(token, validationParameters, out var securityToken);
-
-            return result;
+            try
+            {
+                var validationParameters = TokenValidationSetup(securityKey);
+                var handler = new JwtSecurityTokenHandler();
+                var result = handler.ValidateToken(token, validationParameters, out var securityToken);
+                return result;
+            }
+            catch(SecurityTokenException)
+            {
+                return null;
+            }
         }
     }
 }

@@ -24,6 +24,7 @@ namespace Frozen.Controllers
             var products = await GetProductsAsync();
             return View(products);
         }
+
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> ManageProductsPage(string message)
         {
@@ -61,6 +62,15 @@ namespace Frozen.Controllers
             }
             return RedirectToAction("ManageProductsPage", new { message = "Kunde inte ta bort produkten" });
         }
+
+
+        public async Task<IActionResult> ProductDetails(Guid id)
+        {
+            var product = await GetProductByIdAsync(id);
+            return View(product);
+        }
+
+
         [HttpGet]
         public async Task<List<Product>> GetProductsAsync()
         {

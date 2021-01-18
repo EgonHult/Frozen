@@ -69,13 +69,9 @@ namespace Users.Controllers
             catch(DbUpdateConcurrencyException)
             {
                 if (!UserExists(id))
-                {
                     return NotFound();
-                }
                 else
-                {
                     throw;
-                }
             }
 
             return NoContent();
@@ -93,9 +89,8 @@ namespace Users.Controllers
                 {
                     var checkExisting = await _userRepository.CheckIfUserExistsByEmailAsync(user.Email);
                     if(checkExisting == true)
-                    {
                         return Conflict();
-                    }
+
                     var newUser = await _userRepository.CreateUserAsync(user);
                     if (newUser != null)
                         return Ok(newUser);
@@ -133,13 +128,10 @@ namespace Users.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<UserModel>> DeleteUser(Guid id)
         {
-            if(id != Guid.Empty)
-            {
-                var result = await _userRepository.DeleteUserAsync(id);
+            var result = await _userRepository.DeleteUserAsync(id);
 
-                if(result != null)
-                    return Ok(result);
-            }
+            if(result != null)
+                return Ok(result);
 
             return BadRequest();
         }

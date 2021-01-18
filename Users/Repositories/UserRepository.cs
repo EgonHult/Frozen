@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 using Users.Context;
@@ -29,24 +31,35 @@ namespace Users.Repositories
 
         public async Task<UserModel> CreateUserAsync(RegisterUserModel userModel)
         {
-            User user = new User()
+            try
             {
-                FirstName = userModel.FirstName,
-                LastName = userModel.LastName,
-                PhoneNumber = userModel.PhoneNumber,
-                Address = userModel.Address,
-                City = userModel.City,
-                Email = userModel.Email,
-                UserName = userModel.Email,
-                Zip = userModel.Zip
-            };
+                User user = new User()
+                {
+                    FirstName = userModel.FirstName,
+                    LastName = userModel.LastName,
+                    PhoneNumber = userModel.PhoneNumber,
+                    Address = userModel.Address,
+                    City = userModel.City,
+                    Email = userModel.Email,
+                    UserName = userModel.Email,
+                    Zip = userModel.Zip
+                };
 
-            var result = await _userManager.CreateAsync(user, userModel.Password);
-            var role = await _userManager.AddToRoleAsync(user, "User");
+                var result = await _userManager.CreateAsync(user, userModel.Password);
 
-            if (result.Succeeded && role.Succeeded)
+                if (result.Succeeded)
+                {
+                    var role = await _userManager.AddToRoleAsync(user, "User");
+
+                    if (role.Succeeded)
+                        return await ConvertUserToUserModelAsync(user);
+                    else
+                        await _userManager.DeleteAsync(user);
+                }
+            }
+            catch(Exception ex)
             {
-                return await ConvertUserToUserModelAsync(user);
+                throw new ArgumentNullException(ex.Message);
             }
 
             return null;
@@ -54,6 +67,10 @@ namespace Users.Repositories
 
         public async Task<UserModel> DeleteUserAsync(Guid id)
         {
+
+            if (UserIdIsEmpty(id))
+                return null;
+
             try
             {
                 var user = await _userManager.FindByIdAsync(id.ToString());
@@ -91,10 +108,8 @@ namespace Users.Repositories
 
         public async Task<UserModel> GetUserByIdAsync(Guid id)
         {
-            if (id == Guid.Empty)
-            {
+            if (UserIdIsEmpty(id))
                 return null;
-            }
 
             var user = await _userManager.FindByIdAsync(id.ToString());
 
@@ -137,6 +152,12 @@ namespace Users.Repositories
 
         public async Task<UserModel> UpdateUserAsync(Guid id, UserModel userModel)
         {
+
+            //CheckModelNotEmptyOrNull(userModel);
+
+            if (UserIdIsEmpty(id) || userModel == null)
+                return null;
+
             var user = await _userManager.FindByIdAsync(id.ToString());
 
             if (id == user.Id)
@@ -146,6 +167,7 @@ namespace Users.Repositories
                 user.PhoneNumber = userModel.PhoneNumber;
                 user.City = userModel.City;
                 user.Zip = userModel.Zip;
+                user.Address = userModel.Address;
 
                 var result = await _userManager.UpdateAsync(user);
 
@@ -227,7 +249,7 @@ namespace Users.Repositories
         {
             var result = _tokenHandler.ValidateRefreshToken(refreshToken);
 
-            if (result.Identity.IsAuthenticated)
+            if (result != null && result.Identity.IsAuthenticated)
             {
                 // Get user and role
                 var user = await _userManager.FindByIdAsync(userId.ToString());
@@ -243,6 +265,20 @@ namespace Users.Repositories
             }
 
             return null;
+        }
+
+        private bool UserIdIsEmpty(Guid userId)
+        {
+            return (userId == Guid.Empty);
+        }
+
+        private void CheckModelNotEmptyOrNull(UserModel model)
+        {
+            var properties = typeof(UserModel).GetProperties();
+            foreach(var property in properties)
+            {
+                var test = property.GetValue(model);
+            }
         }
     }
 }
