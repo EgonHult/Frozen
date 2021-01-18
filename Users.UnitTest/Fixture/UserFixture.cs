@@ -11,6 +11,7 @@ namespace Users.UnitTest.Fixture
         public UserFixture(UserManager<User> userManager)
         {
             this._userManager = userManager;
+            CleanUpUserDatabaseBeforeTest().Wait();
         }
 
         public async Task<User> CreateDummyUserAsync()
@@ -27,9 +28,23 @@ namespace Users.UnitTest.Fixture
             return null;
         }
 
+        private async Task CleanUpUserDatabaseBeforeTest()
+        {
+            await RemoveTestUserByEmail("unittest@frozen.se");
+            await RemoveTestUserByEmail("testuser@frozen.se");
+        }
+
         public async Task RemoveDummyUserAsync(User user)
         {
             await _userManager.DeleteAsync(user);
+        }
+
+        private async Task RemoveTestUserByEmail(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if(user != null)
+                await _userManager.DeleteAsync(user);
         }
     }
 }

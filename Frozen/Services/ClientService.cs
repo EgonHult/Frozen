@@ -75,7 +75,7 @@ namespace Frozen.Services
         /// </summary>
         public async Task ValidateJwtTokenStatusAsync()
         {
-            var isTokenValid = await _cookieHandler.ValidateJwtTokenSessionCookieAsync();
+            var isTokenValid = await _cookieHandler.ValidateJwtTokenSessionExpirationAsync();
             var refreshToken = _cookieHandler.GetPersistentCookieContent(Cookies.JWT_REFRESH_TOKEN);
             var loggedInUserId = await _cookieHandler.GetClaimFromAuthenticationCookieAsync("UserId");
 
@@ -100,6 +100,8 @@ namespace Frozen.Services
                 var tokenPayload = await ReadResponseAsync<TokenModel>(result.Content);
                 _cookieHandler.RenewJwtTokens(tokenPayload);
             }
+            else
+                _cookieHandler.DestroyAllCookies();
         }
 
     }
