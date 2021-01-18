@@ -22,27 +22,25 @@ namespace Gateway.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateOrderAsync(Order order)
         {
-            // Extract JWT token from Authorization header
-            var authHeader = Request.Headers["Authorization"];
+            var jwtToken = Request.Headers["Authorization"];
 
-            // Send requests to Orders
-            var orderResponse = await _clientService.PostRequestAsync("https://localhost:44398/api/Orders/create", order, authHeader);
-
-            // Reduce payload to send. Only product Id and Quantity to remove is needed
-            var updateStock = new Dictionary<Guid, int>();
+            var productsToDecreaseFromStock = new Dictionary<Guid, int>();
             foreach(var item in order.OrderProduct)
-                updateStock.Add(item.ProductId, item.Quantity);
+                productsToDecreaseFromStock.Add(item.ProductId, item.Quantity);
 
-            // Post request to Products and update products in stock
-            var productResponse = await _clientService.PostRequestAsync("https://localhost:44339/api/products/updatestock", updateStock, authHeader);
+            var productResponse = await _clientService.PostRequestAsync("https://localhost:44339/api/products/updatestock", productsToDecreaseFromStock, jwtToken);
 
-            // If both responses are successful, return new order
-            if (orderResponse.IsSuccessStatusCode && productResponse.IsSuccessStatusCode)
+            if (productResponse.IsSuccessStatusCode)
             {
-                var json = await orderResponse.Content.ReadAsStringAsync();
-                var newOrder = JsonConvert.DeserializeObject<Order>(json);
+                var orderResponse = await _clientService.PostRequestAsync("https://localhost:44398/api/Orders/create", order, jwtToken);
 
-                return Ok(newOrder);
+                if (orderResponse.IsSuccessStatusCode)
+                {
+                    var json = await orderResponse.Content.ReadAsStringAsync();
+                    var newOrder = JsonConvert.DeserializeObject<Order>(json);
+
+                    return Ok(newOrder);
+                }
             }
 
             return null;
