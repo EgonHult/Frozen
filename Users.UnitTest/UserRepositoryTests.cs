@@ -9,7 +9,7 @@ using Users.UnitTest.Fixture;
 namespace Users.UnitTest
 {
     [TestClass]
-    public class UserTests
+    public class UserRepositoryTests
     {
         public static IUserRepository UserRepositoryClass { get; set; }
         public static TestUserContext UnitTestContext { get; set; }

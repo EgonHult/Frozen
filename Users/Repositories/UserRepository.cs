@@ -151,6 +151,9 @@ namespace Users.Repositories
 
             var user = await _userManager.FindByIdAsync(id.ToString());
 
+            if (user == null)
+                return null;
+
             if (id == user.Id)
             {
                 user.FirstName = userModel.FirstName;
