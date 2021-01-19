@@ -1,8 +1,17 @@
 ﻿@model List<Frozen.Models.Product>
 @{
     ViewData["Title"] = "Hantera produkter";
+
+    var alertMessage = TempData["AlertMessage"];
 }
-@ViewBag.Message
+
+@if (alertMessage != null)
+{
+    <div class="alert alert-success" role="alert">
+        @alertMessage
+    </div>
+}
+
 <div class="card  mb-3 simple-linear shadow-lg cart-padding">
     <table class="table table-striped">
         <thead>
@@ -66,4 +75,5 @@
             }
         </tbody>
     </table>
+    <a class="btn btn-danger" style="width:200px" asp-action="CreateProductPage">Skapa ny produkt</a>
 </div>
