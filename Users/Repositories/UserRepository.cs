@@ -122,15 +122,9 @@ namespace Users.Repositories
             return null;
         }
 
-        public async Task<bool> CheckIfUserExistsByEmailAsync(string email)
+        public async Task<bool> CheckIfEmailIsRegisteredAsync(string email)
         {
-            var user = await _userManager.FindByEmailAsync(email);
-            if(user != null)
-            {
-                return true;
-            }
-
-            return false;
+            return await _context.Users.AnyAsync(x => x.Email == email);
         }
 
         public async Task<UserModel> ConvertUserToUserModelAsync(User user)
@@ -152,9 +146,6 @@ namespace Users.Repositories
 
         public async Task<UserModel> UpdateUserAsync(Guid id, UserModel userModel)
         {
-
-            //CheckModelNotEmptyOrNull(userModel);
-
             if (UserIdIsEmpty(id) || userModel == null)
                 return null;
 
@@ -168,15 +159,13 @@ namespace Users.Repositories
                 user.City = userModel.City;
                 user.Zip = userModel.Zip;
                 user.Address = userModel.Address;
+                user.Email = userModel.Email;
+                user.UserName = userModel.Email;
 
                 var result = await _userManager.UpdateAsync(user);
 
                 if (result.Succeeded)
-                {
                     return userModel;
-                }
-
-                return null;
             }
 
             return null;
@@ -206,25 +195,6 @@ namespace Users.Repositories
                 };
 
                 return responseModel;
-            }
-
-            return null;
-        }
-
-        public async Task<UserModel> UpdateEmailAddressAsync(UserModel userModel)
-        {
-            var emailAvailable = await _userManager.FindByEmailAsync(userModel.Email);
-
-            if (emailAvailable == null)
-            {
-                var user = await _userManager.FindByIdAsync(userModel.Id.ToString());
-                user.Email = userModel.Email;
-                user.UserName = userModel.Email;
-
-                var result = await _userManager.UpdateAsync(user);
-
-                if (result.Succeeded)
-                    return userModel;
             }
 
             return null;
@@ -272,13 +242,13 @@ namespace Users.Repositories
             return (userId == Guid.Empty);
         }
 
-        private void CheckModelNotEmptyOrNull(UserModel model)
-        {
-            var properties = typeof(UserModel).GetProperties();
-            foreach(var property in properties)
-            {
-                var test = property.GetValue(model);
-            }
-        }
+        //private void CheckModelNotEmptyOrNull(UserModel model)
+        //{
+        //    var properties = typeof(UserModel).GetProperties();
+        //    foreach(var property in properties)
+        //    {
+        //        var test = property.GetValue(model);
+        //    }
+        //}
     }
 }

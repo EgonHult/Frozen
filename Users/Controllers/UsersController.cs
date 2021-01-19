@@ -87,7 +87,7 @@ namespace Users.Controllers
             {
                 try
                 {
-                    var checkExisting = await _userRepository.CheckIfUserExistsByEmailAsync(user.Email);
+                    var checkExisting = await _userRepository.CheckIfEmailIsRegisteredAsync(user.Email);
                     if(checkExisting == true)
                         return Conflict();
 
@@ -155,6 +155,13 @@ namespace Users.Controllers
             }
 
             return BadRequest();
+        }
+
+        [HttpGet("verifyemail/{email}")]
+        public async Task<ActionResult<bool>> EmailAvailable(string email)
+        {
+            var isRegistered = await _userRepository.CheckIfEmailIsRegisteredAsync(email);
+            return Ok(isRegistered);
         }
 
         private bool UserExists(Guid id)

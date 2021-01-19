@@ -27,7 +27,7 @@ namespace Frozen.Controllers
         public async Task<IActionResult> ViewOrderPage()
         {
             var userId = await _cookieHandler.GetClaimFromAuthenticationCookieAsync("UserId");
-            var cart = _cartService.GetCart();
+            var cart = _cartService.GetCartContent();
 
             var paymentResult = await _clientService.SendRequestToGatewayAsync(ApiLocation.Payments.GET_PAYMENTS, HttpMethod.Get);
             var paymentMethods = await _clientService.ReadResponseAsync<List<Payment>>(paymentResult.Content);
@@ -142,7 +142,7 @@ namespace Frozen.Controllers
                 {
                     var newOrder = await _clientService.ReadResponseAsync<Order>(orderResponse.Content);
                     _cartService.EmptyCart();
-                    return Ok("Snygg mannen! Ditt order id är: " + newOrder.Id);
+                    return RedirectToAction("OrderConfirmationPage", new { orderId = newOrder.Id });
                 }
             }
 
@@ -159,6 +159,22 @@ namespace Frozen.Controllers
         {
             return (response.IsSuccessStatusCode)
                 ? await _clientService.ReadResponseAsync<Order>(response.Content) : null;
+        }
+        public async Task<ActionResult> OrderConfirmationPage(Guid orderId)
+        {
+            var userId = await _cookieHandler.GetClaimFromAuthenticationCookieAsync("UserId");
+            var userResult = await _clientService.SendRequestToGatewayAsync(ApiLocation.Users.GET_USER + userId, HttpMethod.Get);
+            var user = await _clientService.ReadResponseAsync<User>(userResult.Content);
+
+            var orderResult = await _clientService.SendRequestToGatewayAsync(ApiLocation.Orders.GATEWAY_BASEURL + orderId, HttpMethod.Get);
+            var order = await _clientService.ReadResponseAsync<Order>(orderResult.Content);
+
+            OrderConfirmationViewModel Model = new OrderConfirmationViewModel
+            {
+                Order = order,
+                User = user
+            };
+            return View(Model);
         }
 
     }
