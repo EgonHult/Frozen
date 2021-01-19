@@ -98,7 +98,7 @@ namespace Orders.UnitTest
             Assert.AreEqual(newOrder2, null);
 
             // Delete dummyOrder from DB
-            OrderTestContext.DbContext.Remove(dummyOrder);
+            OrderTestContext.DbContext.Remove(newOrder);
             OrderTestContext.DbContext.SaveChanges();
             
         }
@@ -121,13 +121,13 @@ namespace Orders.UnitTest
         }
 
         [TestMethod]
-        public void DeleteOrderByIdAsync_TryDeleteByEmtyId_ReturnNull()
+        public void DeleteOrderByIdAsync_TryDeleteByEmptyId_ReturnNull()
         {                      
             //Arrange
-            var emtyOrderId = Guid.Empty;
+            var emptyOrderId = Guid.Empty;
 
             //Act              
-            var result = OrderRepository.DeleteOrderByOrderIdAsync(emtyOrderId).Result;
+            var result = OrderRepository.DeleteOrderByOrderIdAsync(emptyOrderId).Result;
 
             //Assert
             Assert.IsNull(result);           
@@ -135,7 +135,7 @@ namespace Orders.UnitTest
 
         [TestMethod]
         public void DeleteOrderByIdAsync_TryDeleteNonExistingOrder_ReturnNull()
-    {                         
+        {                         
             // Arrange
             var nonExistingOrderId = Guid.NewGuid();
 

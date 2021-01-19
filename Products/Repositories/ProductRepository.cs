@@ -25,24 +25,24 @@ namespace Products.Repositories
         /// <returns>Created Product</returns>
         public async Task<ProductModel> CreateProductAsync(ProductModel product)
         {
-            try
+            if (product != null)
             {
-                _context.Product.Add(product);
-                var result = await _context.SaveChangesAsync();
-
-                if (result > 0)
+                bool productExistInDataBase = await CheckIfProductExistInDatabaseAsync(product.Id);
+                if (!productExistInDataBase)
                 {
-                    return product;
+                    _context.Product.Add(product);
+                    var result = await _context.SaveChangesAsync();
+
+                    if (result > 0)
+                        return product;
+                    else
+                        return null;
                 }
                 else
-                {
                     return null;
-                }
             }
-            catch (Exception)
-            {
+            else
                 return null;
-            }
         }
 
         public async Task<ProductModel> DeleteProductByIdAsync(Guid productId)
@@ -68,16 +68,7 @@ namespace Products.Repositories
 
         public async Task<List<ProductModel>> GetAllProductsAsync()
         {
-            //try
-            //{
-            //    var listOfProducts = await _context.Product.OrderBy(x => x.Name).ToListAsync();
-
-            //    return listOfProducts;
-            //}
-            //catch (Exception)
-            //{
-            //    return null;
-            //}
+           
             var listOfProducts = await _context.Product.OrderBy(x => x.Name).ToListAsync();
             return listOfProducts;
         }
@@ -143,5 +134,8 @@ namespace Products.Repositories
                 return false;
             }
         }
+
+        public async Task<bool> CheckIfProductExistInDatabaseAsync(Guid id)
+            => await _context.Product.AnyAsync(x => x.Id == id);
     }
 }

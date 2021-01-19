@@ -25,43 +25,60 @@ namespace Products.UnitTest
 
 
         [TestMethod]
-        public void CreateProductAsync_CreateNewPRoduct_ReturnCreatedProduct()
+        public void CreateProductAsync_CreateNewProduct_ReturnCreatedProduct()
         {
            
             // Arrange              
             var dummyProduct = DummyTestProduct.TestProduct();
 
             // Act
-            var newProduct = ProductRepository.CreateProductAsync(dummyProduct);
+            var newProduct = ProductRepository.CreateProductAsync(dummyProduct).Result;
 
             // Assert
-            Assert.AreEqual(dummyProduct, newProduct.Result);
+            Assert.AreEqual(dummyProduct, newProduct);
 
             // Clean up!
-            ProductTestContext.DbContext.Remove(dummyProduct);
+            ProductTestContext.DbContext.Remove(newProduct);
             ProductTestContext.DbContext.SaveChanges();
             
         }
 
         [TestMethod]
-        public void CreateProductAsync_TryCreateNullProduct_CatchExceptionReturnTrue()
+        public void CreateProductAsync_TryCreateNullProduct_ReturnNull()
         {         
             // Arrange            
             ProductModel dummyProduct = null;
-            try
-            {
-                // Act
-                var nullProduct = ProductRepository.CreateProductAsync(dummyProduct);
-            }
-            catch(Exception)
-            {
-                // Assert
-                return;
-            }         
+           
+            // Act
+            var nullProduct = ProductRepository.CreateProductAsync(dummyProduct).Result;
+
+            // Assert
+            Assert.IsNull(nullProduct);                    
         }
 
         [TestMethod]
-        public void DeleteProductByIdAsync_DeleteProductFromDatabse_ReturnDeletedProductAreEqual()
+        public void CreateOrderAsync_TryCreateProductWithExistingProductId_ReturnNull()
+        {
+
+            // Arrange               
+            var dummyProduct = DummyTestProduct.TestProduct();
+            var dummyProduct2 = dummyProduct;
+
+            //Act 
+
+            var newOrder = ProductRepository.CreateProductAsync(dummyProduct).Result;
+            var newOrder2 = ProductRepository.CreateProductAsync(dummyProduct2).Result;
+
+            //Assert
+            Assert.AreEqual(newOrder2, null);
+
+            // Delete dummyOrder from DB
+            ProductTestContext.DbContext.Remove(newOrder);
+            ProductTestContext.DbContext.SaveChanges();
+        }
+
+        [TestMethod]
+        public void DeleteProductByIdAsync_DeleteProductFromDatabase_ReturnDeletedProductAreEqual()
         {         
             // Arrange
             var dummyProduct = DummyTestProduct.TestProduct();
@@ -69,10 +86,10 @@ namespace Products.UnitTest
             ProductTestContext.DbContext.SaveChanges();
 
             // Act
-            var deletedProduct = ProductRepository.DeleteProductByIdAsync(dummyProduct.Id);
+            var deletedProduct = ProductRepository.DeleteProductByIdAsync(dummyProduct.Id).Result;
 
             // Assert
-            Assert.AreEqual(dummyProduct, deletedProduct.Result);            
+            Assert.AreEqual(dummyProduct, deletedProduct);            
         }
 
         [TestMethod]
@@ -84,7 +101,7 @@ namespace Products.UnitTest
                 var nonExistingProductId = Guid.NewGuid();
 
                 // Act                  
-                var product = ProductRepository.DeleteProductByIdAsync(nonExistingProductId);
+                var product = ProductRepository.DeleteProductByIdAsync(nonExistingProductId).Result;
             }
             catch (Exception)
             {
@@ -93,6 +110,21 @@ namespace Products.UnitTest
             }
             
         }
+
+        [TestMethod]
+        public void DeleteProductByIdAsync_TryDeleteProductByEmptyId_ReturnNull()
+        {
+            //Arrange
+            var emptyProductId = Guid.Empty;
+
+            //Act              
+            var result = ProductRepository.DeleteProductByIdAsync(emptyProductId).Result;
+
+            //Assert
+            Assert.IsNull(result);
+        }
+
+
         [TestMethod]
         public void GetAllProducts_GetListWithAllProductsInDb_ReturnListOfProducts()
         {
@@ -119,7 +151,7 @@ namespace Products.UnitTest
             Assert.IsNotNull(product);
 
             // Delete dummyOrder from DB
-            ProductTestContext.DbContext.Remove(dummyProduct);
+            ProductTestContext.DbContext.Remove(product);
             ProductTestContext.DbContext.SaveChanges();
             
         }
@@ -157,7 +189,7 @@ namespace Products.UnitTest
                 ProductModel dummyProduct = null;
 
                 // Act            
-                var product = ProductRepository.UpdateProductAsync(dummyProduct);
+                var product = ProductRepository.UpdateProductAsync(dummyProduct).Result;
             }
             catch (Exception)
             {
