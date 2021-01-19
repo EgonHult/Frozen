@@ -141,7 +141,20 @@ namespace Users.UnitTest
         }
 
         [TestMethod]
-        public void GetAllUsersAsync_GetAllUsersFromDatase_ReturnListOfUsers()
+        public void GetUserByIdAsync_TryGetUserById_ReturnNull()
+        {
+            //Arange
+            var notExistingUserId = Guid.NewGuid();
+
+            //Act
+            var user = UserRepositoryClass.GetUserByIdAsync(notExistingUserId).Result;
+
+            //Assert
+            Assert.IsNull(user);
+        }
+
+        [TestMethod]
+        public void GetAllUsersAsync_GetAllUsersFromDatabase_ReturnListOfUsers()
         {
             // Act
             var users = UserRepositoryClass.GetAllUsersAsync().Result;

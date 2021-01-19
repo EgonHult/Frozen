@@ -31,5 +31,24 @@ namespace Orders.UnitTest.DummyOrder
             return dummyOrder;
 
         }
+
+        public static OrderModel TestOrderWithoutOrderProduct()
+        {
+
+            var dummyOrder = new OrderModel
+            {
+                Id = Guid.NewGuid(),
+                StatusId = 1,
+                TotalPrice = 1000.99M,
+                PaymentId = 1,
+                UserId = Guid.NewGuid(),
+                Date = DateTime.Now,           
+            };
+
+            return dummyOrder;
+
+        }
+
+
     }
 }
