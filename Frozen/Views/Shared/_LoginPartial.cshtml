@@ -7,10 +7,6 @@
             <div class="dropdown">
                 @if (!User.IsInRole("Admin"))
                 {
-
-                    <button class="btn btn-info btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        @User.Claims.Where(x => x.Type == "FirstName").Select(x => x.Value).FirstOrDefault() <i class="far fa-user"></i>
-
                     <button class="btn btn-info btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Mina Sidor <i class="far fa-user"></i>
 
