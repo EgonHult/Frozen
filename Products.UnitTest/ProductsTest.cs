@@ -12,185 +12,159 @@ namespace Products.UnitTest
     [TestClass]
     public class ProductsTest
     {
-        /*
-        public static TestProductsDbContext DbContext { get; set; }
-        
+
+        public static IProductRepository ProductRepository { get; set; }
+        public static TestProductsDbContext ProductTestContext { get; set; }
+
         [ClassInitialize]
-        public static void LoadAppsettings(TestContext context)
+        public static void TestFixtureSetup(TestContext context)
         {
-            DbContext = new TestProductsDbContext();
+            ProductTestContext = new TestProductsDbContext();
+            ProductRepository = new ProductRepository(ProductTestContext.DbContext);
         }
-        */
+
 
         [TestMethod]
         public void CreateProductAsync_CreateNewPRoduct_ReturnCreatedProduct()
         {
-            using(var context = new TestProductsDbContext().DbContext)
-            {
-                // Arrange
-                var productRepository = new ProductRepository(context);
+           
+            // Arrange              
+            var dummyProduct = DummyTestProduct.TestProduct();
 
-                var dummyProduct = DummyTestProduct.TestProduct();
+            // Act
+            var newProduct = ProductRepository.CreateProductAsync(dummyProduct);
 
-                // Act
-                var newProduct = productRepository.CreateProductAsync(dummyProduct);
+            // Assert
+            Assert.AreEqual(dummyProduct, newProduct.Result);
 
-                // Assert
-                Assert.AreEqual(dummyProduct, newProduct.Result);
-
-                // Clean up!
-                context.Remove(dummyProduct);
-                context.SaveChanges();
-            }
+            // Clean up!
+            ProductTestContext.DbContext.Remove(dummyProduct);
+            ProductTestContext.DbContext.SaveChanges();
+            
         }
 
         [TestMethod]
         public void CreateProductAsync_TryCreateNullProduct_CatchExceptionReturnTrue()
-        {
-            using (var context = new TestProductsDbContext().DbContext)
+        {         
+            // Arrange            
+            ProductModel dummyProduct = null;
+            try
             {
-                // Arrange
-                var productRepository = new ProductRepository(context);
-
-                ProductModel dummyProduct = null;
-
-                try
-                {
-                    // Act
-                    var nullProduct = productRepository.CreateProductAsync(dummyProduct);
-                }
-                catch(Exception)
-                {
-                    // Assert
-                    return;
-                }
-
+                // Act
+                var nullProduct = ProductRepository.CreateProductAsync(dummyProduct);
             }
+            catch(Exception)
+            {
+                // Assert
+                return;
+            }         
         }
 
         [TestMethod]
         public void DeleteProductByIdAsync_DeleteProductFromDatabse_ReturnDeletedProductAreEqual()
-        {
-            using (var context = new TestProductsDbContext().DbContext)
-            {
-                // Arrange
-                var dummyProduct = DummyTestProduct.TestProduct();
-                context.Product.Add(dummyProduct);
-                context.SaveChanges();
+        {         
+            // Arrange
+            var dummyProduct = DummyTestProduct.TestProduct();
+            ProductTestContext.DbContext.Product.Add(dummyProduct);
+            ProductTestContext.DbContext.SaveChanges();
 
-                // Act
-                var productRepository = new ProductRepository(context);
-                var deletedProduct = productRepository.DeleteProductByIdAsync(dummyProduct.Id);
+            // Act
+            var deletedProduct = ProductRepository.DeleteProductByIdAsync(dummyProduct.Id);
 
-                // Assert
-                Assert.AreEqual(dummyProduct, deletedProduct.Result);
-            }
+            // Assert
+            Assert.AreEqual(dummyProduct, deletedProduct.Result);            
         }
 
         [TestMethod]
         public void DeleteProductByIdAsync_TryDeleteNonExistingProduct_ReturnNull()
-        {
-            using (var context = new TestProductsDbContext().DbContext)
+        {          
+            try
             {
-                try
-                {
-                    // Arrange
-                    var nonExistingProductId = Guid.NewGuid();
+                // Arrange
+                var nonExistingProductId = Guid.NewGuid();
 
-                    // Act
-                    var productRepository = new ProductRepository(context);
-                    var product = productRepository.DeleteProductByIdAsync(nonExistingProductId);
-                }
-                catch (Exception)
-                {
-                    // Arrange
-                    return;
-                }
+                // Act                  
+                var product = ProductRepository.DeleteProductByIdAsync(nonExistingProductId);
             }
+            catch (Exception)
+            {
+                // Arrange
+                return;
+            }
+            
         }
         [TestMethod]
         public void GetAllProducts_GetListWithAllProductsInDb_ReturnListOfProducts()
         {
-            using (var context = new TestProductsDbContext().DbContext)
-            {
-                // Act
-                var productRepository = new ProductRepository(context);
-                var products = productRepository.GetAllProductsAsync().Result;
+            // Act             
+            var products = ProductRepository.GetAllProductsAsync().Result;
 
-                // Assert
-                Assert.IsInstanceOfType(products, typeof(List<ProductModel>));
-            }
+            // Assert
+            Assert.IsInstanceOfType(products, typeof(List<ProductModel>));           
         }
 
         [TestMethod]
         public void GetProductByIdAsync_GetProductById_ReturnProduct()
         {
-            using (var context = new TestProductsDbContext().DbContext)
-            {
-                // Arrange 
-                var dummyProduct = DummyTestProduct.TestProduct();
-                context.Product.Add(dummyProduct);
-                context.SaveChanges();
+           
+            // Arrange 
+            var dummyProduct = DummyTestProduct.TestProduct();
+            ProductTestContext.DbContext.Product.Add(dummyProduct);
+            ProductTestContext.DbContext.SaveChanges();
 
-                // Act
-                var productRepository = new ProductRepository(context);
-                var product = productRepository.GetProductByIdAsync(dummyProduct.Id).Result;
+            // Act
+            var product = ProductRepository.GetProductByIdAsync(dummyProduct.Id).Result;
 
-                // Assert
-                Assert.IsNotNull(product);
+            // Assert
+            Assert.IsNotNull(product);
 
-                // Delete dummyOrder from DB
-                context.Remove(dummyProduct);
-                context.SaveChanges();
-            }
+            // Delete dummyOrder from DB
+            ProductTestContext.DbContext.Remove(dummyProduct);
+            ProductTestContext.DbContext.SaveChanges();
+            
         }
 
         [TestMethod]
         public void UpdateProductAsync_UpdatePriceForProduct_ReturnUpdatedProduct()
         {
-            using (var context = new TestProductsDbContext().DbContext)
-            {
-                // Arrange
-                var dummyProduct = DummyTestProduct.TestProduct();
-                context.Product.Add(dummyProduct);
-                context.SaveChanges();
-                var oldPrice = 1000;
+           
+            // Arrange
+            var dummyProduct = DummyTestProduct.TestProduct();
+            ProductTestContext.DbContext.Product.Add(dummyProduct);
+            ProductTestContext.DbContext.SaveChanges();
+            var oldPrice = 1000;
 
-                // Act
-                dummyProduct.Price = 2000;
-                var productRepository = new ProductRepository(context);
-                var product = productRepository.UpdateProductAsync(dummyProduct).Result;
+            // Act
+            dummyProduct.Price = 2000;
+            var product = ProductRepository.UpdateProductAsync(dummyProduct).Result;
 
-                // Assert
-                Assert.AreNotEqual(oldPrice, product.Price);
-                Assert.AreEqual(dummyProduct.Price, product.Price);
+            // Assert
+            Assert.AreNotEqual(oldPrice, product.Price);
+            Assert.AreEqual(dummyProduct.Price, product.Price);
 
-                // Delete dummyOrder from DB
-                context.Remove(dummyProduct);
-                context.SaveChanges();
-            }
+            // Delete dummyOrder from DB
+            ProductTestContext.DbContext.Remove(dummyProduct);
+            ProductTestContext.DbContext.SaveChanges();
+          
         }
 
         [TestMethod]
         public void UpdateProductAsync_TryUpdateNonExistingProduct_ReturnNull()
-        {
-            using (var context = new TestProductsDbContext().DbContext)
+        {          
+            try
             {
-                try
-                {
-                    // Arrange
-                    ProductModel dummyProduct = null;
+                // Arrange
+                ProductModel dummyProduct = null;
 
-                    // Act
-                    var productRepository = new ProductRepository(context);
-                    var product = productRepository.UpdateProductAsync(dummyProduct);
-                }
-                catch (Exception)
-                {
-                    // Arrange
-                    return;
-                }
+                // Act            
+                var product = ProductRepository.UpdateProductAsync(dummyProduct);
             }
+            catch (Exception)
+            {
+                // Arrange
+                return;
+            }
+            
         }
 
     }
