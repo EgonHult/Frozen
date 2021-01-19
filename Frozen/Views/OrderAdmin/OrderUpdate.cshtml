@@ -7,26 +7,7 @@
         { 2, "Behandlad" },
         { 3, "Skickad" },
     };
-
-    var statusUpdateSuccessful = TempData["StatusUpdated"];
 }
-
-@if (statusUpdateSuccessful != null)
-{
-    if ((bool)statusUpdateSuccessful)
-    {
-        <div class="alert alert-success" role="alert">
-            Holy crap, Batman! Order <strong>@Model.Id</strong> har uppdaterats
-        </div>
-    }
-    else
-    {
-        <div class="alert alert-warning" role="alert">
-            Kunde inte uppdatera order <strong>@Model.Id</strong>
-        </div>
-    }
-}
-
 <h3>Uppdatera Order</h3>
 
 <form asp-action="OrderUpdate">
