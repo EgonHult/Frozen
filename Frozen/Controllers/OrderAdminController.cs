@@ -62,33 +62,8 @@ namespace Frozen.Controllers
                 updateSuccessFlag = true;
 
             TempData["StatusUpdated"] = updateSuccessFlag;
-            return RedirectToAction(nameof(OrderUpdate), new { id = id });
+            TempData["OrderID"] = id;
+            return RedirectToAction("Index");
         }
-
-        //[HttpPost]
-        //public async Task<IActionResult> OrderUpdate(Order order)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        var id = order.Id;
-        //        var orderResult = await _clientService.SendRequestToGatewayAsync(ApiLocation.Orders.GATEWAY_BASEURL + order.Id, HttpMethod.Get);
-
-        //        if(orderResult.IsSuccessStatusCode)
-        //        {
-        //            var orderToUpdate = await _clientService.ReadResponseAsync<Order>(orderResult.Content);
-        //            orderToUpdate.StatusId = order.StatusId;
-
-        //            var result = await _clientService.SendRequestToGatewayAsync(ApiLocation.Orders.GATEWAY_BASEURL + id, HttpMethod.Put, orderToUpdate);
-
-        //            if (result.IsSuccessStatusCode)
-        //            {
-        //                var updatedOrder = await _clientService.ReadResponseAsync<Order>(result.Content);
-        //                return RedirectToAction(nameof(OrderUpdate), new { id = updatedOrder.Id, updated=true });
-        //            }
-        //        }
-        //    }
-
-        //    return View();
-        //}
     }
 }
