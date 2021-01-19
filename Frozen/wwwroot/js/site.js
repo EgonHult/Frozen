@@ -21,6 +21,7 @@ function ReduceFromCart(productId) {
                 return cartResponse.text();
             }
         }).then(data => {
+            console.log(data);
             document.getElementById("cartButtonCount").innerHTML = data;
             DecreaseProductQuantity(productId);
             CalculateTotalPrice();
@@ -88,4 +89,6 @@ function CalculateTotalPrice() {
 
 }
 
-CountProductsInCart();
+window.onload = (event) => {
+    CountProductsInCart();
+}

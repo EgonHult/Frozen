@@ -141,7 +141,20 @@ namespace Users.UnitTest
         }
 
         [TestMethod]
-        public void GetAllUsersAsync_GetAllUsersFromDatase_ReturnListOfUsers()
+        public void GetUserByIdAsync_TryGetUserById_ReturnNull()
+        {
+            //Arange
+            var notExistingUserId = Guid.NewGuid();
+
+            //Act
+            var user = UserRepositoryClass.GetUserByIdAsync(notExistingUserId).Result;
+
+            //Assert
+            Assert.IsNull(user);
+        }
+
+        [TestMethod]
+        public void GetAllUsersAsync_GetAllUsersFromDatabase_ReturnListOfUsers()
         {
             // Act
             var users = UserRepositoryClass.GetAllUsersAsync().Result;
@@ -275,7 +288,7 @@ namespace Users.UnitTest
             };
 
             // Act
-            var updatedUser = UserRepositoryClass.UpdateEmailAddressAsync(userModel).Result;
+            var updatedUser = UserRepositoryClass.UpdateUserAsync(userModel.Id, userModel).Result;
 
             // Assert
             Assert.AreEqual(userModel.Email, updatedUser.Email);
@@ -283,7 +296,8 @@ namespace Users.UnitTest
 
             // Restore testuser
             updatedUser.Email = "testuser@frozen.se";
-            var tmp = UserRepositoryClass.UpdateEmailAddressAsync(updatedUser).Result;
+            var tmp = UserRepositoryClass.UpdateUserAsync(updatedUser.Id, updatedUser).Result;
+            //var tmp = UserRepositoryClass.UpdateEmailAddressAsync(updatedUser).Result;
         }
 
         [TestMethod]
@@ -305,7 +319,8 @@ namespace Users.UnitTest
             };
 
             // Act
-            var result = UserRepositoryClass.UpdateEmailAddressAsync(userModel).Result;
+            var result = UserRepositoryClass.UpdateUserAsync(userModel.Id, userModel).Result;
+            //var result = UserRepositoryClass.UpdateEmailAddressAsync(userModel).Result;
 
             // Assert
             Assert.IsNull(result);
@@ -330,26 +345,26 @@ namespace Users.UnitTest
         }
 
         [TestMethod]
-        public void CheckIfUserExistsByEmailAsync_CheckIfNonExistingEmailIsRegistered_ReturnFalse()
+        public void CheckIfEmailIsRegisteredAsync_CheckIfNonExistingEmailIsRegistered_ReturnFalse()
         {
             // Arrange
             var emailToTest = "funkydude666@frozen.se";
 
             // Act
-            var result = UserRepositoryClass.CheckIfUserExistsByEmailAsync(emailToTest).Result;
+            var result = UserRepositoryClass.CheckIfEmailIsRegisteredAsync(emailToTest).Result;
 
             // Assert
             Assert.IsFalse(result);
         }
 
         [TestMethod]
-        public void CheckIfUserExistsByEmailAsync_CheckAlreadyRegisteredEmail_ReturnTrue()
+        public void CheckIfEmailIsRegisteredAsync_CheckAlreadyRegisteredEmail_ReturnTrue()
         {
             // Arrange
             var emailToTest = "testuser@frozen.se";
 
             // Act
-            var result = UserRepositoryClass.CheckIfUserExistsByEmailAsync(emailToTest).Result;
+            var result = UserRepositoryClass.CheckIfEmailIsRegisteredAsync(emailToTest).Result;
 
             // Assert
             Assert.IsTrue(result);
