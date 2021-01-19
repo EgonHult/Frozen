@@ -73,6 +73,19 @@ namespace Orders.UnitTest
         }
 
         [TestMethod]
+        public void CreateOrderAsync_TryGetOrderWithEmptyModel_ReturnNull()
+        {
+            //Arrange
+            var orderModel = new OrderModel();
+
+            //Act
+            var EmptyOrder = OrderRepository.CreateOrderAsync(orderModel).Result;
+
+            //Assert
+            Assert.IsNull(EmptyOrder);
+        }
+
+        [TestMethod]
         public void CreateOrderAsync_TryCreateOrderWithExistingOrderId_ReturnNull()
         {
            
@@ -155,7 +168,7 @@ namespace Orders.UnitTest
             OrderTestContext.DbContext.Remove(dummyOrder);
             OrderTestContext.DbContext.SaveChanges();            
         }
-
+    
         [TestMethod]
         public void GetOrderByIdAsync_GetNonExistingOrder_ReturnNull()
         {
@@ -238,7 +251,7 @@ namespace Orders.UnitTest
             // Assert
             Assert.IsNull(orders);
         }
-
+      
         [TestMethod]
         public void UpdateOrderStatusAsync_UpdateOrderStatusToSent_ReturnTrue()
         {          
