@@ -62,7 +62,8 @@ namespace Frozen.Controllers
                 updateSuccessFlag = true;
 
             TempData["StatusUpdated"] = updateSuccessFlag;
-            return RedirectToAction(nameof(OrderUpdate), new { id = id });
+            TempData["OrderID"] = id;
+            return RedirectToAction("Index");
         }
     }
 }

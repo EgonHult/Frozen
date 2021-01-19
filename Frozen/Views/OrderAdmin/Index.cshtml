@@ -1,5 +1,22 @@
 ﻿@model List<Order>
 @{
+    var statusUpdateSuccessful = TempData["StatusUpdated"];
+}
+
+@if (statusUpdateSuccessful != null)
+{
+    if ((bool)statusUpdateSuccessful)
+    {
+        <div class="alert alert-success" role="alert">
+            Holy crap, Batman! Order <strong>@TempData["OrderId"]</strong> har uppdaterats
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning" role="alert">
+            Kunde inte uppdatera order <strong>@TempData["OrderId"]</strong>
+        </div>
+    }
 }
 
 <h3>Orders</h3>
