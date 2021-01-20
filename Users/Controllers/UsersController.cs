@@ -25,8 +25,8 @@ namespace Users.Controllers
         }
 
         // GET: api/Users
-        [Authorize(Policy = "Admin")]
-        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        [HttpGet("all")]
         public async Task<ActionResult<IEnumerable<UserModel>>> GetUsersAsync()
         {
             var result = await _userRepository.GetAllUsersAsync();
@@ -60,21 +60,23 @@ namespace Users.Controllers
             if (id != user.Id)
                 return BadRequest();
 
-            try
+            if (ModelState.IsValid)
             {
-                var result = await _userRepository.UpdateUserAsync(id, user);
-                if (result != null)
-                    return Ok(result);
+                try
+                {
+                    var result = await _userRepository.UpdateUserAsync(id, user);
+                    if (result != null)
+                        return Ok(result);
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!UserExists(id))
+                        return NotFound();
+                    else
+                        throw;
+                }
             }
-            catch(DbUpdateConcurrencyException)
-            {
-                if (!UserExists(id))
-                    return NotFound();
-                else
-                    throw;
-            }
-
-            return NoContent();
+            return BadRequest();
         }
 
         // POST: api/Users
@@ -83,25 +85,28 @@ namespace Users.Controllers
         [HttpPost("register")]
         public async Task<ActionResult<UserModel>> PostUser(RegisterUserModel user)
         {
-            if (user != null)
+            if (ModelState.IsValid)
             {
-                try
+                if (user != null)
                 {
-                    var checkExisting = await _userRepository.CheckIfEmailIsRegisteredAsync(user.Email);
-                    if(checkExisting == true)
-                        return Conflict();
+                    try
+                    {
+                        var checkExisting = await _userRepository.CheckIfEmailIsRegisteredAsync(user.Email);
+                        if (checkExisting == true)
+                            return Conflict();
 
-                    var newUser = await _userRepository.CreateUserAsync(user);
-                    if (newUser != null)
-                        return Ok(newUser);
-                }
-                catch(Exception)
-                {
-                    return BadRequest();
+                        var newUser = await _userRepository.CreateUserAsync(user);
+                        if (newUser != null)
+                            return Ok(newUser);
+                    }
+                    catch (Exception)
+                    {
+                        return BadRequest();
+                    }
                 }
             }
 
-            return BadRequest();
+            return BadRequest(ModelState);
         }
 
         // POST: api/Users/login/
@@ -124,7 +129,7 @@ namespace Users.Controllers
 
 
         // DELETE: api/Users/5
-        [Authorize(Policy = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<ActionResult<UserModel>> DeleteUser(Guid id)
         {

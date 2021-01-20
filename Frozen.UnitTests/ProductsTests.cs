@@ -81,12 +81,13 @@ namespace Frozen.UnitTests
             //Arrange
             Product product = new Product
             {
+                Id = Guid.NewGuid(),
                 Name = "Test2",
                 Details = "Test product2",
                 Price = 100,
                 Quantity = 50,
                 WeightInGrams = 100,
-                Image = ""
+                Image = "",
             };
 
             //Act

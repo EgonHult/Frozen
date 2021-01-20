@@ -85,14 +85,19 @@ namespace Orders.Repositories
         }
 
         public async Task<OrderModel> UpdateOrderAsync(OrderModel order)
-        {       
-            bool orderExistInDatabase = await CheckIfOrderExistInDatabaseAsync(order.Id);
-
-            if (orderExistInDatabase && order.Id != Guid.Empty)
+        {
+            if (order != null)
             {
-                _context.Entry(order).State = EntityState.Modified;
-                await _context.SaveChangesAsync();
-                return order;
+                bool orderExistInDatabase = await CheckIfOrderExistInDatabaseAsync(order.Id);
+
+                if (orderExistInDatabase && order.Id != Guid.Empty)
+                {
+                    _context.Entry(order).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                    return order;
+                }
+                else
+                    return null;
             }
             else
                 return null;

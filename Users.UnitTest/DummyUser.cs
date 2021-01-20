@@ -11,10 +11,10 @@ namespace Users.UnitTest
             {
                 FirstName = "UnitTest",
                 LastName = "UnitTest",
-                Address = "UnitTest",
+                Address = "UnitTest 123",
                 City = "UnitTest",
                 Zip = "12345",
-                PhoneNumber = "+46-12-3456789",
+                PhoneNumber = "070-123 45 67",
                 Email = "unittest@frozen.se",
                 Password = "Test123!"
             };
@@ -29,10 +29,10 @@ namespace Users.UnitTest
                 Id = Guid.NewGuid(),
                 FirstName = "Test",
                 LastName = "Test",
-                Address = "Test",
+                Address = "Test 123",
                 City = "Test",
                 Zip = "12345",
-                PhoneNumber = "+46-12-3456789",
+                PhoneNumber = "070-123 45 67",
                 Email = "testuser@frozen.se",
                 UserName = "testuser@frozen.se"
             };

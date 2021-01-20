@@ -27,6 +27,7 @@ namespace Users.UnitTest
         {
             // Arrange
             JwtTokenHandler tokenHandler = new JwtTokenHandler(Config);
+
             var user = DummyUser.TestUser();
 
             // Act
@@ -41,6 +42,7 @@ namespace Users.UnitTest
         {
             // Arrange
             JwtTokenHandler tokenHandler = new JwtTokenHandler(Config);
+
             var user = DummyUser.TestUserModel();
 
             // Act
@@ -55,6 +57,7 @@ namespace Users.UnitTest
         {
             // Arrange
             JwtTokenHandler tokenHandler = new JwtTokenHandler(Config);
+
             var user = DummyUser.TestUser();
 
             // Act
@@ -69,6 +72,7 @@ namespace Users.UnitTest
         {
             // Arrange
             JwtTokenHandler tokenHandler = new JwtTokenHandler(Config);
+
             var user = DummyUser.TestUserModel();
 
             // Act
@@ -83,6 +87,7 @@ namespace Users.UnitTest
         {
             // Arrange
             JwtTokenHandler tokenHandler = new JwtTokenHandler(Config);
+
             var user = DummyUser.TestUser();
             string token = tokenHandler.CreateToken(user, false);
 
