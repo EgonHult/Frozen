@@ -26,7 +26,7 @@ namespace Products.UnitTest
 
         [TestMethod]
         public void CreateProductAsync_CreateNewProduct_ReturnCreatedProduct()
-        {          
+        {
             // Arrange              
             var dummyProduct = DummyTestProduct.TestProduct();
 
@@ -37,9 +37,9 @@ namespace Products.UnitTest
             Assert.AreEqual(dummyProduct, newProduct);
 
             // Clean up!
-            ProductTestContext.DbContext.Remove(newProduct);
-            ProductTestContext.DbContext.SaveChanges();           
+            DeleteDummyProductFromDatabase(dummyProduct);
         }
+      
 
         [TestMethod]
         public void CreateProductAsync_TryCreateNullProduct_ReturnNull()
@@ -82,17 +82,14 @@ namespace Products.UnitTest
             Assert.AreEqual(newOrder2, null);
 
             // Delete dummyOrder from DB
-            ProductTestContext.DbContext.Remove(newOrder);
-            ProductTestContext.DbContext.SaveChanges();
+            DeleteDummyProductFromDatabase(dummyProduct);
         }
 
         [TestMethod]
         public void DeleteProductByIdAsync_DeleteProductFromDatabase_ReturnDeletedProductAreEqual()
-        {         
+        {
             // Arrange
-            var dummyProduct = DummyTestProduct.TestProduct();
-            ProductTestContext.DbContext.Product.Add(dummyProduct);
-            ProductTestContext.DbContext.SaveChanges();
+            ProductModel dummyProduct = CreateDummyProductToDatabase();
 
             // Act
             var deletedProduct = ProductRepository.DeleteProductByIdAsync(dummyProduct.Id).Result;
@@ -140,11 +137,9 @@ namespace Products.UnitTest
 
         [TestMethod]
         public void GetProductByIdAsync_GetProductById_ReturnProduct()
-        {          
+        {
             // Arrange 
-            var dummyProduct = DummyTestProduct.TestProduct();
-            ProductTestContext.DbContext.Product.Add(dummyProduct);
-            ProductTestContext.DbContext.SaveChanges();
+            ProductModel dummyProduct = CreateDummyProductToDatabase();
 
             // Act
             var product = ProductRepository.GetProductByIdAsync(dummyProduct.Id).Result;
@@ -153,9 +148,10 @@ namespace Products.UnitTest
             Assert.IsNotNull(product);
 
             // Delete dummyOrder from DB
-            ProductTestContext.DbContext.Remove(product);
-            ProductTestContext.DbContext.SaveChanges();            
+            DeleteDummyProductFromDatabase(dummyProduct);
         }
+
+      
 
         [TestMethod]
         public void GetProductByIdAsync_TryGetNonExistingProduct_ReturnNull()
@@ -172,11 +168,9 @@ namespace Products.UnitTest
 
         [TestMethod]
         public void UpdateProductAsync_UpdatePriceForProduct_ReturnUpdatedProduct()
-        {           
+        {
             // Arrange
-            var dummyProduct = DummyTestProduct.TestProduct();
-            ProductTestContext.DbContext.Product.Add(dummyProduct);
-            ProductTestContext.DbContext.SaveChanges();
+            ProductModel dummyProduct = CreateDummyProductToDatabase();
             var oldPrice = 1000;
 
             // Act
@@ -188,8 +182,7 @@ namespace Products.UnitTest
             Assert.AreEqual(dummyProduct.Price, product.Price);
 
             // Delete dummyOrder from DB
-            ProductTestContext.DbContext.Remove(dummyProduct);
-            ProductTestContext.DbContext.SaveChanges();          
+            DeleteDummyProductFromDatabase(dummyProduct);
         }
 
         [TestMethod]
@@ -221,9 +214,7 @@ namespace Products.UnitTest
         [TestMethod]
         public void UpdateProductsInStockAsync_UpdateProductQuantityInStock_ReturnTrue()
         {
-            var dummyProduct = DummyTestProduct.TestProduct();
-            ProductTestContext.DbContext.Product.Add(dummyProduct);
-            ProductTestContext.DbContext.SaveChanges();
+            ProductModel dummyProduct = CreateDummyProductToDatabase();
 
             var quantityToDecreaseFromStock = new Dictionary<Guid, int>
             {
@@ -233,8 +224,7 @@ namespace Products.UnitTest
 
             Assert.IsTrue(response);
 
-            ProductTestContext.DbContext.Remove(dummyProduct);
-            ProductTestContext.DbContext.SaveChanges();
+            DeleteDummyProductFromDatabase(dummyProduct);
         }
 
         [TestMethod]
@@ -250,6 +240,23 @@ namespace Products.UnitTest
 
             Assert.IsFalse(response);
         }
+
+        private static ProductModel CreateDummyProductToDatabase()
+        {
+            var dummyProduct = DummyTestProduct.TestProduct();
+            ProductTestContext.DbContext.Product.Add(dummyProduct);
+            ProductTestContext.DbContext.SaveChanges();
+
+            return dummyProduct;
+        }
+
+        private static void DeleteDummyProductFromDatabase(ProductModel newProduct)
+        {
+            ProductTestContext.DbContext.Remove(newProduct);
+            ProductTestContext.DbContext.SaveChanges();
+        }
+
+
     }
 }
 
