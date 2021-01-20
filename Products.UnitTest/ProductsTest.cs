@@ -216,7 +216,40 @@ namespace Products.UnitTest
 
             // Assert
             Assert.IsNull(product);
-        }     
+        }
+
+        [TestMethod]
+        public void UpdateProductsInStockAsync_UpdateProductQuantityInStock_ReturnTrue()
+        {
+            var dummyProduct = DummyTestProduct.TestProduct();
+            ProductTestContext.DbContext.Product.Add(dummyProduct);
+            ProductTestContext.DbContext.SaveChanges();
+
+            var quantityToDecreaseFromStock = new Dictionary<Guid, int>
+            {
+                { dummyProduct.Id, 50 }
+            };
+            var response = ProductRepository.UpdateProductsInStockAsync(quantityToDecreaseFromStock).Result;
+
+            Assert.IsTrue(response);
+
+            ProductTestContext.DbContext.Remove(dummyProduct);
+            ProductTestContext.DbContext.SaveChanges();
+        }
+
+        [TestMethod]
+        public void UpdateProductsInStockAsync_TryUpdateProductQuantityInStockWithNoExistingProduct_ReturnFalse()
+        {
+            var dummyProduct = DummyTestProduct.TestProduct();
+
+            var quantityToDecreaseFromStock = new Dictionary<Guid, int>
+            {
+                { dummyProduct.Id, 50 }
+            };
+            var response = ProductRepository.UpdateProductsInStockAsync(quantityToDecreaseFromStock).Result;
+
+            Assert.IsFalse(response);
+        }
     }
 }
 
