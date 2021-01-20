@@ -141,7 +141,7 @@ namespace Users.UnitTest
         }
 
         [TestMethod]
-        public void GetUserByIdAsync_TryGetUserById_ReturnNull()
+        public void GetUserByIdAsync_TryGetUserByEmptyId_ReturnNull()
         {
             //Arange
             var notExistingUserId = Guid.NewGuid();
@@ -297,7 +297,6 @@ namespace Users.UnitTest
             // Restore testuser
             updatedUser.Email = "testuser@frozen.se";
             var tmp = UserRepositoryClass.UpdateUserAsync(updatedUser.Id, updatedUser).Result;
-            //var tmp = UserRepositoryClass.UpdateEmailAddressAsync(updatedUser).Result;
         }
 
         [TestMethod]
@@ -320,7 +319,6 @@ namespace Users.UnitTest
 
             // Act
             var result = UserRepositoryClass.UpdateUserAsync(userModel.Id, userModel).Result;
-            //var result = UserRepositoryClass.UpdateEmailAddressAsync(userModel).Result;
 
             // Assert
             Assert.IsNull(result);
