@@ -55,7 +55,7 @@ namespace Products.UnitTest
         }
 
         [TestMethod]
-        public void CreateOrderAsync_TryCreateProductWithExistingProductId_ReturnNull()
+        public void CreateProductAsync_TryCreateProductWithAllReadyExistingProductIdInDatabase_ReturnNull()
         {
             // Arrange               
             var dummyProduct = DummyTestProduct.TestProduct();
