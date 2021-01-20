@@ -69,7 +69,7 @@ namespace Orders.UnitTest
         }
 
         [TestMethod]
-        public void CreateOrderAsync_TryGetOrderWithEmptyModel_ReturnNull()
+        public void CreateOrderAsync_TryCreateOrderWithEmptyModel_ReturnNull()
         {
             //Arrange
             var orderModel = new OrderModel();

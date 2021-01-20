@@ -48,10 +48,23 @@ namespace Products.UnitTest
             ProductModel dummyProduct = null;
            
             // Act
-            var nullProduct = ProductRepository.CreateProductAsync(dummyProduct).Result;
+            var product = ProductRepository.CreateProductAsync(dummyProduct).Result;
 
             // Assert
-            Assert.IsNull(nullProduct);                    
+            Assert.IsNull(product);                    
+        }
+
+        [TestMethod]
+        public void CreateProductAsync_TryCreateProductWithEmptyModel_ReturnNull()
+        {
+            //Arrange
+            var ProductModel = new ProductModel();
+
+            //Act
+            var product = ProductRepository.CreateProductAsync(ProductModel).Result;
+
+            //Assert
+            Assert.IsNull(product);
         }
 
         [TestMethod]
@@ -203,6 +216,8 @@ namespace Products.UnitTest
 
             // Assert
             Assert.IsNull(product);
-        }
+        }     
     }
 }
+
+
