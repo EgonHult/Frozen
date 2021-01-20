@@ -15,15 +15,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Users", "Users\Users.csproj
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gateway", "Gateway\Gateway.csproj", "{1BE84391-EE77-4E0F-AC2A-DA5C0B77BA80}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Users.UnitTest", "Users.UnitTest\Users.UnitTest.csproj", "{6732B35C-1490-4B3A-8CF2-EEBDF4D9799B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Users.UnitTests", "Users.UnitTest\Users.UnitTests.csproj", "{6732B35C-1490-4B3A-8CF2-EEBDF4D9799B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Products.UnitTest", "Products.UnitTest\Products.UnitTest.csproj", "{B3F2DBEE-E49F-4F6B-9139-9FE49DF4A4A6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Products.UnitTests", "Products.UnitTest\Products.UnitTests.csproj", "{B3F2DBEE-E49F-4F6B-9139-9FE49DF4A4A6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orders.UnitTest", "Orders.UnitTest\Orders.UnitTest.csproj", "{638E96D0-B3F2-4033-937A-95D0D5D6C55D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orders.UnitTests", "Orders.UnitTest\Orders.UnitTests.csproj", "{638E96D0-B3F2-4033-937A-95D0D5D6C55D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Frozen.UnitTests", "Frozen.UnitTests\Frozen.UnitTests.csproj", "{141060BF-F638-46E4-A425-6759A421F0CD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Payments.UnitTests", "Payments.UnitTests\Payments.UnitTests.csproj", "{10ABF44E-2191-40BA-8C5A-CAF03C643D11}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Payments.UnitTests", "Payments.UnitTests\Payments.UnitTests.csproj", "{10ABF44E-2191-40BA-8C5A-CAF03C643D11}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
