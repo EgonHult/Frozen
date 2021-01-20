@@ -25,7 +25,7 @@ namespace Products.Repositories
         /// <returns>Created Product</returns>
         public async Task<ProductModel> CreateProductAsync(ProductModel product)
         {
-            if (product != null)
+            if (product != null && product.Id != Guid.Empty)
             {
                 bool productExistInDataBase = await CheckIfProductExistInDatabaseAsync(product.Id);
                 if (!productExistInDataBase)
