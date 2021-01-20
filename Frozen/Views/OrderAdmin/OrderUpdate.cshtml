@@ -10,24 +10,50 @@
 }
 <h3>Uppdatera Order</h3>
 
-<form asp-action="OrderUpdate">
+<form asp-action="OrderUpdate" class="form-inline">
 
-    <select asp-for="StatusId">
+    <div class="form-group mb-2">
+        <label for="orderStatus" class="visually-hidden">Orderstatus:</label>
+    </div>
+    <div class="form-group mx-sm-3 mb-2">
+        <select class="form-control" asp-for="StatusId">
 
-        @foreach (var option in statusOptions)
-        {
-            @if (Model.StatusId == option.Key)
+            @foreach (var option in statusOptions)
             {
-                <option value="@option.Key" selected>@option.Value</option>
+                @if (Model.StatusId == option.Key)
+                {
+                    <option value="@option.Key" selected>@option.Value</option>
+                }
+                else
+                {
+                    <option value="@option.Key">@option.Value</option>
+                }
             }
-            else
-            {
-                <option value="@option.Key">@option.Value</option>
-            }
-        }
 
-    </select>
+        </select>
+    </div>
 
     <input type="hidden" asp-for="Id" />
-    <button type="submit" class="btn btn-danger">Uppdatera Orderstatus</button>
+    <button type="submit" class="btn btn-danger mb-2">Uppdatera Orderstatus</button>
+
 </form>
+
+<div class="card mt-3 mb-3 simple-linear shadow-lg cart-padding">
+    <table class="table table-striped">
+        <tr>
+            <td>Product</td>
+            <td>Antal beställt</td>
+        </tr>
+        @foreach (var product in Model.OrderProduct)
+        {
+            <tr>
+                <td>
+                    <a asp-controller="Products" asp-action="ProductDetails" asp-route-id="@product.ProductId">@product.Name</a>
+                </td>
+                <td>
+                    @product.Quantity
+                </td>
+            </tr>
+        }
+    </table>
+</div>
