@@ -84,21 +84,21 @@ namespace Products.Repositories
 
         public async Task<ProductModel> UpdateProductAsync(ProductModel product)
         {
-            try
+            if (product != null)
             {
-                if (product.Id != Guid.Empty)
+                bool productExistInDatabase = await CheckIfProductExistInDatabaseAsync(product.Id);
+
+                if (productExistInDatabase && product.Id != Guid.Empty)
                 {
                     _context.Entry(product).State = EntityState.Modified;
                     await _context.SaveChangesAsync();
                     return product;
                 }
                 else
-                    return product;
+                    return null;
             }
-            catch (Exception)
-            {
+            else
                 return null;
-            }
         }
 
         /// <summary>

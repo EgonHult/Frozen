@@ -215,7 +215,33 @@ namespace Orders.UnitTest
         }
 
         [TestMethod]
-        public void GetOrdersByUserId_GetAllOrdersFromTheSpecsificUserId_ReturnAllOrdersWithTheUserId()
+        public void UpdateOrderAsync_TryUpdateNullOrder_ReturnNull()
+        {
+            // Arrange
+            OrderModel dummyOrder = null;
+
+            // Act            
+            var order = OrderRepository.UpdateOrderAsync(dummyOrder).Result;
+
+            // Assert
+            Assert.IsNull(order);
+        }
+
+        [TestMethod]
+        public void UpdateOrderAsync_TryUpdateNotExistingOrder_ReturnNull()
+        {
+            // Arrange
+            var dummyOrder = DummyTestOrder.TestOrder();
+
+            // Act            
+            var order = OrderRepository.UpdateOrderAsync(dummyOrder).Result;
+
+            // Assert
+            Assert.IsNull(order);
+        }
+
+        [TestMethod]
+        public void GetOrdersByUserId_GetAllOrdersFromTheSpecificUserId_ReturnAllOrdersWithTheUserId()
         {
          
             // Arrange 
@@ -236,7 +262,7 @@ namespace Orders.UnitTest
         }
 
         [TestMethod]
-        public void GetOrdersByUserId_GetNonExistingOrdersFromTheSpecsificUserId_ReturnNull()
+        public void GetOrdersByUserId_GetNonExistingOrdersFromTheSpecificUserId_ReturnNull()
         {        
             // Arrange 
             var dummyOrder = DummyTestOrder.TestOrder();
