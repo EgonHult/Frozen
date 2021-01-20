@@ -3,9 +3,11 @@ using Frozen.Models;
 using Frozen.Services;
 using Frozen.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -86,14 +88,22 @@ namespace Frozen.Controllers
         {
             var response = await _clientService.SendRequestToGatewayAsync(ApiLocation.Orders.GATEWAY_BASEURL + id, HttpMethod.Delete);
             return await ReturnOrder(response);
+
         }
 
         [HttpGet]
-        public async Task<List<Order>> GetOrdersByUserIdAsync(Guid id)
+        public async Task<IActionResult> GetUserOrders()
         {
+            var id = await _cookieHandler.GetClaimFromAuthenticationCookieAsync("UserId");
             var response = await _clientService.SendRequestToGatewayAsync(ApiLocation.Orders.GET_ORDER_BY_USERID + id, HttpMethod.Get);
-            return await ReturnOrders(response);
-        }    
+
+            if (response.IsSuccessStatusCode)
+            {
+                var orders = await _clientService.ReadResponseAsync<List<Order>>(response.Content);
+                return View(orders);
+            }
+            return View();
+        }
 
         [HttpPost]
         public async Task<ActionResult> SendSwishRequest(int paymentId, string phoneNumber)
@@ -160,6 +170,5 @@ namespace Frozen.Controllers
             return (response.IsSuccessStatusCode)
                 ? await _clientService.ReadResponseAsync<Order>(response.Content) : null;
         }
-
     }
 }
