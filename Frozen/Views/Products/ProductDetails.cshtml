@@ -22,7 +22,9 @@
 
     <div class="col-md-12 col-lg-6 mt-3">
 
-        <h3>@Model.Name</h3>       
+    @if (Model != null)
+    {
+        <h3>@Model.Name</h3>
         <p class="lead">Vikt: @Model.WeightInGrams gram</p>
 
         <div class="d-flex justify-content-between">
@@ -36,10 +38,25 @@
         <hr />
 
         <p>@Model.Details</p>
-
+    }
+    else
+    {
+        <div class="alert alert-warning" role="alert">
+            <h4 class="alert-heading">Produkten finns ej</h4>
+            <p>Produkten du söker finns inte eller har utgått från vårt sortiment.</p>
+            <hr>
+            <p class="mb-0"><a asp-controller="Products" asp-action="ProductsPage">Klicka här för att se alla våra erbjudanden</a></p>
+        </div>
+    }
     </div>
 
-    <div class="col-md-12 col-lg-6 text-center">       
-            <img src="@Model.Image" alt="Bild på produkten" class="img-fluid rounded-lg" width="350" height="250" />    
-    </div>
+    @if (Model != null)
+    {
+        <div class="col-md-12 col-lg-6 text-center">
+            @if (@Model.Image != null)
+            {
+                <img src="@Model.Image" alt="Bild på produkten" class="img-fluid rounded-lg" width="350" height="250" />
+            }
+        </div>
+    }
 </div>
