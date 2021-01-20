@@ -25,7 +25,7 @@ namespace Products.Repositories
         /// <returns>Created Product</returns>
         public async Task<ProductModel> CreateProductAsync(ProductModel product)
         {
-            if (product != null && product.Id != Guid.Empty)
+            if (ValidateProductModel(product))
             {
                 bool productExistInDataBase = await CheckIfProductExistInDatabaseAsync(product.Id);
                 if (!productExistInDataBase)
@@ -43,6 +43,19 @@ namespace Products.Repositories
             }
             else
                 return null;
+        }
+
+        private bool ValidateProductModel(ProductModel product)
+        {
+            if(product == null || product.Name == null ||
+                product.Price == 0 ||
+                product.WeightInGrams == 0 ||
+                product.Image == null)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public async Task<ProductModel> DeleteProductByIdAsync(Guid productId)
