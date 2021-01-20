@@ -45,14 +45,14 @@
                     </td>
                     <td>        
                            
-                        <button type="button" class="decrease-button" onclick="ReduceFromCart('@Model.CartItems[i].Product.Id')"><i class="fas fa-minus"></i></button>
+                        <button type="button" title="Ta bort en @Model.CartItems[i].Product.Name" class="decrease-button" onclick="ReduceFromCart('@Model.CartItems[i].Product.Id')"><i class="fas fa-minus"></i></button>
                         <span id="productinCartQuantity_@Model.CartItems[i].Product.Id"> @Model.CartItems[i].Quantity</span>
 
-                        <button type="button" class="increase-button" onclick="AddToCart('@Model.CartItems[i].Product.Id')"><i class="fas fa-plus"></i></button>
+                        <button type="button" title="Lägg till en @Model.CartItems[i].Product.Name" class="increase-button" onclick="AddToCart('@Model.CartItems[i].Product.Id')"><i class="fas fa-plus"></i></button>
 
                     </td>    
                     <td>
-                        <button type="button" class="decrease-button" onclick="RemoveFromCart('@Model.CartItems[i].Product.Id')"><i class="fas fa-dumpster-fire"></i></button>
+                        <button type="button" title="Ta bort hela produkten" class="decrease-button" onclick="RemoveFromCart('@Model.CartItems[i].Product.Id')"><i class="fas fa-dumpster-fire"></i></button>
                     </td>
                 </tr>
             }
