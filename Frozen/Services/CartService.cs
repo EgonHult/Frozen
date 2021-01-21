@@ -1,4 +1,5 @@
-﻿using Frozen.Models;
+﻿using Frozen.Common;
+using Frozen.Models;
 using Frozen.ViewModels;
 using Microsoft.AspNetCore.Http;
 using System;
@@ -32,12 +33,12 @@ namespace Frozen.Services
 
         public List<CartItem> GetCartContent()
         {
-            return SessionHandler.GetObjectFromJson<List<CartItem>>(_context.HttpContext.Session, "cart");
+            return SessionHandler.GetObjectFromJson<List<CartItem>>(_context.HttpContext.Session, Cookies.CART_SESSION_COOKIE);
         }
 
         public void SaveCartChanges(List<CartItem> cartItems)
         {
-            SessionHandler.SetObjectAsJson(_context.HttpContext.Session, "cart", cartItems);
+            SessionHandler.SetObjectAsJson(_context.HttpContext.Session, Cookies.CART_SESSION_COOKIE, cartItems);
         }
 
         public decimal CalculateTotalPrice()
@@ -139,7 +140,7 @@ namespace Frozen.Services
 
         public void EmptyCart()
         {
-            _context.HttpContext.Session.Remove("cart");
+            _context.HttpContext.Session.Remove(Cookies.CART_SESSION_COOKIE);
         }
     }
 }
