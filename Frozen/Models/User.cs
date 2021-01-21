@@ -20,11 +20,11 @@ namespace Frozen.Models
         public string Email { get; set; }
 
         [Required(ErrorMessage = "Ange ett telefonnummer")]
-        [RegularExpression(@"^\+\d{2}-\d{2}-\d{3}\s?\d{2}\s?\d{2}|\d{2,3}-?\d{3}\s?\d{2}\s?\d{2}$", ErrorMessage = "Telefonnumret är ogiltigt")]
+        [RegularExpression(@"^\+\d{2}-?\d{2}-?\d{3}\s?\d{2}\s?\d{2}|\d{2,3}-?\d{3}\s?\d{2}\s?\d{2}$", ErrorMessage = "Telefonnumret är ogiltigt")]
         public string PhoneNumber { get; set; }
 
         [Required(ErrorMessage = "Ange adress")]
-        [RegularExpression(@"^\p{L}{4,} \d+$", ErrorMessage = "Ogiltig adress")]
+        [RegularExpression(@"^\p{L}([-\p{L} ]+)? \d+$", ErrorMessage = "Ogiltig adress")]
         public string Address { get; set; }
 
         [Required(ErrorMessage = "Ange stad")]
