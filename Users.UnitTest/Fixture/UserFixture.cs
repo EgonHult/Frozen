@@ -28,7 +28,7 @@ namespace Users.UnitTest.Fixture
             return null;
         }
 
-        private async Task CleanUpUserDatabaseBeforeTest()
+        public async Task CleanUpUserDatabaseBeforeTest()
         {
             await RemoveTestUserByEmail("unittest@frozen.se");
             await RemoveTestUserByEmail("testuser@frozen.se");

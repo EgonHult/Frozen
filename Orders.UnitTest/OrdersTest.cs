@@ -12,296 +12,297 @@ namespace Orders.UnitTest
    public class OrdersTest
     {
 
+        public  static IOrderRepository OrderRepository { get; set; }
+        public static TestOrdersDbContext OrderTestContext { get; set; }
+
+
+
+        [ClassInitialize]
+        public static void TestFixtureSetup(TestContext context)
+        {
+            OrderTestContext = new TestOrdersDbContext();
+            OrderRepository = new OrderRepository(OrderTestContext.DbContext);
+        }
+
         [TestMethod]
         public void CreateOrderAsync_CreateNewOrder_ReturnCreatedOrder()
-        {
-            using(var context = new TestOrdersDbContext().DbContext)
-            {
-                // Arrange
-                var orderRepository = new OrderRepository(context);
-                var dummyOrder = DummyTestOrder.TestOrder();
+        {           
+            // Arrange           
+            var dummyOrder = DummyTestOrder.TestOrder();
 
+            // Act
+            var newOrder = OrderRepository.CreateOrderAsync(dummyOrder).Result;
 
-                // Act
-                var newOrder = orderRepository.CreateOrderAsync(dummyOrder).Result;
+            // Assert
+            Assert.AreEqual(dummyOrder, newOrder);
+           
+            DeleteDummyOrderFromDatabase(dummyOrder);
+        }
 
-                // Assert
-                Assert.AreEqual(dummyOrder, newOrder);
+        [TestMethod]
+        public void CreateOrderAsync_CreateOrderWithoutOrderProducts_ReturnNull()
+        {           
+            //Arrange              
+            var dummyOrder = DummyTestOrder.TestOrderWithoutOrderProduct();
 
-                // Delete dummyOrder from DB
-                context.Remove(dummyOrder);
-                context.SaveChanges();
+            //Act
+            var result = OrderRepository.CreateOrderAsync(dummyOrder).Result;
 
-
-            }
+            //Assert
+            Assert.IsNull(result);            
         }
 
         [TestMethod]
         public void CreateOrderAsync_TryCreateNullOrder_ReturnNull()
-        {
-            using(var context = new TestOrdersDbContext().DbContext)
-            {
-                // Arrange
-                
-                var orderRepository = new OrderRepository(context);
-                OrderModel dummyOrder = null;
+        {         
+            // Arrange                       
+            OrderModel dummyOrder = null;
               
-                //Act 
-                var nullOrder = orderRepository.CreateOrderAsync(dummyOrder).Result;
+            //Act 
+            var nullOrder = OrderRepository.CreateOrderAsync(dummyOrder).Result;
 
-                //Assert
-                Assert.IsNull(nullOrder);
-            }
+            //Assert
+            Assert.IsNull(nullOrder);            
         }
 
         [TestMethod]
-        public void CreateOrderAsync_TryCreateOrderWithExistingOrderId_ReturnNull()
+        public void CreateOrderAsync_TryCreateOrderWithEmptyModel_ReturnNull()
         {
-            using (var context = new TestOrdersDbContext().DbContext)
-            {
-                // Arrange
+            //Arrange
+            var orderModel = new OrderModel();
 
-                var orderRepository = new OrderRepository(context);
-                var dummyOrder = DummyTestOrder.TestOrder();
-                var dummyOrder2 = dummyOrder;
+            //Act
+            var EmptyOrder = OrderRepository.CreateOrderAsync(orderModel).Result;
+
+            //Assert
+            Assert.IsNull(EmptyOrder);
+        }
+
+        [TestMethod]
+        public void CreateOrderAsync_TryCreateOrderWithAllReadyExistingOrderIdInDatabase_ReturnNull()
+        {          
+            // Arrange               
+            var dummyOrder = DummyTestOrder.TestOrder();
+            var dummyOrder2 = dummyOrder;
               
-                //Act 
+            //Act 
+            var newOrder = OrderRepository.CreateOrderAsync(dummyOrder).Result;
+            var newOrder2 = OrderRepository.CreateOrderAsync(dummyOrder2).Result;
 
-                var newOrder = orderRepository.CreateOrderAsync(dummyOrder).Result;
-                var newOrder2 = orderRepository.CreateOrderAsync(dummyOrder2).Result;
-
-                //Assert
-                Assert.AreEqual(newOrder2, null);
-
-                // Delete dummyOrder from DB
-                context.Remove(dummyOrder);
-                context.SaveChanges();
-            }
+            //Assert
+            Assert.AreEqual(newOrder2, null);
+           
+            DeleteDummyOrderFromDatabase(dummyOrder);
         }
 
         [TestMethod]
-        public void DeleteOrderByIdAsync_DeleteOrderFromDatabse_ReturnDeletedOrderAreEqual()
+        public void DeleteOrderByOrderIdAsync_DeleteOrderFromDatabse_ReturnDeletedOrderAreEqual()
         {
-            using (var context = new TestOrdersDbContext().DbContext)
-            {
-                // Arrange
-                var dummyOrder = DummyTestOrder.TestOrder();
-                context.Order.Add(dummyOrder);
-                context.SaveChanges();
 
-                // Act
-                var productRepository = new OrderRepository(context);
-                var deletedProduct = productRepository.DeleteOrderByOrderIdAsync(dummyOrder.Id).Result;
+            // Arrange
+            OrderModel dummyOrder = CreateDummyOrderToDatabase();
 
-                // Assert
-                Assert.AreEqual(dummyOrder, deletedProduct);         
-            }
+            // Act               
+            var deletedProduct = OrderRepository.DeleteOrderByOrderIdAsync(dummyOrder.Id).Result;
+
+            // Assert
+            Assert.AreEqual(dummyOrder, deletedProduct);                     
         }
 
         [TestMethod]
-        public void DeleteOrderByIdAsync_TryDeleteNonExistingOrder_ReturnNull()
-        {
-            using (var context = new TestOrdersDbContext().DbContext)
-            {
-                
-                // Arrange
-                var nonExistingOrderId = Guid.NewGuid();
+        public void DeleteOrderByOrderIdAsync_TryDeleteByEmptyId_ReturnNull()
+        {                      
+            //Arrange
+            var emptyOrderId = Guid.Empty;
 
-                // Act
-                var orderRepository = new OrderRepository(context);
-                var order = orderRepository.DeleteOrderByOrderIdAsync(nonExistingOrderId).Result;
+            //Act              
+            var result = OrderRepository.DeleteOrderByOrderIdAsync(emptyOrderId).Result;
 
-                // Arrange
-                Assert.IsNull(order);               
-            }
+            //Assert
+            Assert.IsNull(result);           
         }
 
         [TestMethod]
-        public void GetOrderByIdAsync_GetOrderById_ReturnOrder()
-        {
-            using (var context = new TestOrdersDbContext().DbContext)
-            {
-                // Arrange 
-                var dummyOrder = DummyTestOrder.TestOrder();
-                context.Order.Add(dummyOrder);
-                context.SaveChanges();
+        public void DeleteOrderByOrderIdAsync_TryDeleteNonExistingOrder_ReturnNull()
+        {                         
+            // Arrange
+            var nonExistingOrderId = Guid.NewGuid();
 
-                // Act
-                var orderRepository = new OrderRepository(context);
-                var order = orderRepository.GetOrderByOrderIdAsync(dummyOrder.Id).Result;
+            // Act            
+            var order = OrderRepository.DeleteOrderByOrderIdAsync(nonExistingOrderId).Result;
 
-                // Assert
-                Assert.IsNotNull(order);
-
-                // Delete dummyOrder from DB
-                context.Remove(dummyOrder);
-                context.SaveChanges();
-            }
+            // Arrange
+            Assert.IsNull(order);                          
         }
 
         [TestMethod]
-        public void GetOrderByIdAsync_GetNonExistingOrder_ReturnNull()
+        public void GetOrderByOrderIdAsync_GetOrderById_ReturnOrder()
         {
-            using (var context = new TestOrdersDbContext().DbContext)
-            {
-                // Arrange 
-                var dummyOrder = DummyTestOrder.TestOrder();
+            // Arrange 
+            OrderModel dummyOrder = CreateDummyOrderToDatabase();
+
+            // Act            
+            var order = OrderRepository.GetOrderByOrderIdAsync(dummyOrder.Id).Result;
+
+            // Assert
+            Assert.IsNotNull(order);
+            
+            DeleteDummyOrderFromDatabase(dummyOrder);
+        }
+    
+        [TestMethod]
+        public void GetOrderByOrderIdAsync_GetNonExistingOrder_ReturnNull()
+        {
+          
+            // Arrange 
+            var dummyOrder = DummyTestOrder.TestOrder();
               
-                // Act
-                var orderRepository = new OrderRepository(context);
-                var order = orderRepository.GetOrderByOrderIdAsync(dummyOrder.Id).Result;
+            // Act              
+            var order = OrderRepository.GetOrderByOrderIdAsync(dummyOrder.Id).Result;
 
-                // Assert
-                Assert.IsNull(order);
-            }
+            // Assert
+            Assert.IsNull(order);           
         }
 
         [TestMethod]
         public void GetAllOrdersAsync_GetAllOrdersFromDatbase_ReturnListOfOrders()
-        {
-            using (var context = new TestOrdersDbContext().DbContext)
-            {             
+        {                       
+            // Act             
+            var orders = OrderRepository.GetAllOrdersAsync().Result;
 
-                // Act
-                var orderrepository = new OrderRepository(context);
-                var orders = orderrepository.GetAllOrdersAsync().Result;
-
-                // Assert
-                Assert.IsInstanceOfType(orders, typeof(List<OrderModel>));         
-            }
+            // Assert
+            Assert.IsInstanceOfType(orders, typeof(List<OrderModel>));                     
         }
 
         [TestMethod]
         public void UpdateOrderAsync_UpdateStatus_ReturnUpdatedOrder()
         {
-            using (var context = new TestOrdersDbContext().DbContext)
-            {
-                // Arrange
-                var dummyOrder = DummyTestOrder.TestOrder();              
-                context.Order.Add(dummyOrder);
-                context.SaveChanges();
-                var oldStatusId = 1; 
 
-                // Act
-                dummyOrder.StatusId = 2;
-                var orderrepository = new OrderRepository(context);
-                var order = orderrepository.UpdateOrderAsync(dummyOrder).Result;
+            // Arrange
+            OrderModel dummyOrder = CreateDummyOrderToDatabase();
+            var oldStatusId = 1; 
+            dummyOrder.StatusId = 2;
 
-                // Assert
-                Assert.AreNotEqual(oldStatusId, order.StatusId);
-                Assert.AreEqual(dummyOrder.StatusId, order.StatusId);
+            // Act
+            var order = OrderRepository.UpdateOrderAsync(dummyOrder).Result;
 
-                // Delete dummyOrder from DB
-                context.Remove(dummyOrder);         
-                context.SaveChanges();
-            }
+            // Assert
+            Assert.AreNotEqual(oldStatusId, order.StatusId);
+            Assert.AreEqual(dummyOrder.StatusId, order.StatusId);
+            
+            DeleteDummyOrderFromDatabase(dummyOrder);
         }
 
         [TestMethod]
-        public void GetOrdersByUserId_GetAllOrdersFromTheSpecsificUserId_ReturnAllOrdersWithTheUserId()
+        public void UpdateOrderAsync_TryUpdateNullOrder_ReturnNull()
         {
-            using (var context = new TestOrdersDbContext().DbContext)
-            {
-                // Arrange 
-                var dummyOrder = DummyTestOrder.TestOrder();
-                context.Order.Add(dummyOrder);
-                context.SaveChanges();
+            // Arrange
+            OrderModel dummyOrder = null;
 
-                // Act
-                var orderRepository = new OrderRepository(context);
-                var orders = orderRepository.GetOrdersByUserIdAsync(dummyOrder.UserId).Result;
+            // Act            
+            var order = OrderRepository.UpdateOrderAsync(dummyOrder).Result;
 
-                // Assert
-                Assert.IsInstanceOfType(orders, typeof(List<OrderModel>));
-
-                // Delete dummyOrder from DB
-                context.Remove(dummyOrder);
-                context.SaveChanges();
-            }
+            // Assert
+            Assert.IsNull(order);
         }
 
         [TestMethod]
-        public void GetOrdersByUserId_GetNonExistingOrdersFromTheSpecsificUserId_ReturnNull()
+        public void UpdateOrderAsync_TryUpdateNotExistingOrder_ReturnNull()
         {
-            using (var context = new TestOrdersDbContext().DbContext)
-            {
-                // Arrange 
-                var dummyOrder = DummyTestOrder.TestOrder();
+            // Arrange
+            var dummyOrder = DummyTestOrder.TestOrder();
 
+            // Act            
+            var order = OrderRepository.UpdateOrderAsync(dummyOrder).Result;
 
-                // Act
-                var orderRepository = new OrderRepository(context);
-                var orders = orderRepository.GetOrdersByUserIdAsync(dummyOrder.UserId).Result;
-
-                // Assert
-                Assert.IsNull(orders);
-            }
-
+            // Assert
+            Assert.IsNull(order);
         }
 
+        [TestMethod]
+        public void GetOrdersByUserId_GetAllOrdersFromTheSpecificUserId_ReturnAllOrdersWithTheUserId()
+        {
+
+            // Arrange 
+            OrderModel dummyOrder = CreateDummyOrderToDatabase();
+
+            // Act              
+            var orders = OrderRepository.GetOrdersByUserIdAsync(dummyOrder.UserId).Result;
+
+            // Assert
+            Assert.IsInstanceOfType(orders, typeof(List<OrderModel>));
+            
+            DeleteDummyOrderFromDatabase(dummyOrder);
+        }
+
+        [TestMethod]
+        public void GetOrdersByUserId_GetNonExistingOrdersFromTheSpecificUserId_ReturnNull()
+        {        
+            // Arrange 
+            var dummyOrder = DummyTestOrder.TestOrder();
+
+            // Act             
+            var orders = OrderRepository.GetOrdersByUserIdAsync(dummyOrder.UserId).Result;
+
+            // Assert
+            Assert.IsNull(orders);
+        }
+      
         [TestMethod]
         public void UpdateOrderStatusAsync_UpdateOrderStatusToSent_ReturnTrue()
         {
-            using (var context = new TestOrdersDbContext().DbContext)
-            {
-                // Arrange 
-                var dummyOrder = DummyTestOrder.TestOrder();
-                context.Order.Add(dummyOrder);
-                context.SaveChanges();
+            // Arrange 
+            OrderModel dummyOrder = CreateDummyOrderToDatabase();
 
-                // Act
-                var orderRepository = new OrderRepository(context);
-                var result = orderRepository.UpdateOrderStatusAsync(2, dummyOrder.Id).Result;
+            // Act              
+            var result = OrderRepository.UpdateOrderStatusAsync(2, dummyOrder.Id).Result;
 
-                // Assert
-                Assert.IsTrue(result);
-
-                // Delete dummyOrder from DB
-                context.Remove(dummyOrder);
-                context.SaveChanges();
-            }
-
+            // Assert
+            Assert.IsTrue(result);
+           
+            DeleteDummyOrderFromDatabase(dummyOrder);
         }
 
         [TestMethod]
         public void UpdateOrderStatusAsync_UpdateOrderStatusToNonExistingStatus_ReturnFalse()
         {
-            using (var context = new TestOrdersDbContext().DbContext)
-            {
-                // Arrange 
-                var dummyOrder = DummyTestOrder.TestOrder();
-                context.Order.Add(dummyOrder);
-                context.SaveChanges();
+            // Arrange 
+            OrderModel dummyOrder = CreateDummyOrderToDatabase();
 
-                // Act
-                var orderRepository = new OrderRepository(context);
-                var result = orderRepository.UpdateOrderStatusAsync(10, dummyOrder.Id).Result;
+            // Act             
+            var result = OrderRepository.UpdateOrderStatusAsync(10, dummyOrder.Id).Result;
 
-                // Assert
-                Assert.IsFalse(result);
-
-                // Delete dummyOrder from DB
-                context.Remove(dummyOrder);
-                context.SaveChanges();
-            }
+            // Assert
+            Assert.IsFalse(result);
+            
+            DeleteDummyOrderFromDatabase(dummyOrder);
         }
 
         [TestMethod]
         public void UpdateOrderStatusAsync_TryUpdateStatusOfNonExistingOrder_ReturnFalse()
-        {
-            using (var context = new TestOrdersDbContext().DbContext)
-            {
-                // Arrange 
-                var nonExistingOrderId = Guid.NewGuid();
+        {         
+            // Arrange 
+            var nonExistingOrderId = Guid.NewGuid();
 
-                // Act
-                var orderRepository = new OrderRepository(context);
-                var result = orderRepository.UpdateOrderStatusAsync(3, nonExistingOrderId).Result;
+            // Act           
+            var result = OrderRepository.UpdateOrderStatusAsync(3, nonExistingOrderId).Result;
 
-                // Assert
-                Assert.IsFalse(result);
-            }
+            // Assert
+            Assert.IsFalse(result);           
         }
 
+        private static OrderModel CreateDummyOrderToDatabase()
+        {
+            var dummyOrder = DummyTestOrder.TestOrder();
+            OrderTestContext.DbContext.Order.Add(dummyOrder);
+            OrderTestContext.DbContext.SaveChanges();
+            return dummyOrder;
+        }
+
+        private static void DeleteDummyOrderFromDatabase(OrderModel dummyOrder)
+        {           
+            OrderTestContext.DbContext.Remove(dummyOrder);
+            OrderTestContext.DbContext.SaveChanges();
+        }
     }
 }

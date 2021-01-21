@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = "Din Order";
 }
-@if (Model.Cart.Count > 0)
+@if (Model.Cart != null && Model.Cart.Count > 0)
 {
 
 
@@ -19,6 +19,8 @@
                             <div>@Model.User.PhoneNumber</div>
                             <div>@Model.User.Email</div>
                         </address>
+
+                        <div><a asp-controller="Account" asp-action="Update">Ändra uppgifter här</a></div>
                     </td>
                 </tr>
             </tbody>

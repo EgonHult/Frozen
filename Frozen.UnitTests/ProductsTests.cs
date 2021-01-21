@@ -52,7 +52,7 @@ namespace Frozen.UnitTests
         }
 
         [TestMethod]
-        public void GetProducts_GetAllProducts_ReturnAllProducts()
+        public void GetProductsAsync_GetAllProducts_ReturnAllProducts()
         {
             //Act
             var products = Controller.GetProductsAsync().Result;
@@ -63,7 +63,7 @@ namespace Frozen.UnitTests
         }
 
         [TestMethod]
-        public void GetProductById_GetProduct_ReturnProduct()
+        public void GetProductByIdAsync_GetProduct_ReturnProduct()
         {
             //Arrange
             var id = DummyProduct.Id;
@@ -76,17 +76,28 @@ namespace Frozen.UnitTests
         }
 
         [TestMethod]
-        public void PostProduct_PostProduct_ReturnPostedProduct()
+        public void GetProductByIdAsync_TryGetProductWithNonExistingId_ReturnNull()
+        {
+            var id = Guid.NewGuid();
+
+            var result = Controller.GetProductByIdAsync(id).Result;
+
+            Assert.IsNull(result);
+        }
+
+        [TestMethod]
+        public void PostProductAsync_PostProduct_ReturnPostedProduct()
         {
             //Arrange
             Product product = new Product
             {
+                Id = Guid.NewGuid(),
                 Name = "Test2",
                 Details = "Test product2",
                 Price = 100,
                 Quantity = 50,
                 WeightInGrams = 100,
-                Image = ""
+                Image = "",
             };
 
             //Act
@@ -98,7 +109,27 @@ namespace Frozen.UnitTests
         }
 
         [TestMethod]
-        public void UpdateProduct_UpdateProduct_ReturnUpdatedProduct()
+        public void PostProductAsync_TryCreateNewProductWithEmptyProductModel_ReturnNull()
+        {
+           Product dummyProduct = new Product();
+
+            var result = Controller.PostProductAsync(dummyProduct).Result;
+
+            Assert.IsNull(result);
+        }
+
+        [TestMethod]
+        public void PostOrderAsync_TryCreateNewOrderWithNullOrder_ReturnNull()
+        {
+            Product dummyProduct = null;
+
+            var result = Controller.PostProductAsync(dummyProduct).Result;
+
+            Assert.IsNull(result);
+        }
+
+        [TestMethod]
+        public void UpdateProductAsync_UpdateProduct_ReturnUpdatedProduct()
         {
             //Arrange
             Product product = new Product
@@ -121,7 +152,29 @@ namespace Frozen.UnitTests
         }
 
         [TestMethod]
-        public void DeleteProduct_DeleteProduct_ReturnDeletedProduct()
+        public void UpdateProductAsync_UpdateProductWithNotExistingProduct_ReturnNull()
+        {
+            //Arrange
+            Product product = new Product
+            {
+                Id = Guid.NewGuid(),
+                Name = "Uppdaterat namn",
+                Details = "Uppdaterade detaljer",
+                Image = "",
+                WeightInGrams = 100,
+                Price = 2200,
+                Quantity = 5
+            };
+
+            //Act
+            var result = Controller.UpdateProductAsync(DummyProduct.Id, product).Result;
+
+            //Assert
+            Assert.IsNull(result);            
+        }
+
+        [TestMethod]
+        public void DeleteProductAsync_DeleteProduct_ReturnDeletedProduct()
         {
             //Arrange
             var DummyProductTwo = DummyData.CreateDummyProduct();
@@ -137,6 +190,16 @@ namespace Frozen.UnitTests
                 DummyData.DeleteDummyProduct(Id);
             }
         }
-        
+
+        [TestMethod]
+        public void DeleteProductAsync_DeleteProductWithNotExistingProductId_ReturnNull()
+        {
+            var productId = Guid.NewGuid();
+
+            var result = Controller.DeleteProductAsync(productId).Result;
+
+            Assert.IsNull(result);
+        }
+
     }
 }

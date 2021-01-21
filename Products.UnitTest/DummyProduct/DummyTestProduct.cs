@@ -13,11 +13,13 @@ namespace Products.UnitTest.DummyProduct
         {
             var dummyProduct = new ProductModel()
             {
+                Id = Guid.NewGuid(),
                 Name = "TestProduct",
                 Price = 1000,
                 Details = "Test details",
                 Quantity = 200,
-                Image = "testimage.jpg"
+                Image = "testimage.jpg",
+                WeightInGrams = 100
             };
 
             return dummyProduct;

@@ -14,6 +14,7 @@
             public const string REGISTER_ENDPOINT           = GATEWAY_BASEURL + "register/";
             public const string REQUEST_NEW_TOKEN_ENDPOINT  = GATEWAY_BASEURL + "token/";
             public const string GET_USER                    = GATEWAY_BASEURL + "getuserbyid/";
+            public const string CHECK_EMAIL_AVAILABILITY    = GATEWAY_BASEURL + "verifyemail/";
         }
 
         public class Products

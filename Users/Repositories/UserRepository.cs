@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 using Users.Context;
@@ -33,18 +31,7 @@ namespace Users.Repositories
         {
             try
             {
-                User user = new User()
-                {
-                    FirstName = userModel.FirstName,
-                    LastName = userModel.LastName,
-                    PhoneNumber = userModel.PhoneNumber,
-                    Address = userModel.Address,
-                    City = userModel.City,
-                    Email = userModel.Email,
-                    UserName = userModel.Email,
-                    Zip = userModel.Zip
-                };
-
+                var user = ConvertToUser(userModel);
                 var result = await _userManager.CreateAsync(user, userModel.Password);
 
                 if (result.Succeeded)
@@ -52,17 +39,34 @@ namespace Users.Repositories
                     var role = await _userManager.AddToRoleAsync(user, "User");
 
                     if (role.Succeeded)
-                        return await ConvertUserToUserModelAsync(user);
+                        return await ConvertToUserModelAsync(user);
                     else
                         await _userManager.DeleteAsync(user);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new ArgumentNullException(ex.Message);
             }
 
             return null;
+        }
+
+        private User ConvertToUser(RegisterUserModel userModel)
+        {
+            User user = new User()
+            {
+                FirstName = userModel.FirstName,
+                LastName = userModel.LastName,
+                PhoneNumber = userModel.PhoneNumber,
+                Address = userModel.Address,
+                City = userModel.City,
+                Email = userModel.Email,
+                UserName = userModel.Email,
+                Zip = userModel.Zip
+            };
+
+            return user;
         }
 
         public async Task<UserModel> DeleteUserAsync(Guid id)
@@ -78,12 +82,12 @@ namespace Users.Repositories
 
                 if (result.Succeeded)
                 {
-                    var deletedUser = await ConvertUserToUserModelAsync(user);
+                    var deletedUser = await ConvertToUserModelAsync(user);
                     return deletedUser;
                 }
                 return null;
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return null;
             }
@@ -115,25 +119,19 @@ namespace Users.Repositories
 
             if (user != null)
             {
-                var userModel = await ConvertUserToUserModelAsync(user);
+                var userModel = await ConvertToUserModelAsync(user);
                 return userModel;
             }
 
             return null;
         }
 
-        public async Task<bool> CheckIfUserExistsByEmailAsync(string email)
+        public async Task<bool> CheckIfEmailIsRegisteredAsync(string email)
         {
-            var user = await _userManager.FindByEmailAsync(email);
-            if(user != null)
-            {
-                return true;
-            }
-
-            return false;
+            return await _context.Users.AnyAsync(x => x.Email == email);
         }
 
-        public async Task<UserModel> ConvertUserToUserModelAsync(User user)
+        public async Task<UserModel> ConvertToUserModelAsync(User user)
         {
             var userModel = new UserModel()
             {
@@ -152,34 +150,35 @@ namespace Users.Repositories
 
         public async Task<UserModel> UpdateUserAsync(Guid id, UserModel userModel)
         {
-
-            //CheckModelNotEmptyOrNull(userModel);
-
             if (UserIdIsEmpty(id) || userModel == null)
                 return null;
 
             var user = await _userManager.FindByIdAsync(id.ToString());
 
-            if (id == user.Id)
+            if (user != null && id == user.Id)
             {
-                user.FirstName = userModel.FirstName;
-                user.LastName = userModel.LastName;
-                user.PhoneNumber = userModel.PhoneNumber;
-                user.City = userModel.City;
-                user.Zip = userModel.Zip;
-                user.Address = userModel.Address;
-
-                var result = await _userManager.UpdateAsync(user);
+                var updatedUser = UpdateUserData(user, userModel);
+                var result = await _userManager.UpdateAsync(updatedUser);
 
                 if (result.Succeeded)
-                {
                     return userModel;
-                }
-
-                return null;
             }
 
             return null;
+        }
+
+        private User UpdateUserData(User user, UserModel userModel)
+        {
+            user.FirstName = userModel.FirstName;
+            user.LastName = userModel.LastName;
+            user.PhoneNumber = userModel.PhoneNumber;
+            user.City = userModel.City;
+            user.Zip = userModel.Zip;
+            user.Address = userModel.Address;
+            user.Email = userModel.Email;
+            user.UserName = userModel.Email;
+
+            return user;
         }
 
         public async Task<LoginResponseModel> LoginUserAsync(LoginModel loginModel)
@@ -191,43 +190,26 @@ namespace Users.Repositories
 
             var signInResult = await _signInManager.CheckPasswordSignInAsync(user, loginModel.Password, false);
 
-            if(signInResult.Succeeded)
-            {
-                var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
-
-                var token = _tokenHandler.CreateToken(user, isAdmin);
-                var refreshToken = _tokenHandler.CreateRefreshToken(user);
-
-                var responseModel = new LoginResponseModel()
-                {
-                    User = await ConvertUserToUserModelAsync(user),
-                    Token = token,
-                    RefreshToken = refreshToken
-                };
-
-                return responseModel;
-            }
+            if (signInResult.Succeeded)
+                return await CreateLoginResponseModelAsync(user);
 
             return null;
         }
 
-        public async Task<UserModel> UpdateEmailAddressAsync(UserModel userModel)
+        private async Task<LoginResponseModel> CreateLoginResponseModelAsync(User user)
         {
-            var emailAvailable = await _userManager.FindByEmailAsync(userModel.Email);
+            var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+            var token = _tokenHandler.CreateToken(user, isAdmin);
+            var refreshToken = _tokenHandler.CreateRefreshToken(user);
 
-            if (emailAvailable == null)
+            var responseModel = new LoginResponseModel()
             {
-                var user = await _userManager.FindByIdAsync(userModel.Id.ToString());
-                user.Email = userModel.Email;
-                user.UserName = userModel.Email;
+                User = await ConvertToUserModelAsync(user),
+                Token = token,
+                RefreshToken = refreshToken
+            };
 
-                var result = await _userManager.UpdateAsync(user);
-
-                if (result.Succeeded)
-                    return userModel;
-            }
-
-            return null;
+            return responseModel;
         }
 
         public async Task<UserModel> UpdatePasswordAsync(Guid id, string oldPass, string newPass)
@@ -239,7 +221,7 @@ namespace Users.Repositories
                 var result = await _userManager.ChangePasswordAsync(user, oldPass, newPass);
 
                 if (result.Succeeded)
-                    return await ConvertUserToUserModelAsync(user);
+                    return await ConvertToUserModelAsync(user);
             }
 
             return null;
@@ -251,7 +233,6 @@ namespace Users.Repositories
 
             if (result != null && result.Identity.IsAuthenticated)
             {
-                // Get user and role
                 var user = await _userManager.FindByIdAsync(userId.ToString());
                 var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
 
@@ -272,13 +253,5 @@ namespace Users.Repositories
             return (userId == Guid.Empty);
         }
 
-        private void CheckModelNotEmptyOrNull(UserModel model)
-        {
-            var properties = typeof(UserModel).GetProperties();
-            foreach(var property in properties)
-            {
-                var test = property.GetValue(model);
-            }
-        }
     }
 }

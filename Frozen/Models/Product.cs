@@ -11,22 +11,22 @@ namespace Frozen.Models
     {
         [Required]
         public Guid Id { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Ange produktnamn")]
         [DisplayName("Produkter")]
         public string Name { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Ange ett pris")]
         [DisplayName("Pris")]
         public decimal Price { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Ange en beskrivning")]
         [DisplayName("Beskrivning")]
         public string Details { get; set; }  
-        [Required]
+        [Required(ErrorMessage = "Ange lagersaldo")]
         [DisplayName("Antal i lager")]
         public int Quantity { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Ange en bildadress")]
         [DisplayName("Bild")]
         public string Image { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Ange vikt")]
         [DisplayName("Vikt i gram")]
         public int WeightInGrams { get; set; }
     }
