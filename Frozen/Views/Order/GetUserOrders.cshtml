@@ -1,7 +1,7 @@
 ﻿@model List<Frozen.Models.Order>
 
 <div class="card  mb-3 simple-linear shadow-lg cart-padding">
-    <h1>Din beställning</h1>
+    <h1>Mina ordrar</h1>
     <table class="table table-striped">
         <thead>
             <tr>
@@ -12,19 +12,19 @@
         </thead>
         <tbody>
             @foreach (var order in Model)
-            {
-            <tr>
-                <td>
-                    @order.Date
-                </td>
-                <td>
-                    @order.Status.Name
-                </td>
-                <td>
-                    @order.TotalPrice
-                </td>
-            </tr>
-            }
+             {
+                <tr>
+                    <td>
+                        @order.Date
+                    </td>
+                    <td>
+                        @order.Status.Name
+                    </td>
+                    <td>
+                        @order.TotalPrice
+                    </td>
+                </tr>
+             }
         </tbody>
     </table>
 </div>

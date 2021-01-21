@@ -37,7 +37,7 @@
                 <td>@order.UserId</td>
                 <td>@order.Date</td>
                 <td>@order.Status.Name</td>
-                <td><a asp-action="OrderUpdate" asp-route-id="@order.Id">Uppdatera</a></td>
+                <td><a asp-action="OrderUpdate" asp-route-id="@order.Id" title="Uppdatera"><i class="fas fa-edit"></i></a></td>
             </tr>
         }
     </table>
