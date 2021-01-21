@@ -35,11 +35,8 @@ namespace Orders.UnitTest
 
             // Assert
             Assert.AreEqual(dummyOrder, newOrder);
-
-            // Delete dummyOrder from DB
-            OrderTestContext.DbContext.Remove(dummyOrder);
-            OrderTestContext.DbContext.SaveChanges();
-
+           
+            DeleteDummyOrderFromDatabase(dummyOrder);
         }
 
         [TestMethod]
@@ -83,41 +80,33 @@ namespace Orders.UnitTest
 
         [TestMethod]
         public void CreateOrderAsync_TryCreateOrderWithAllReadyExistingOrderIdInDatabase_ReturnNull()
-        {
-           
+        {          
             // Arrange               
             var dummyOrder = DummyTestOrder.TestOrder();
             var dummyOrder2 = dummyOrder;
               
             //Act 
-
             var newOrder = OrderRepository.CreateOrderAsync(dummyOrder).Result;
             var newOrder2 = OrderRepository.CreateOrderAsync(dummyOrder2).Result;
 
             //Assert
             Assert.AreEqual(newOrder2, null);
-
-            // Delete dummyOrder from DB
-            OrderTestContext.DbContext.Remove(newOrder);
-            OrderTestContext.DbContext.SaveChanges();
-            
+           
+            DeleteDummyOrderFromDatabase(dummyOrder);
         }
 
         [TestMethod]
         public void DeleteOrderByOrderIdAsync_DeleteOrderFromDatabse_ReturnDeletedOrderAreEqual()
         {
-           
+
             // Arrange
-            var dummyOrder = DummyTestOrder.TestOrder();
-            OrderTestContext.DbContext.Order.Add(dummyOrder);
-            OrderTestContext.DbContext.SaveChanges();
+            OrderModel dummyOrder = CreateDummyOrderToDatabase();
 
             // Act               
             var deletedProduct = OrderRepository.DeleteOrderByOrderIdAsync(dummyOrder.Id).Result;
 
             // Assert
-            Assert.AreEqual(dummyOrder, deletedProduct);         
-            
+            Assert.AreEqual(dummyOrder, deletedProduct);                     
         }
 
         [TestMethod]
@@ -148,21 +137,17 @@ namespace Orders.UnitTest
 
         [TestMethod]
         public void GetOrderByOrderIdAsync_GetOrderById_ReturnOrder()
-        {          
+        {
             // Arrange 
-            var dummyOrder = DummyTestOrder.TestOrder();
-            OrderTestContext.DbContext.Order.Add(dummyOrder);
-            OrderTestContext.DbContext.SaveChanges();
+            OrderModel dummyOrder = CreateDummyOrderToDatabase();
 
             // Act            
             var order = OrderRepository.GetOrderByOrderIdAsync(dummyOrder.Id).Result;
 
             // Assert
             Assert.IsNotNull(order);
-
-            // Delete dummyOrder from DB
-            OrderTestContext.DbContext.Remove(dummyOrder);
-            OrderTestContext.DbContext.SaveChanges();            
+            
+            DeleteDummyOrderFromDatabase(dummyOrder);
         }
     
         [TestMethod]
@@ -176,8 +161,7 @@ namespace Orders.UnitTest
             var order = OrderRepository.GetOrderByOrderIdAsync(dummyOrder.Id).Result;
 
             // Assert
-            Assert.IsNull(order);
-            
+            Assert.IsNull(order);           
         }
 
         [TestMethod]
@@ -193,11 +177,9 @@ namespace Orders.UnitTest
         [TestMethod]
         public void UpdateOrderAsync_UpdateStatus_ReturnUpdatedOrder()
         {
-           
+
             // Arrange
-            var dummyOrder = DummyTestOrder.TestOrder();
-            OrderTestContext.DbContext.Order.Add(dummyOrder);
-            OrderTestContext.DbContext.SaveChanges();
+            OrderModel dummyOrder = CreateDummyOrderToDatabase();
             var oldStatusId = 1; 
             dummyOrder.StatusId = 2;
 
@@ -207,11 +189,8 @@ namespace Orders.UnitTest
             // Assert
             Assert.AreNotEqual(oldStatusId, order.StatusId);
             Assert.AreEqual(dummyOrder.StatusId, order.StatusId);
-
-            // Delete dummyOrder from DB
-            OrderTestContext.DbContext.Remove(dummyOrder);
-            OrderTestContext.DbContext.SaveChanges();
             
+            DeleteDummyOrderFromDatabase(dummyOrder);
         }
 
         [TestMethod]
@@ -243,22 +222,17 @@ namespace Orders.UnitTest
         [TestMethod]
         public void GetOrdersByUserId_GetAllOrdersFromTheSpecificUserId_ReturnAllOrdersWithTheUserId()
         {
-         
+
             // Arrange 
-            var dummyOrder = DummyTestOrder.TestOrder();
-            OrderTestContext.DbContext.Order.Add(dummyOrder);
-            OrderTestContext.DbContext.SaveChanges();
+            OrderModel dummyOrder = CreateDummyOrderToDatabase();
 
             // Act              
             var orders = OrderRepository.GetOrdersByUserIdAsync(dummyOrder.UserId).Result;
 
             // Assert
             Assert.IsInstanceOfType(orders, typeof(List<OrderModel>));
-
-            // Delete dummyOrder from DB
-            OrderTestContext.DbContext.Remove(dummyOrder);
-            OrderTestContext.DbContext.SaveChanges();
             
+            DeleteDummyOrderFromDatabase(dummyOrder);
         }
 
         [TestMethod]
@@ -276,46 +250,37 @@ namespace Orders.UnitTest
       
         [TestMethod]
         public void UpdateOrderStatusAsync_UpdateOrderStatusToSent_ReturnTrue()
-        {          
+        {
             // Arrange 
-            var dummyOrder = DummyTestOrder.TestOrder();
-            OrderTestContext.DbContext.Order.Add(dummyOrder);
-            OrderTestContext.DbContext.SaveChanges();
+            OrderModel dummyOrder = CreateDummyOrderToDatabase();
 
             // Act              
             var result = OrderRepository.UpdateOrderStatusAsync(2, dummyOrder.Id).Result;
 
             // Assert
             Assert.IsTrue(result);
-
-            // Delete dummyOrder from DB
-            OrderTestContext.DbContext.Remove(dummyOrder);
-            OrderTestContext.DbContext.SaveChanges();         
+           
+            DeleteDummyOrderFromDatabase(dummyOrder);
         }
 
         [TestMethod]
         public void UpdateOrderStatusAsync_UpdateOrderStatusToNonExistingStatus_ReturnFalse()
-        {          
+        {
             // Arrange 
-            var dummyOrder = DummyTestOrder.TestOrder();
-            OrderTestContext.DbContext.Order.Add(dummyOrder);
-            OrderTestContext.DbContext.SaveChanges();
+            OrderModel dummyOrder = CreateDummyOrderToDatabase();
 
             // Act             
             var result = OrderRepository.UpdateOrderStatusAsync(10, dummyOrder.Id).Result;
 
             // Assert
             Assert.IsFalse(result);
-
-            // Delete dummyOrder from DB
-            OrderTestContext.DbContext.Remove(dummyOrder);
-            OrderTestContext.DbContext.SaveChanges();          
+            
+            DeleteDummyOrderFromDatabase(dummyOrder);
         }
 
         [TestMethod]
         public void UpdateOrderStatusAsync_TryUpdateStatusOfNonExistingOrder_ReturnFalse()
-        {
-          
+        {         
             // Arrange 
             var nonExistingOrderId = Guid.NewGuid();
 
@@ -323,9 +288,21 @@ namespace Orders.UnitTest
             var result = OrderRepository.UpdateOrderStatusAsync(3, nonExistingOrderId).Result;
 
             // Assert
-            Assert.IsFalse(result);
-           
+            Assert.IsFalse(result);           
         }
 
+        private static OrderModel CreateDummyOrderToDatabase()
+        {
+            var dummyOrder = DummyTestOrder.TestOrder();
+            OrderTestContext.DbContext.Order.Add(dummyOrder);
+            OrderTestContext.DbContext.SaveChanges();
+            return dummyOrder;
+        }
+
+        private static void DeleteDummyOrderFromDatabase(OrderModel dummyOrder)
+        {           
+            OrderTestContext.DbContext.Remove(dummyOrder);
+            OrderTestContext.DbContext.SaveChanges();
+        }
     }
 }

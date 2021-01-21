@@ -45,11 +45,13 @@ namespace Frozen.UnitTests
             // Arrange for all tests
             Controller = new OrderController(clientService, cartService, _cookieHandler);
         }
+
         [ClassCleanup]
         public static void TestFixtureDispose()
         {
             DummyData.DeleteDummyOrder(DummyOrder.Id);
         }
+
         [TestMethod]
         public void GetOrdersAsync_GetAllOrders_ReturnAllOrders()
         {
@@ -60,17 +62,29 @@ namespace Frozen.UnitTests
             Assert.IsInstanceOfType(orders, typeof(List<Order>));
             Assert.IsTrue(orders.Count > 0);
         }
+
         [TestMethod]
         public void GetOrderByIdAsync_GetOrder_ReturnOrder()
         {
             //Arrange
-            var Id = DummyOrder.Id;
+            var id = DummyOrder.Id;
             //Act
-            var order = Controller.GetOrderByIdAsync(Id).Result;
+            var order = Controller.GetOrderByIdAsync(id).Result;
 
             //Assert
-            Assert.AreEqual(order.Id, Id);
+            Assert.AreEqual(order.Id, id);
         }
+
+        [TestMethod]
+        public void GetOrderByIdAsync_TryGetOrderWithNonExistingId_ReturnNull()
+        {
+            var id = Guid.NewGuid();
+
+            var result = Controller.GetOrderByIdAsync(id).Result;
+
+            Assert.IsNull(result);
+        }
+
         [TestMethod]
         public void PostOrderAsync_CreateNewOrder_ReturnCreatedOrder()
         {
@@ -96,6 +110,27 @@ namespace Frozen.UnitTests
             Assert.AreEqual(result.UserId, order.UserId);
             DummyData.DeleteDummyOrder(result.Id);
         }
+
+        [TestMethod]
+        public void PostOrderAsync_TryCreateNewOrderWithEmptyOrderModel_ReturnNull()
+        {
+            Order dummyOrder = new Order();
+
+            var result = Controller.PostOrderAsync(dummyOrder).Result;
+
+            Assert.IsNull(result);
+        }
+
+        [TestMethod]
+        public void PostOrderAsync_TryCreateNewOrderWithNullOrder_ReturnNull()
+        {
+            Order dummyOrder = null;
+
+            var result = Controller.PostOrderAsync(dummyOrder).Result;
+
+            Assert.IsNull(result);
+        }
+
         [TestMethod]
         public void UpdateOrderAsync_UpdateOrder_ReturnUpdatedOrder()
         {
@@ -117,6 +152,29 @@ namespace Frozen.UnitTests
             Assert.AreEqual(DummyOrder.Id, result.Id);
             Assert.AreEqual(result.TotalPrice, order.TotalPrice);
         }
+
+        [TestMethod]
+
+        public void UpdateOrderAsync_UpdateOrderWithNotExistingOrder_ReturnNull()
+        {
+            //Arrange            
+            Order order = new Order
+            {
+                Id = Guid.NewGuid(),
+                TotalPrice = 420M,
+                StatusId = 2,
+                PaymentId = 1,
+                UserId = Guid.Parse("a5fa1093-aebc-49ac-8636-5c171c4d3991"),
+                Date = DateTime.Now,
+            };
+
+            //Act
+            var result = Controller.UpdateOrderAsync(DummyOrder.Id, order).Result;
+
+            //Assert
+            Assert.IsNull(result);            
+        }
+
         [TestMethod]
         public void DeleteOrderAsync_DeleteOrder_ReturnDeletedOrder()
         {
@@ -134,6 +192,17 @@ namespace Frozen.UnitTests
                 DummyData.DeleteDummyOrder(Id);
             }
         }
+
+        [TestMethod]
+        public void DeleteOrderAsync_DeleteOrderWithNonExistingOrderId_ReturnNull()
+        {
+            var orderId = Guid.NewGuid();
+
+            var result = Controller.DeleteOrderAsync(orderId).Result;
+
+            Assert.IsNull(result);
+        }
+
         [TestMethod]
         public void GetOrdersByUserIdAsync_GetUsersOrders_ReturnUsersOrders()
         {
@@ -145,6 +214,19 @@ namespace Frozen.UnitTests
 
             //Assert
             Assert.AreEqual(result[0].UserId, Id);
+        }
+
+        [TestMethod]
+        public void GetOrdersByUserIdAsync_TryGetOrderWithNonExistingUserId_ReturnNull()
+        {
+            //Arrange
+            var userId = Guid.NewGuid();
+
+            //Act
+            var result = Controller.GetOrdersByUserIdAsync(userId).Result;
+
+            //Assert
+            Assert.IsNull(result);
         }
     }
 }

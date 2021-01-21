@@ -92,9 +92,18 @@ namespace Frozen.Controllers
         }
 
         [HttpGet]
+        public async Task<List<Order>> GetOrdersByUserIdAsync(Guid id)
+        {
+
+            var response = await _clientService.SendRequestToGatewayAsync(ApiLocation.Orders.GET_ORDER_BY_USERID + id, HttpMethod.Get);
+            return (response.IsSuccessStatusCode)
+                ? await _clientService.ReadResponseAsync<List<Order>>(response.Content) : null;
+        }
+        [HttpGet]
         public async Task<IActionResult> GetUserOrders()
         {
             var id = await _cookieHandler.GetClaimFromAuthenticationCookieAsync("UserId");
+
             var response = await _clientService.SendRequestToGatewayAsync(ApiLocation.Orders.GET_ORDER_BY_USERID + id, HttpMethod.Get);
 
             if (response.IsSuccessStatusCode)

@@ -146,6 +146,7 @@ namespace Frozen.Services
         public void DestroyAllCookies()
         {
             _accessor.HttpContext.Session.Remove(Cookies.JWT_SESSION_TOKEN);
+            _accessor.HttpContext.Session.Remove(Cookies.CART_SESSION_COOKIE);
             _accessor.HttpContext.Response.Cookies.Delete(Cookies.JWT_REFRESH_TOKEN);
             _accessor.HttpContext.SignOutAsync();
         }
