@@ -291,8 +291,6 @@ namespace Orders.UnitTest
             Assert.IsFalse(result);           
         }
 
-
-
         private static OrderModel CreateDummyOrderToDatabase()
         {
             var dummyOrder = DummyTestOrder.TestOrder();
@@ -306,6 +304,5 @@ namespace Orders.UnitTest
             OrderTestContext.DbContext.Remove(dummyOrder);
             OrderTestContext.DbContext.SaveChanges();
         }
-
     }
 }

@@ -35,8 +35,7 @@ namespace Products.UnitTest
 
             // Assert
             Assert.AreEqual(dummyProduct, newProduct);
-
-            // Clean up!
+            
             DeleteDummyProductFromDatabase(dummyProduct);
         }
       
@@ -80,8 +79,7 @@ namespace Products.UnitTest
 
             //Assert
             Assert.AreEqual(newOrder2, null);
-
-            // Delete dummyOrder from DB
+            
             DeleteDummyProductFromDatabase(dummyProduct);
         }
 
@@ -146,8 +144,7 @@ namespace Products.UnitTest
 
             // Assert
             Assert.IsNotNull(product);
-
-            // Delete dummyOrder from DB
+          
             DeleteDummyProductFromDatabase(dummyProduct);
         }
 
@@ -180,8 +177,7 @@ namespace Products.UnitTest
             // Assert
             Assert.AreNotEqual(oldPrice, product.Price);
             Assert.AreEqual(dummyProduct.Price, product.Price);
-
-            // Delete dummyOrder from DB
+           
             DeleteDummyProductFromDatabase(dummyProduct);
         }
 
@@ -255,8 +251,6 @@ namespace Products.UnitTest
             ProductTestContext.DbContext.Remove(newProduct);
             ProductTestContext.DbContext.SaveChanges();
         }
-
-
     }
 }
 
